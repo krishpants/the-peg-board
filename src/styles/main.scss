@@ -1,0 +1,1791 @@
+// =============================================================================
+// BADMINTON QUEUE APP STYLES
+// =============================================================================
+
+@use 'sass:color';
+
+// Variables
+// -----------------------------------------------------------------------------
+$border-radius: 16px;
+$border-radius-sm: 10px;
+$spacing-xs: 6px;
+$spacing-sm: 8px;
+$spacing-md: 12px;
+$spacing-lg: 16px;
+
+// Dark theme - Inky blues/purples color scheme
+$color-dark-bg: #0d0e1e;          // Deep navy background (layer 1)
+$color-dark-surface: #161729;     // Slightly lighter purple-blue surface (layer 2)
+$color-dark-card: #1f2037;        // Player cards background (layer 3)
+$color-dark-card-hover: #272842;  // Player cards hover state
+$color-dark-surface-hover: #1e1f3a; // Hover state
+$color-dark-border: rgba(138, 143, 226, 0.12); // Soft purple border
+$color-dark-border-strong: rgba(138, 143, 226, 0.25); // Stronger purple border
+$color-dark-text: #d4d6f4;        // Soft lavender text
+$color-dark-text-muted: #7c80b8;  // Muted purple-grey text
+
+// Accent colors - purple/blue palette
+$color-accent-purple: #7c3aed;    // Vibrant purple
+$color-accent-blue: #4f46e5;      // Deep blue
+$color-accent-indigo: #6366f1;    // Bright indigo
+$color-accent-lavender: #a78bfa;  // Soft lavender
+
+// All legacy colors removed - using dark theme only
+
+$color-winner: rgba(46, 204, 113, 0.4);
+$color-loser: rgba(231, 76, 60, 0.4);
+$color-court: rgba(52, 152, 219, 0.4);
+$color-success-bg: rgba(46, 204, 113, 0.15);
+
+// Base Layout
+// -----------------------------------------------------------------------------
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background: $color-dark-bg;
+  color: $color-dark-text;
+}
+
+// Main app container
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: $color-dark-bg;
+}
+
+// Settings screen styles
+.settings-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-dark-bg;
+  padding: $spacing-lg;
+}
+
+.settings-card {
+  background: $color-dark-surface;
+  border-radius: $border-radius;
+  padding: 40px;
+  max-width: 500px;
+  width: 100%;
+  border: 1px solid $color-dark-border;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.app__actions {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.start-session-btn {
+  padding: 12px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  background: $color-accent-purple;
+  color: white;
+  border: none;
+  border-radius: $border-radius-sm;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: color.adjust($color-accent-purple, $lightness: 8%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba($color-accent-purple, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Modal styles
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  background: $color-dark-surface;
+  border-radius: $border-radius;
+  padding: 24px;
+  width: 400px;
+  max-width: 90vw;
+  border: 1px solid $color-dark-border;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+
+  &--bulk-rename {
+    width: 90vw;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__title {
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: $color-dark-text;
+  }
+
+  &__player-number {
+    color: $color-accent-lavender;
+    font-weight: 500;
+  }
+
+  &__form {
+    margin: 0;
+  }
+
+  &__input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: $border-radius-sm;
+    border: 1px solid $color-dark-border;
+    background: $color-dark-card;
+    color: $color-dark-text;
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+
+    &::placeholder {
+      color: $color-dark-text-muted;
+    }
+
+    &:focus {
+      border-color: $color-accent-lavender;
+      background: $color-dark-card-hover;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    justify-content: flex-end;
+  }
+
+  &__btn {
+    padding: 8px 20px;
+    border-radius: $border-radius-sm;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+
+    &--cancel {
+      background: transparent;
+      color: $color-dark-text-muted;
+      border: 1px solid $color-dark-border;
+
+      &:hover {
+        background: rgba($color-dark-card, 0.5);
+        color: $color-dark-text;
+      }
+    }
+
+    &--save {
+      background: $color-accent-purple;
+      color: white;
+
+      &:hover {
+        background: color.adjust($color-accent-purple, $lightness: 8%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba($color-accent-purple, 0.3);
+      }
+    }
+  }
+
+  &__tip {
+    font-size: 13px;
+    color: $color-dark-text-muted;
+    margin: 16px 0 0 0;
+
+    kbd {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: $color-dark-card;
+      border: 1px solid $color-dark-border;
+      font-family: monospace;
+      font-size: 12px;
+      color: $color-dark-text;
+    }
+  }
+
+  &__bulk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    overflow-y: auto;
+    padding: 8px;
+    margin-bottom: 20px;
+    flex: 1;
+  }
+
+  &__input--bulk {
+    margin: 0;
+    width: 100%;
+  }
+
+  &__input--default {
+    color: $color-dark-text-muted;
+    font-style: italic;
+    border-color: rgba(251, 191, 36, 0.2);
+    background: rgba(251, 191, 36, 0.02);
+
+    &:focus {
+      color: $color-dark-text;
+      font-style: normal;
+      border-color: $color-accent-purple;
+      background: $color-dark-bg;
+    }
+  }
+
+  &--substitution {
+    width: 80vw;
+    max-width: 900px;
+    overflow: hidden;
+  }
+
+  &--bench {
+    width: 450px;
+  }
+
+  &--return {
+    width: 450px;
+  }
+}
+
+// Substitution Modal Styles
+.substitution {
+  &__current {
+    margin-bottom: 20px;
+  }
+
+  &__label {
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: $color-dark-text-muted;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  &__player-card {
+    background: linear-gradient(135deg, $color-accent-purple, $color-accent-indigo);
+    padding: 16px 20px;
+    border-radius: $border-radius;
+    border: none;
+    font-weight: 700;
+    font-size: 18px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba($color-accent-purple, 0.3);
+  }
+
+  &__divider {
+    text-align: center;
+    color: $color-dark-text-muted;
+    margin: 16px 0;
+    font-size: 20px;
+  }
+
+  &__available {
+    margin-bottom: 20px;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 8px;
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: $color-dark-card;
+    border: 1px solid $color-dark-border;
+    padding: 10px 14px;
+    border-radius: $border-radius;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    color: $color-dark-text;
+    width: 100%;
+
+    &:hover {
+      background: color.adjust($color-dark-card, $lightness: 5%);
+      border-color: $color-accent-purple;
+      transform: translateX(2px);
+    }
+
+    &-name {
+      flex: 1;
+    }
+
+    &-state {
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+
+      &--winner {
+        background: rgba(52, 211, 153, 0.2);
+        color: #34d399;
+      }
+
+      &--loser {
+        background: rgba(248, 113, 113, 0.2);
+        color: #f87171;
+      }
+
+      &--ready {
+        background: rgba(251, 191, 36, 0.2);
+        color: #fbbf24;
+      }
+    }
+  }
+
+  &__empty {
+    text-align: center;
+    padding: 40px;
+    color: $color-dark-text-muted;
+    font-style: italic;
+  }
+}
+
+// Bench Modal Styles
+.bench {
+  &__player {
+    margin-bottom: 24px;
+  }
+
+  &__label {
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: $color-dark-text-muted;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  &__player-card {
+    background: linear-gradient(135deg, $color-accent-purple, $color-accent-indigo);
+    padding: 16px 20px;
+    border-radius: $border-radius;
+    border: none;
+    font-weight: 700;
+    font-size: 18px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba($color-accent-purple, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  &__action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: $color-dark-card;
+    border: 1px solid $color-dark-border;
+    padding: 16px;
+    border-radius: $border-radius;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: $color-dark-text;
+
+    i {
+      font-size: 24px;
+    }
+
+    span {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    small {
+      font-size: 12px;
+      color: $color-dark-text-muted;
+      text-align: center;
+    }
+
+    &:hover {
+      background: color.adjust($color-dark-card, $lightness: 5%);
+      transform: translateY(-2px);
+    }
+
+    &--resting {
+      &:hover {
+        border-color: #fbbf24;
+        i {
+          color: #fbbf24;
+        }
+      }
+    }
+
+    &--left {
+      &:hover {
+        border-color: #f87171;
+        i {
+          color: #f87171;
+        }
+      }
+    }
+    &--ready {
+      &:hover {
+        border-color: #34d399;
+        i {
+          color: #34d399;
+        }
+      }
+    }
+  }
+}
+
+// Return Player Modal Styles
+.return {
+  &__player {
+    margin-bottom: 20px;
+  }
+
+  &__label {
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: $color-dark-text-muted;
+    margin-bottom: 8px;
+  }
+
+  &__player-card {
+    background: $color-dark-card;
+    padding: 12px 16px;
+    border-radius: $border-radius;
+    border: 1px solid $color-dark-border;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    i {
+      &.fa-pause-circle {
+        color: #fbbf24;
+      }
+      &.fa-sign-out-alt {
+        color: #f87171;
+      }
+    }
+  }
+
+  &__message {
+    color: $color-dark-text-muted;
+    font-size: 14px;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+}
+
+// Benched Players Styles
+.benched-players {
+  margin-top: auto;
+  padding: 16px;
+  border-top: 1px solid $color-dark-border;
+  background: $color-dark-bg;
+
+  &__section {
+    margin-bottom: 20px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    i {
+      font-size: 14px;
+    }
+  }
+
+  &__section--resting &__title {
+    color: #fbbf24;
+  }
+
+  &__section--left &__title {
+    color: #f87171;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+  }
+
+  &__card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: $color-dark-card;
+    padding: 8px 12px;
+    border-radius: $border-radius;
+    border: 1px solid $color-dark-border;
+    font-size: 13px;
+
+    &--resting {
+      border-left: 3px solid #fbbf24;
+    }
+
+    &--left {
+      border-left: 3px solid #f87171;
+      opacity: 0.7;
+    }
+  }
+
+  &__name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__return-btn {
+    background: none;
+    border: none;
+    color: $color-dark-text-muted;
+    cursor: pointer;
+    padding: 4px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: $color-accent-purple;
+      transform: rotate(-360deg);
+    }
+  }
+}
+
+// Settings component styles
+.settings {
+  h2 {
+    margin: 0 0 32px 0;
+    font-size: 28px;
+    font-weight: 600;
+    color: $color-dark-text;
+    text-align: center;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+
+    label {
+      font-size: 16px;
+      font-weight: 500;
+      color: $color-dark-text;
+    }
+  }
+
+  &__control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    button {
+      width: 36px;
+      height: 36px;
+      border-radius: $border-radius-sm;
+      border: 1px solid $color-dark-border;
+      background: $color-dark-card;
+      color: $color-dark-text;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        background: $color-dark-card-hover;
+        border-color: $color-accent-lavender;
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+    }
+
+    input {
+      width: 80px;
+      height: 36px;
+      padding: 0 12px;
+      border-radius: $border-radius-sm;
+      border: 1px solid $color-dark-border;
+      background: $color-dark-card;
+      color: $color-dark-text;
+      font-size: 16px;
+      font-weight: 500;
+      text-align: center;
+      transition: all 0.2s ease;
+
+      &:focus {
+        outline: none;
+        border-color: $color-accent-lavender;
+        background: $color-dark-card-hover;
+      }
+
+      &::-webkit-inner-spin-button,
+      &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    }
+  }
+}
+
+// Session container
+.session {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &__layout {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+}
+
+// Court area styles
+.court-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: $color-dark-bg;
+
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+  }
+}
+
+// Courts header styles
+.courts__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm $spacing-lg;
+  background: rgba($color-dark-surface, 0.5);
+  border-bottom: 1px solid $color-dark-border;
+}
+
+.courts__header-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: $color-dark-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.courts__header-controls {
+  display: flex;
+  gap: $spacing-sm;
+
+  button {
+    padding: 4px 10px;
+    border-radius: $border-radius-sm;
+    border: 1px solid rgba($color-dark-border, 0.5);
+    background: rgba($color-dark-card, 0.5);
+    color: $color-dark-text-muted;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: rgba($color-dark-card, 0.8);
+      border-color: $color-dark-border;
+      color: $color-dark-text;
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Queue column styles
+.queue-column {
+  width: 500px;
+  border-left: 1px solid $color-dark-border;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: $color-dark-surface;
+}
+
+.layout--app {
+  display: flex;
+  gap: $spacing-lg;
+}
+
+.layout__main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.layout__queue {
+  width: 500px;
+  flex: 0 0 500px;
+  overflow: auto;
+}
+
+// Courts Area
+// -----------------------------------------------------------------------------
+.courts {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-lg;
+    background: $color-dark-card;
+    border: 1px solid $color-dark-border;
+  }
+
+  &__header-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: $color-dark-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__header-controls {
+    display: flex;
+    gap: $spacing-sm;
+
+    button {
+      background: $color-dark-card;
+      border: 1px solid $color-dark-border-strong;
+      border-radius: $border-radius-sm;
+      padding: $spacing-sm $spacing-lg;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s ease;
+
+      &:hover:not(:disabled) {
+        background: $color-dark-card-hover;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: rgba($color-dark-card, 0.3);
+      }
+    }
+  }
+}
+
+.courts-area {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: $spacing-md;
+}
+
+.court {
+  background: $color-dark-surface;
+  border-radius: $border-radius;
+  padding: $spacing-md;
+  border: 1px solid $color-dark-border;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 320px;
+
+  &__header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: $spacing-md;
+    min-height: 28px;
+  }
+
+  &__content {
+    flex: 1;
+  }
+
+  &__rotate-btn {
+    font-size: 12px;
+    padding: $spacing-xs $spacing-sm;
+    white-space: nowrap;
+    background: $color-accent-lavender;
+    border-color: transparent;
+    color: white;
+    font-weight: 600;
+
+    &:hover {
+      background: color.adjust($color-accent-lavender, $lightness: 10%);
+      box-shadow: 0 2px 8px rgba(167, 139, 250, 0.4);
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: $spacing-md;
+    padding-top: $spacing-sm;
+    border-top: 1px solid $color-dark-border;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: $color-dark-text-muted;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__status {
+    display: flex;
+    align-items: center;
+  }
+
+  &__status-text {
+    font-size: 12px;
+    padding: 2px $spacing-xs;
+    border-radius: 12px;
+    font-weight: 500;
+    
+    &--waiting {
+      background: rgba(251, 191, 36, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      font-weight: 600;
+    }
+
+    &--playing {
+      background: rgba(74, 222, 128, 0.2);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.4);
+      font-weight: 600;
+    }
+
+    &--warmup {
+      background: rgba(108, 117, 125, 0.15);
+      color: #6c757d;
+      border: 1px solid rgba(108, 117, 125, 0.3);
+    }
+
+    &--declaring {
+      background: rgba(248, 113, 113, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(248, 113, 113, 0.4);
+      font-weight: 600;
+    }
+  }
+
+  // Court state modifiers
+  &--waiting {
+    border: 2px solid $color-dark-text-muted;
+    box-shadow: 0 2px 8px rgba(124, 128, 184, 0.2);
+  }
+
+  &--playing {
+    border: 2px solid $color-accent-indigo;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+    background: rgba(99, 102, 241, 0.03);
+  }
+
+  &--warmup {
+    border: 2px solid rgba(108, 117, 125, 0.3);
+    box-shadow: 0 2px 8px rgba(108, 117, 125, 0.1);
+  }
+
+  &--declaring {
+    border: 2px solid $color-accent-lavender;
+    box-shadow: 0 2px 8px rgba(167, 139, 250, 0.2);
+  }
+
+  &--priority {
+    border: 2px solid $color-accent-purple;
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+  }
+
+  &__empty {
+    opacity: 0.6;
+    font-style: italic;
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__player {
+    padding: $spacing-sm;
+    border-radius: $border-radius-sm;
+    border: 1px solid $color-dark-border;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-sm;
+  }
+
+  // Absolute positioning container for smooth animations
+  &__pairing-container {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    margin-top: $spacing-md;
+  }
+
+  &__pair-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-md;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__pair-player {
+    flex: 1;
+    text-align: center;
+    width: 120px;
+    max-width: 120px;
+    min-width: 120px;
+    position: relative;
+    transition: all 0.3s ease;
+
+    &--absolute {
+      position: absolute !important;
+      flex: none;
+    }
+
+    &.winning {
+      .player-card__name-button {
+        background: rgba(74, 222, 128, 0.3);
+        border: 1px solid rgba(74, 222, 128, 0.6);
+        color: #4ade80;
+        box-shadow: 0 2px 8px rgba(74, 222, 128, 0.3);
+      }
+    }
+
+    &.losing {
+      .player-card__name-button {
+        background: rgba(248, 113, 113, 0.3);
+        border: 1px solid rgba(248, 113, 113, 0.6);
+        color: #f87171;
+        box-shadow: 0 2px 8px rgba(248, 113, 113, 0.3);
+      }
+    }
+
+    .player-card__name-button {
+      width: 120px;
+      height: 36px;
+      background: rgba($color-accent-indigo, 0.25);
+      border: 1px solid rgba($color-accent-indigo, 0.5);
+      border-radius: $border-radius-sm;
+      padding: $spacing-sm;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-sizing: border-box;
+
+      &:hover {
+        background: rgba($color-accent-indigo, 0.25);
+        border-color: rgba($color-accent-indigo, 0.5);
+        box-shadow: 0 0 8px rgba(99, 102, 241, 0.2);
+      }
+
+      &.player-card--clicked {
+        background: rgba(167, 139, 250, 0.2);
+        border-color: $color-accent-lavender;
+      }
+    }
+  }
+
+  // Ensure elements don't center during animation
+  &__pair-row {
+    position: relative;  // Create positioning context
+  }
+
+  &__pair-win-btn {
+    width: 42px !important;
+    height: 42px !important;
+    padding: 0 !important;
+    font-size: 1.75rem;
+    min-width: 42px !important;
+    min-height: 42px !important;
+    border-radius: 21px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+    font-weight: 600;
+
+    &:hover {
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 6px 12px rgba(0, 0, 0, 0.35), 0 3px 6px rgba(0, 0, 0, 0.25);
+      transform: translateY(-2px);
+    }
+
+    i {
+      font-size: 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  &__vs-divider {
+    text-align: center;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: -100px;
+      right: -100px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    span {
+      position: relative;
+      color: $color-dark-text-muted;
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: #101124;
+      padding: 2px 12px;
+      z-index: 1;
+    }
+  }
+}
+
+// Queue System
+// -----------------------------------------------------------------------------
+.queue {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: $spacing-md;
+    min-height: 0;
+  }
+  &__header {
+    padding: $spacing-lg;
+    margin-bottom: $spacing-md;
+    text-align: center;
+    
+    button {
+      background: $color-dark-card;
+      border: 1px solid $color-dark-border-strong;
+      border-radius: $border-radius-sm;
+      padding: $spacing-sm $spacing-lg;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: $color-dark-card-hover;
+      }
+    }
+  }
+  &__instruction {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: linear-gradient(135deg, $color-accent-purple, $color-accent-blue);
+    color: white;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+    transition: all 0.3s ease;
+    animation: instructionPulse 0.6s ease-out;
+
+    &--waiting {
+      background: linear-gradient(135deg, $color-dark-text-muted, color.adjust($color-dark-text-muted, $lightness: -10%));
+      color: white;
+      box-shadow: 0 4px 12px rgba(124, 128, 184, 0.2);
+    }
+
+    &--declaring {
+      background: linear-gradient(135deg, $color-accent-lavender, $color-accent-indigo);
+      color: white;
+      box-shadow: 0 4px 12px rgba(167, 139, 250, 0.3);
+    }
+  }
+
+  @keyframes instructionPulse {
+    0% {
+      transform: scale(0.95);
+      opacity: 0.7;
+      box-shadow: 0 2px 10px rgba(102, 126, 234, 0.1);
+    }
+    50% {
+      transform: scale(1.02);
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+      box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+    }
+  }
+
+  &__instruction-text {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  &__vs {
+    text-align: center;
+    color: $color-dark-text;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: $spacing-sm 0;
+    opacity: 0.7;
+  }
+
+  &__instruction-count {
+    font-size: 14px;
+    opacity: 0.9;
+  }
+
+  &__block {
+    background: rgba($color-dark-surface, 0.6);
+    border-radius: $border-radius;
+    padding: $spacing-md;
+    border: 1px solid $color-dark-border;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: $spacing-md;
+    backdrop-filter: blur(10px);
+  }
+
+  &__block-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: $spacing-sm;
+    color: $color-accent-lavender;
+    letter-spacing: 0.3px;
+  }
+
+  &__block-time {
+    font-weight: 500;
+    color: $color-accent-indigo;
+    font-size: 13px;
+  }
+
+  &__game {
+    display: flex;
+    align-items: stretch;
+    gap: $spacing-md;
+
+    &--single-side {
+      justify-content: flex-start;
+    }
+  }
+
+  &__side {
+    flex: 1;
+    min-width: 0;
+
+    &--winner {
+      border-left: 3px solid #4ade80;  // Bright green
+      padding-left: $spacing-sm;
+      background: linear-gradient(90deg, rgba(74, 222, 128, 0.08), transparent);
+    }
+
+    &--loser {
+      border-left: 3px solid #f87171;  // Bright red
+      padding-left: $spacing-sm;
+      background: linear-gradient(90deg, rgba(248, 113, 113, 0.08), transparent);
+    }
+
+    &--ready {
+      border-left: 3px solid rgba(108, 117, 125, 0.6);
+      padding-left: $spacing-sm;
+    }
+
+    &--waiting {
+      border-left: 3px solid #fbbf24;  // Bright amber
+      padding-left: $spacing-sm;
+      background: linear-gradient(90deg, rgba(251, 191, 36, 0.08), transparent);
+    }
+  }
+
+  &__side-label {
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: $spacing-sm;
+    margin-bottom: $spacing-sm;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    .queue__side--winner & {
+      color: #4ade80;  // Bright green
+      text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+    }
+
+    .queue__side--loser & {
+      color: #f87171;  // Bright red
+      text-shadow: 0 0 10px rgba(248, 113, 113, 0.5);
+    }
+
+    .queue__side--ready & {
+      color: $color-dark-text;
+      opacity: 0.8;
+    }
+
+    .queue__side--waiting & {
+      color: #fbbf24;  // Consistent yellow
+      text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+    }
+  }
+
+  &__vs {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: $color-dark-text;
+    opacity: 0.6;
+    padding: 0 $spacing-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__player {
+    padding: $spacing-sm;
+    border-radius: $border-radius-sm;
+    border: 1px solid $color-dark-border;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-sm;
+  }
+
+  &__empty {
+    opacity: 0.6;
+    font-style: italic;
+  }
+}
+
+// Buttons & Controls
+// -----------------------------------------------------------------------------
+.queue-buttons {
+  display: flex;
+  gap: $spacing-xs;
+}
+
+// Unified button styles
+.queue-btn {
+  padding: $spacing-xs 10px;
+  border-radius: $border-radius-sm;
+  border: 1px solid $color-dark-border;
+  background: $color-dark-card;
+  color: $color-dark-text;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 12px;
+  font-weight: 500;
+
+  &:hover {
+    background: $color-dark-card-hover;
+    border-color: $color-dark-border-strong;
+  }
+
+  // Win button style
+  &.winner {
+    background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+    border: 1px solid rgba(203, 213, 225, 0.5);
+    color: #000000;
+    font-weight: 600;
+    min-width: 50px;
+    transition: all 0.3s ease;
+
+    .fas.fa-trophy {
+      font-size: 16px;
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    &.losing {
+      opacity: 0.3;
+      filter: grayscale(100%);
+      background: linear-gradient(135deg, #475569, #334155);
+
+      &:hover {
+        opacity: 0.3;
+        transform: scale(1);
+        box-shadow: none;
+      }
+    }
+
+    &:hover:not(.losing) {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #000000;
+      box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+      transform: scale(1.05);
+    }
+  }
+
+  // Loser button style (not used but keeping for consistency)
+  &.loser {
+    background: $color-dark-text-muted;
+    border-color: transparent;
+    color: white;
+  }
+
+  &.ready {
+    border-color: rgba(108, 117, 125, 0.4);
+    background: rgba(108, 117, 125, 0.05);
+    
+    &:hover {
+      background: rgba(108, 117, 125, 0.1);
+    }
+  }
+
+  // Court assignment buttons
+  &--court {
+    background: $color-accent-indigo;
+    border: 1px solid transparent;
+    color: white;
+    font-size: 11px;
+    padding: 4px 10px;
+    min-width: auto;
+    font-weight: 600;
+
+    &:hover {
+      background: color.adjust($color-accent-indigo, $lightness: 10%);
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+    }
+
+    &.queue-btn--priority {
+      background: $color-accent-indigo;
+      border-color: transparent;
+      color: white;
+    }
+  }
+
+  // Disabled states
+  &:disabled,
+  &.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(0.2);
+  }
+}
+
+// Badge Components
+// -----------------------------------------------------------------------------
+.badge {
+  padding: 2px $spacing-sm;
+  border-radius: 999px;
+  font-size: 12px;
+
+  &--on {
+    background: $color-success-bg;
+  }
+
+  &--off {
+    background: rgba($color-dark-card, 0.3);
+  }
+}
+
+// Player Components
+// -----------------------------------------------------------------------------
+.player-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  &--empty {
+    opacity: 0.6;
+    font-style: italic;
+    text-align: center;
+    padding: $spacing-lg;
+  }
+}
+
+.player-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-sm;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $border-radius-sm;
+  border: 1px solid $color-dark-border;
+  background: $color-dark-card;
+  margin-bottom: $spacing-xs;
+  transition: opacity 0.3s ease;
+
+  &__name-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    text-align: left;
+    flex: 1;
+    min-width: 0;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  &__status {
+    font-size: 12px;
+    padding: 2px $spacing-xs;
+    border-radius: 10px;
+    background: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    font-weight: 600;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-xs;
+    flex-shrink: 0;
+  }
+
+  // Waiting state
+  &--waiting {
+    opacity: 0.8;
+    border-color: rgba(255, 193, 7, 0.3);
+    background: rgba(255, 193, 7, 0.05);
+  }
+
+  // Pairing states
+  &--pair-1 {
+    border-left: 3px solid #667eea;
+  }
+
+  &--pair-2 {
+    border-left: 3px solid #28a745;
+  }
+
+  &--clicked {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: #667eea;
+  }
+
+  &--clickable {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  &__pair-badge {
+    font-size: 10px;
+    padding: 2px $spacing-xs;
+    border-radius: 8px;
+    font-weight: 600;
+    
+    &--1 {
+      background: rgba(102, 126, 234, 0.2);
+      color: #667eea;
+    }
+    
+    &--2 {
+      background: rgba(40, 167, 69, 0.2);
+      color: #28a745;
+    }
+  }
+}
+
+// Queue Player Components
+// -----------------------------------------------------------------------------
+.queue-player-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-sm;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $border-radius-sm;
+  border: 1px solid rgba($color-accent-indigo, 0.2);
+  margin-bottom: $spacing-xs;
+  background: rgba($color-accent-indigo, 0.08);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba($color-accent-indigo, 0.12);
+    border-color: rgba($color-accent-indigo, 0.3);
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.15);
+  }
+
+  &__number {
+    padding: 2px $spacing-xs;
+    border: 1px solid $color-dark-border-strong;
+    border-radius: $spacing-xs;
+    background: $color-dark-card;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.2s ease;
+    min-width: 24px;
+    text-align: center;
+
+    &:hover {
+      background: $color-dark-card-hover;
+    }
+  }
+
+  &__name-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    text-align: left;
+    flex: 1;
+    min-width: 0;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  &__unnamed {
+    opacity: 0.6;
+    font-size: 14px;
+    margin-left: $spacing-xs;
+  }
+
+  &__action {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+
+  &__waiting {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #fbbf24;
+    padding: 4px $spacing-xs;
+    text-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+  }
+}
+
+// Queue Block Styles
+// -----------------------------------------------------------------------------
+.queue {
+  &__block-title {
+    margin: 0 0 $spacing-sm;
+    font-size: 0.95rem;
+    color: $color-dark-text-muted;
+    font-weight: 500;
+    opacity: 0.9;
+
+    &--benched {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+
+      i {
+        font-size: 14px;
+      }
+    }
+  }
+
+  &__block--benched {
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0.8;
+    border: 1px solid $color-dark-border;
+    border-radius: $border-radius;
+    padding: 12px;
+    margin-top: auto;
+  }
+
+  &__block--left {
+    opacity: 0.6;
+  }
+
+  &__benched-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 6px;
+  }
+
+  &__benched-player {
+    background: $color-dark-card;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    border-left: 2px solid transparent;
+    border: 1px solid $color-dark-border;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    text-align: left;
+    color: inherit;
+
+    &:hover {
+      background: color.adjust($color-dark-card, $lightness: 5%);
+      transform: translateY(-1px);
+    }
+  }
+
+  &__benched-icon {
+    font-size: 10px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    color: $color-dark-text-muted;
+  }
+
+  &__benched-player:hover &__benched-icon {
+    opacity: 0.7;
+  }
+
+  &__benched-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0.8;
+  }
+
+  &__block--benched {
+    .queue__block-title {
+      color: #94a3b8;  // Muted blue-gray for resting
+    }
+
+    .queue__benched-player {
+      border-left-color: #94a3b8;  // Muted blue-gray for resting
+    }
+
+    &.queue__block--left {
+      .queue__block-title {
+        color: #f87171;  // Red for left
+      }
+
+      .queue__benched-player {
+        border-left-color: #f87171;  // Red for left
+      }
+    }
+  }
+
+  &__block-subtitle {
+    opacity: 0.7;
+    font-size: 12px;
+    font-weight: normal;
+  }
+
+  &__empty-state {
+    text-align: center;
+    padding: $spacing-lg;
+    opacity: 0.6;
+    font-style: italic;
+  }
+}
+
+// Enhanced Button Styles
+// -----------------------------------------------------------------------------

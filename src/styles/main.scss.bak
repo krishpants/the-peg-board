@@ -1,0 +1,953 @@
+// =============================================================================
+// BADMINTON QUEUE APP STYLES
+// =============================================================================
+
+@use 'sass:color';
+
+// Variables
+// -----------------------------------------------------------------------------
+$border-radius: 16px;
+$border-radius-sm: 10px;
+$spacing-xs: 6px;
+$spacing-sm: 8px;
+$spacing-md: 12px;
+$spacing-lg: 16px;
+
+// Dark theme - Inky blues/purples color scheme
+$color-dark-bg: #0d0e1e;          // Deep navy background (layer 1)
+$color-dark-surface: #161729;     // Slightly lighter purple-blue surface (layer 2)
+$color-dark-card: #1f2037;        // Player cards background (layer 3)
+$color-dark-card-hover: #272842;  // Player cards hover state
+$color-dark-surface-hover: #1e1f3a; // Hover state
+$color-dark-border: rgba(138, 143, 226, 0.12); // Soft purple border
+$color-dark-border-strong: rgba(138, 143, 226, 0.25); // Stronger purple border
+$color-dark-text: #d4d6f4;        // Soft lavender text
+$color-dark-text-muted: #7c80b8;  // Muted purple-grey text
+
+// Accent colors - purple/blue palette
+$color-accent-purple: #7c3aed;    // Vibrant purple
+$color-accent-blue: #4f46e5;      // Deep blue
+$color-accent-indigo: #6366f1;    // Bright indigo
+$color-accent-lavender: #a78bfa;  // Soft lavender
+
+// All legacy colors removed - using dark theme only
+
+$color-winner: rgba(46, 204, 113, 0.4);
+$color-loser: rgba(231, 76, 60, 0.4);
+$color-court: rgba(52, 152, 219, 0.4);
+$color-success-bg: rgba(46, 204, 113, 0.15);
+$color-muted-bg: rgba(0, 0, 0, 0.08);
+
+// Base Layout
+// -----------------------------------------------------------------------------
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background: $color-dark-bg;
+  color: $color-dark-text;
+}
+
+// Main app container
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: $color-dark-bg;
+}
+
+// Session container
+.session {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &__layout {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+}
+
+// Court area styles
+.court-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: $color-dark-bg;
+
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+  }
+}
+
+// Courts header styles
+.courts__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm $spacing-lg;
+  background: rgba($color-dark-surface, 0.5);
+  border-bottom: 1px solid $color-dark-border;
+}
+
+.courts__header-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: $color-dark-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.courts__header-controls {
+  display: flex;
+  gap: $spacing-sm;
+
+  button {
+    padding: 4px 10px;
+    border-radius: $border-radius-sm;
+    border: 1px solid rgba($color-dark-border, 0.5);
+    background: rgba($color-dark-card, 0.5);
+    color: $color-dark-text-muted;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: rgba($color-dark-card, 0.8);
+      border-color: $color-dark-border;
+      color: $color-dark-text;
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Queue column styles
+.queue-column {
+  width: 500px;
+  border-left: 1px solid $color-dark-border;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: $color-dark-surface;
+}
+
+.layout--app {
+  display: flex;
+  gap: $spacing-lg;
+}
+
+.layout__main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.layout__queue {
+  width: 500px;
+  flex: 0 0 500px;
+  overflow: auto;
+}
+
+// Courts Area
+// -----------------------------------------------------------------------------
+.courts {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-lg;
+    background: $color-background;
+    border: 1px solid $color-border;
+  }
+
+  &__header-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  &__header-controls {
+    display: flex;
+    gap: $spacing-sm;
+
+    button {
+      background: $color-background;
+      border: 1px solid $color-border-strong;
+      border-radius: $border-radius-sm;
+      padding: $spacing-sm $spacing-lg;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s ease;
+
+      &:hover:not(:disabled) {
+        background: $color-background-hover;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: $color-muted-bg;
+      }
+    }
+  }
+}
+
+.courts-area {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: $spacing-md;
+}
+
+.court {
+  background: $color-dark-surface;
+  border-radius: $border-radius;
+  padding: $spacing-md;
+  border: 1px solid $color-dark-border;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 320px;
+
+  &__header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: $spacing-md;
+    min-height: 28px;
+  }
+
+  &__content {
+    flex: 1;
+  }
+
+  &__rotate-btn {
+    font-size: 12px;
+    padding: $spacing-xs $spacing-sm;
+    white-space: nowrap;
+    background: $color-accent-lavender;
+    border-color: transparent;
+    color: white;
+    font-weight: 600;
+
+    &:hover {
+      background: color.adjust($color-accent-lavender, $lightness: 10%);
+      box-shadow: 0 2px 8px rgba(167, 139, 250, 0.4);
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: $spacing-md;
+    padding-top: $spacing-sm;
+    border-top: 1px solid $color-border;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: $color-accent-lavender;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__status {
+    display: flex;
+    align-items: center;
+  }
+
+  &__status-text {
+    font-size: 12px;
+    padding: 2px $spacing-xs;
+    border-radius: 12px;
+    font-weight: 500;
+    
+    &--waiting {
+      background: rgba(251, 191, 36, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      font-weight: 600;
+    }
+
+    &--playing {
+      background: rgba(74, 222, 128, 0.2);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.4);
+      font-weight: 600;
+    }
+
+    &--warmup {
+      background: rgba(108, 117, 125, 0.15);
+      color: #6c757d;
+      border: 1px solid rgba(108, 117, 125, 0.3);
+    }
+
+    &--declaring {
+      background: rgba(248, 113, 113, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(248, 113, 113, 0.4);
+      font-weight: 600;
+    }
+  }
+
+  // Court state modifiers
+  &--waiting {
+    border: 2px solid $color-dark-text-muted;
+    box-shadow: 0 2px 8px rgba(124, 128, 184, 0.2);
+  }
+
+  &--playing {
+    border: 2px solid $color-accent-indigo;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+    background: rgba(99, 102, 241, 0.03);
+  }
+
+  &--warmup {
+    border: 2px solid rgba(108, 117, 125, 0.3);
+    box-shadow: 0 2px 8px rgba(108, 117, 125, 0.1);
+  }
+
+  &--declaring {
+    border: 2px solid $color-accent-lavender;
+    box-shadow: 0 2px 8px rgba(167, 139, 250, 0.2);
+  }
+
+  &--priority {
+    border: 2px solid $color-accent-purple;
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+  }
+
+  &__empty {
+    opacity: 0.6;
+    font-style: italic;
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__player {
+    padding: $spacing-sm;
+    border-radius: $border-radius-sm;
+    border: 1px solid $color-border;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-sm;
+  }
+
+  // New pairing layout
+  &__pairing-layout {
+    margin-top: $spacing-md;
+    
+    // Override flex behavior during layout animations
+    .motion-div {
+      will-change: transform;
+    }
+  }
+
+  &__pair-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-md;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__pair-player {
+    flex: 1;
+    text-align: center;
+    width: 120px;
+    max-width: 120px;
+    min-width: 120px;
+    position: relative;  // Allow for absolute positioning during animation
+    
+    .player-card__name-button {
+      width: 120px;
+      height: 36px;
+      background: rgba($color-accent-indigo, 0.25);
+      border: 1px solid rgba($color-accent-indigo, 0.5);
+      border-radius: $border-radius-sm;
+      padding: $spacing-sm;
+      cursor: pointer;
+      color: white;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-sizing: border-box;
+
+      &:hover {
+        background: rgba($color-accent-indigo, 0.25);
+        border-color: rgba($color-accent-indigo, 0.5);
+        box-shadow: 0 0 8px rgba(99, 102, 241, 0.2);
+      }
+
+      &.player-card--clicked {
+        background: rgba(167, 139, 250, 0.2);
+        border-color: $color-accent-lavender;
+      }
+    }
+  }
+
+  // Ensure elements don't center during animation
+  &__pair-row {
+    position: relative;  // Create positioning context
+  }
+
+  &__pair-win-btn {
+    flex-shrink: 0;
+    padding: $spacing-sm $spacing-md;
+    font-weight: 600;
+  }
+
+  &__vs-divider {
+    text-align: center;
+    color: rgba(0, 0, 0, 0.5);
+    font-weight: 600;
+    margin: $spacing-sm 0;
+  }
+}
+
+// Queue System
+// -----------------------------------------------------------------------------
+.queue {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: $spacing-md;
+    min-height: 0;
+  }
+  &__header {
+    padding: $spacing-lg;
+    margin-bottom: $spacing-md;
+    text-align: center;
+    
+    button {
+      background: $color-background;
+      border: 1px solid $color-border-strong;
+      border-radius: $border-radius-sm;
+      padding: $spacing-sm $spacing-lg;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: $color-background-hover;
+      }
+    }
+  }
+  &__instruction {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: linear-gradient(135deg, $color-accent-purple, $color-accent-blue);
+    color: white;
+    padding: $spacing-lg;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+    transition: all 0.3s ease;
+    animation: instructionPulse 0.6s ease-out;
+
+    &--waiting {
+      background: linear-gradient(135deg, $color-dark-text-muted, color.adjust($color-dark-text-muted, $lightness: -10%));
+      color: white;
+      box-shadow: 0 4px 12px rgba(124, 128, 184, 0.2);
+    }
+
+    &--declaring {
+      background: linear-gradient(135deg, $color-accent-lavender, $color-accent-indigo);
+      color: white;
+      box-shadow: 0 4px 12px rgba(167, 139, 250, 0.3);
+    }
+  }
+
+  @keyframes instructionPulse {
+    0% {
+      transform: scale(0.95);
+      opacity: 0.7;
+      box-shadow: 0 2px 10px rgba(102, 126, 234, 0.1);
+    }
+    50% {
+      transform: scale(1.02);
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+      box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+    }
+  }
+
+  &__instruction-text {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  &__instruction-count {
+    font-size: 14px;
+    opacity: 0.9;
+  }
+
+  &__block {
+    background: rgba($color-dark-surface, 0.6);
+    border-radius: $border-radius;
+    padding: $spacing-md;
+    border: 1px solid $color-dark-border;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: $spacing-md;
+    backdrop-filter: blur(10px);
+  }
+
+  &__block-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: $spacing-sm;
+    color: $color-accent-lavender;
+    letter-spacing: 0.3px;
+  }
+
+  &__block-time {
+    font-weight: 500;
+    color: $color-accent-indigo;
+    font-size: 13px;
+  }
+
+  &__game {
+    display: flex;
+    align-items: stretch;
+    gap: $spacing-md;
+
+    &--single-side {
+      justify-content: flex-start;
+    }
+  }
+
+  &__side {
+    flex: 1;
+    min-width: 0;
+
+    &--winner {
+      border-left: 3px solid #4ade80;  // Bright green
+      padding-left: $spacing-sm;
+      background: linear-gradient(90deg, rgba(74, 222, 128, 0.08), transparent);
+    }
+
+    &--loser {
+      border-left: 3px solid #f87171;  // Bright red
+      padding-left: $spacing-sm;
+      background: linear-gradient(90deg, rgba(248, 113, 113, 0.08), transparent);
+    }
+
+    &--ready {
+      border-left: 3px solid rgba(108, 117, 125, 0.6);
+      padding-left: $spacing-sm;
+    }
+
+    &--waiting {
+      border-left: 3px solid #fbbf24;  // Bright amber
+      padding-left: $spacing-sm;
+      background: linear-gradient(90deg, rgba(251, 191, 36, 0.08), transparent);
+    }
+  }
+
+  &__side-label {
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: $spacing-sm;
+    margin-bottom: $spacing-sm;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    .queue__side--winner & {
+      color: #4ade80;  // Bright green
+    }
+
+    .queue__side--loser & {
+      color: #f87171;  // Bright red
+    }
+
+    .queue__side--ready & {
+      color: #6c757d;
+    }
+
+    .queue__side--waiting & {
+      color: #fbbf24;  // Bright amber
+    }
+  }
+
+  &__vs {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.5);
+    padding: 0 $spacing-xs;
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__player {
+    padding: $spacing-sm;
+    border-radius: $border-radius-sm;
+    border: 1px solid $color-border;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-sm;
+  }
+
+  &__empty {
+    opacity: 0.6;
+    font-style: italic;
+  }
+}
+
+// Buttons & Controls
+// -----------------------------------------------------------------------------
+.queue-buttons {
+  display: flex;
+  gap: $spacing-xs;
+}
+
+// Unified button styles
+.queue-btn {
+  padding: $spacing-xs 10px;
+  border-radius: $border-radius-sm;
+  border: 1px solid $color-dark-border;
+  background: $color-dark-card;
+  color: $color-dark-text;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 12px;
+  font-weight: 500;
+
+  &:hover {
+    background: $color-dark-card-hover;
+    border-color: $color-dark-border-strong;
+  }
+
+  // Win button style
+  &.winner {
+    background: linear-gradient(135deg, $color-accent-indigo, $color-accent-blue);
+    border: 1px solid transparent;
+    color: white;
+    font-weight: 600;
+
+    &:hover {
+      background: linear-gradient(135deg, color.adjust($color-accent-indigo, $lightness: 5%), color.adjust($color-accent-blue, $lightness: 5%));
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    }
+  }
+
+  // Loser button style (not used but keeping for consistency)
+  &.loser {
+    background: $color-dark-text-muted;
+    border-color: transparent;
+    color: white;
+  }
+
+  &.ready {
+    border-color: rgba(108, 117, 125, 0.4);
+    background: rgba(108, 117, 125, 0.05);
+    
+    &:hover {
+      background: rgba(108, 117, 125, 0.1);
+    }
+  }
+
+  // Court assignment buttons
+  &--court {
+    background: $color-accent-indigo;
+    border: 1px solid transparent;
+    color: white;
+    font-size: 11px;
+    padding: 4px 10px;
+    min-width: auto;
+    font-weight: 600;
+
+    &:hover {
+      background: color.adjust($color-accent-indigo, $lightness: 10%);
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+    }
+
+    &.queue-btn--priority {
+      background: $color-accent-indigo;
+      border-color: transparent;
+      color: white;
+    }
+  }
+
+  // Disabled states
+  &:disabled,
+  &.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(0.2);
+  }
+}
+
+// Badge Components
+// -----------------------------------------------------------------------------
+.badge {
+  padding: 2px $spacing-sm;
+  border-radius: 999px;
+  font-size: 12px;
+
+  &--on {
+    background: $color-success-bg;
+  }
+
+  &--off {
+    background: $color-muted-bg;
+  }
+}
+
+// Player Components
+// -----------------------------------------------------------------------------
+.player-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  &--empty {
+    opacity: 0.6;
+    font-style: italic;
+    text-align: center;
+    padding: $spacing-lg;
+  }
+}
+
+.player-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-sm;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $border-radius-sm;
+  border: 1px solid $color-border;
+  background: $color-white;
+  margin-bottom: $spacing-xs;
+  transition: opacity 0.3s ease;
+
+  &__name-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    text-align: left;
+    flex: 1;
+    min-width: 0;
+    color: white;
+    font-weight: 500;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  &__status {
+    font-size: 12px;
+    padding: 2px $spacing-xs;
+    border-radius: 10px;
+    background: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    font-weight: 600;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-xs;
+    flex-shrink: 0;
+  }
+
+  // Waiting state
+  &--waiting {
+    opacity: 0.8;
+    border-color: rgba(255, 193, 7, 0.3);
+    background: rgba(255, 193, 7, 0.05);
+  }
+
+  // Pairing states
+  &--pair-1 {
+    border-left: 3px solid #667eea;
+  }
+
+  &--pair-2 {
+    border-left: 3px solid #28a745;
+  }
+
+  &--clicked {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: #667eea;
+  }
+
+  &--clickable {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  &__pair-badge {
+    font-size: 10px;
+    padding: 2px $spacing-xs;
+    border-radius: 8px;
+    font-weight: 600;
+    
+    &--1 {
+      background: rgba(102, 126, 234, 0.2);
+      color: #667eea;
+    }
+    
+    &--2 {
+      background: rgba(40, 167, 69, 0.2);
+      color: #28a745;
+    }
+  }
+}
+
+// Queue Player Components
+// -----------------------------------------------------------------------------
+.queue-player-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-sm;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $border-radius-sm;
+  border: 1px solid rgba($color-accent-indigo, 0.2);
+  margin-bottom: $spacing-xs;
+  background: rgba($color-accent-indigo, 0.08);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba($color-accent-indigo, 0.12);
+    border-color: rgba($color-accent-indigo, 0.3);
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.15);
+  }
+
+  &__number {
+    padding: 2px $spacing-xs;
+    border: 1px solid $color-border-strong;
+    border-radius: $spacing-xs;
+    background: $color-background;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.2s ease;
+    min-width: 24px;
+    text-align: center;
+
+    &:hover {
+      background: $color-background-hover;
+    }
+  }
+
+  &__name-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    text-align: left;
+    flex: 1;
+    min-width: 0;
+    color: white;
+    font-weight: 500;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  &__unnamed {
+    opacity: 0.6;
+    font-size: 14px;
+    margin-left: $spacing-xs;
+  }
+
+  &__action {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+
+  &__waiting {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.5);
+    font-style: italic;
+    padding: 4px $spacing-xs;
+  }
+}
+
+// Queue Block Styles
+// -----------------------------------------------------------------------------
+.queue {
+  &__block-title {
+    margin: 0 0 $spacing-sm;
+    font-size: 1.1rem;
+    color: $color-accent-lavender;
+    font-weight: 700;
+  }
+
+  &__block-subtitle {
+    opacity: 0.7;
+    font-size: 12px;
+    font-weight: normal;
+  }
+
+  &__empty-state {
+    text-align: center;
+    padding: $spacing-lg;
+    opacity: 0.6;
+    font-style: italic;
+  }
+}
+
+// Enhanced Button Styles
+// -----------------------------------------------------------------------------
