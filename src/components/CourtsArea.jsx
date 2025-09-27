@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameResult, onPlayerClick, queueBlocks = [], isPriority = false, onUpdatePairing, ghostPlayer = null, shouldHighlightFirstEmptySlot = false, shouldHighlightRemainingSlots = false, shouldHighlightVictoryButtons = false }) => {
@@ -18,10 +18,14 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
   // Reset click order and hover state when players change
   useEffect(() => {
     setClickOrder([]);
-    // Set pairing index from players or reset to 0
-    const pairingFromPlayers = players.length > 0 && players[0].pairingIndex !== undefined ? players[0].pairingIndex : 0;
-    setCurrentPairingIndex(pairingFromPlayers);
     setHoveredPair(null);
+    // Don't reset pairing index if we're in the middle of rotating
+    // Use ref to avoid stale closure issues in Firefox
+    if (!isRotatingRef.current) {
+      // Set pairing index from players or reset to 0
+      const pairingFromPlayers = players.length > 0 && players[0].pairingIndex !== undefined ? players[0].pairingIndex : 0;
+      setCurrentPairingIndex(pairingFromPlayers);
+    }
   }, [players.map(p => p.playerNumber).join(',')]);
 
   // Update playing time for games in progress
@@ -111,14 +115,20 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
   
   // State for rotation animation
   const [isRotating, setIsRotating] = useState(false);
+  const isRotatingRef = useRef(false);
 
   // Rotate to next pairing option
   const rotatePairing = () => {
     setIsRotating(true);
+    isRotatingRef.current = true;
     setPreviousPairing(currentPairing);
     const newIndex = (currentPairingIndex + 1) % allPairings.length;
     setCurrentPairingIndex(newIndex);
-    setTimeout(() => setIsRotating(false), 600);
+
+    setTimeout(() => {
+      setIsRotating(false);
+      isRotatingRef.current = false;
+    }, 700);
 
     // Update the global state with the new pairing index
     if (onUpdatePairing) {

@@ -37,29 +37,30 @@ const QueuePlayerCard = ({
   return (
     <motion.div
       className={`queue-player-card ${shouldPulse ? 'help-pulse' : ''} ${priorityCourtNum && showOnlyPriority ? 'queue-player-card--priority' : ''} ${!priorityCourtNum && nextGameHasSpace ? 'queue-player-card--next-game' : ''}`}
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
+      initial={{
+        opacity: 0,
+        y: -20,
+        scaleY: 0.6
+      }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        scaleY: 1
+      }}
       exit={{
         opacity: 0,
-        scale: 0.8,
-        x: 50,
+        y: -20,
+        scaleY: 0.6,
         transition: {
-          duration: 0.3,
-          ease: "easeOut"
+          duration: 0.2,
+          ease: "easeIn"
         }
       }}
-      layout
       transition={{
-        layout: {
-          type: "spring",
-          stiffness: 700,
-          damping: 30,
-          mass: 0.8
-        },
-        opacity: {
-          duration: 0.2
-        }
+        duration: 0.3,
+        ease: "easeOut"
       }}
+      style={{ transformOrigin: "top", marginBottom: 8 }}
       onClick={() => {
         if (priorityCourtNum && showOnlyPriority) {
           handleAssignCourt(player.playerNumber, priorityCourtNum);
