@@ -9,7 +9,9 @@ const QueuePlayerCard = ({
   courtOccupancy = [],
   priorityCourtNum = null,
   showOnlyPriority = false,
-  onHover = null
+  onHover = null,
+  shouldPulse = false,
+  shouldPulseBenchButton = false
 }) => {
   const [isAssigning, setIsAssigning] = useState(false);
 
@@ -24,7 +26,7 @@ const QueuePlayerCard = ({
   };
   return (
     <motion.div
-      className="queue-player-card"
+      className={`queue-player-card ${shouldPulse ? 'help-pulse' : ''}`}
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{
@@ -73,7 +75,7 @@ const QueuePlayerCard = ({
 
       <button
         type="button"
-        className="queue-player-card__options-btn"
+        className={`queue-player-card__options-btn ${shouldPulseBenchButton ? 'help-pulse' : ''}`}
         title="Player options"
         onClick={(e) => {
           e.stopPropagation();

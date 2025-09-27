@@ -32,7 +32,10 @@ const QueueBlock = ({
   priorityCourtNum,
   onAssignCourt,
   onPlayerClick,
-  onPlayerHover
+  onPlayerHover,
+  shouldHighlight,
+  shouldHighlightEntireBlock,
+  shouldHighlightBenchButton
 }) => {
   const [timeAgo, setTimeAgo] = useState('');
 
@@ -102,7 +105,7 @@ const QueueBlock = ({
 
   return (
     <motion.div
-      className="queue__block"
+      className={`queue__block ${shouldHighlightEntireBlock ? 'help-pulse' : ''}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
@@ -138,7 +141,7 @@ const QueueBlock = ({
               {winners.length === 1 ? 'Winner' : 'Winners'}
             </div>
             <AnimatePresence>
-              {winners.map((player) => (
+              {winners.map((player, index) => (
                 <QueuePlayerCard
                   key={player.playerNumber}
                   player={player}
@@ -151,6 +154,8 @@ const QueueBlock = ({
                   priorityCourtNum={priorityCourtNum}
                   showOnlyPriority={true}
                   onHover={onPlayerHover}
+                  shouldPulse={shouldHighlight && index === 0}
+                  shouldPulseBenchButton={shouldHighlightBenchButton && index === 0}
                 />
               ))}
             </AnimatePresence>
@@ -170,7 +175,7 @@ const QueueBlock = ({
               {losers.length === 1 ? 'Loser' : 'Losers'}
             </div>
             <AnimatePresence>
-              {losers.map((player) => (
+              {losers.map((player, index) => (
                 <QueuePlayerCard
                   key={player.playerNumber}
                   player={player}
@@ -183,6 +188,8 @@ const QueueBlock = ({
                   priorityCourtNum={priorityCourtNum}
                   showOnlyPriority={true}
                   onHover={onPlayerHover}
+                  shouldPulse={shouldHighlight && winners.length === 0 && index === 0}
+                  shouldPulseBenchButton={shouldHighlightBenchButton && winners.length === 0 && index === 0}
                 />
               ))}
             </AnimatePresence>
@@ -200,7 +207,7 @@ const QueueBlock = ({
               {readyPlayers.length === 1 ? 'Ready' : 'Ready'}
             </div>
             <AnimatePresence>
-              {readyPlayers.map((player) => (
+              {readyPlayers.map((player, index) => (
                 <QueuePlayerCard
                   key={player.playerNumber}
                   player={player}
@@ -213,6 +220,8 @@ const QueueBlock = ({
                   priorityCourtNum={priorityCourtNum}
                   showOnlyPriority={true}
                   onHover={onPlayerHover}
+                  shouldPulse={shouldHighlight && winners.length === 0 && losers.length === 0 && index === 0}
+                  shouldPulseBenchButton={shouldHighlightBenchButton && winners.length === 0 && losers.length === 0 && index === 0}
                 />
               ))}
             </AnimatePresence>
@@ -230,7 +239,7 @@ const QueueBlock = ({
               {waitingPlayers.length === 1 ? 'Waiting' : 'Waiting'}
             </div>
             <AnimatePresence>
-              {waitingPlayers.map((player) => (
+              {waitingPlayers.map((player, index) => (
                 <QueuePlayerCard
                   key={player.playerNumber}
                   player={player}
@@ -243,6 +252,8 @@ const QueueBlock = ({
                   priorityCourtNum={priorityCourtNum}
                   showOnlyPriority={true}
                   onHover={onPlayerHover}
+                  shouldPulse={shouldHighlight && winners.length === 0 && losers.length === 0 && readyPlayers.length === 0 && index === 0}
+                  shouldPulseBenchButton={shouldHighlightBenchButton && winners.length === 0 && losers.length === 0 && readyPlayers.length === 0 && index === 0}
                 />
               ))}
             </AnimatePresence>

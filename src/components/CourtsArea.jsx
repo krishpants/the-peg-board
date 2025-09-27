@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameResult, onPlayerClick, queueBlocks = [], isPriority = false, onUpdatePairing, ghostPlayer = null }) => {
+const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameResult, onPlayerClick, queueBlocks = [], isPriority = false, onUpdatePairing, ghostPlayer = null, shouldHighlightFirstEmptySlot = false, shouldHighlightRemainingSlots = false, shouldHighlightVictoryButtons = false }) => {
   const playerCount = players.length;
   const courtNumber = parseInt(title.replace('Court ', '')) || 0;
 
@@ -269,7 +269,7 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
           {/* Win buttons - positioned in center */}
           <motion.button
             type="button"
-            className={`queue-btn winner court__pair-win-btn court__pair-win-btn--top ${hoveredPair === 2 ? 'losing' : ''}`}
+            className={`queue-btn winner court__pair-win-btn court__pair-win-btn--top ${hoveredPair === 2 ? 'losing' : ''} ${shouldHighlightVictoryButtons ? 'help-pulse' : ''}`}
             style={{
               position: 'absolute',
               top: '50%',
@@ -296,7 +296,7 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
 
           <motion.button
             type="button"
-            className={`queue-btn winner court__pair-win-btn court__pair-win-btn--bottom ${hoveredPair === 1 ? 'losing' : ''}`}
+            className={`queue-btn winner court__pair-win-btn court__pair-win-btn--bottom ${hoveredPair === 1 ? 'losing' : ''} ${shouldHighlightVictoryButtons ? 'help-pulse' : ''}`}
             style={{
               position: 'absolute',
               top: '50%',
@@ -363,7 +363,11 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
                     </motion.div>
                   </AnimatePresence>
                 ) : (
-                  <div className="court__slot-empty">
+                  <div className={`court__slot-empty ${
+                    (shouldHighlightFirstEmptySlot && slotIndex === players.length) ||
+                    (shouldHighlightRemainingSlots && slotIndex >= players.length)
+                      ? 'help-pulse' : ''
+                  }`}>
                     <span>Empty</span>
                   </div>
                 )}
@@ -415,6 +419,12 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
         )}
       </div>
 
+      {isPlaying && (
+        <div className="court__help-text">
+          <i className="fas fa-trophy"></i> When game ends, click the winning pair
+        </div>
+      )}
+
       <div className="court__footer">
         <h3 className="court__title">{title}</h3>
         <div className="court__status">
@@ -436,7 +446,7 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
   );
 };
 
-const CourtsArea = ({ players, courtCount, onQueueWinner, onQueueLoser, onQueueGameResult, onPlayerClick, queueBlocks, priorityCourtNum, onUpdatePairing, hoveredPlayer, hoveredTargetCourt }) => {
+const CourtsArea = ({ players, courtCount, onQueueWinner, onQueueLoser, onQueueGameResult, onPlayerClick, queueBlocks, priorityCourtNum, onUpdatePairing, hoveredPlayer, hoveredTargetCourt, shouldHighlightFirstEmptySlot, shouldHighlightRemainingSlots, shouldHighlightVictoryButtons }) => {
   const courts = Array.from({ length: courtCount }, (_, i) => {
     const num = i + 1;
     return {
@@ -460,6 +470,9 @@ const CourtsArea = ({ players, courtCount, onQueueWinner, onQueueLoser, onQueueG
           isPriority={c.num === priorityCourtNum}
           onUpdatePairing={onUpdatePairing}
           ghostPlayer={c.num === hoveredTargetCourt ? hoveredPlayer : null}
+          shouldHighlightFirstEmptySlot={shouldHighlightFirstEmptySlot && c.num === 1}
+          shouldHighlightRemainingSlots={shouldHighlightRemainingSlots && c.num === 1}
+          shouldHighlightVictoryButtons={shouldHighlightVictoryButtons && c.num === 1}
         />
       ))}
     </div>

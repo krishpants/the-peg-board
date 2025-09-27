@@ -25,7 +25,10 @@ const Settings = ({ courtCount, playerCount, onChange }) => {
 
   return (
     <div className="settings">
-      <h2>Settings</h2>
+      <div className="settings__header">
+        <img src="/peg.png" alt="Peg Board Logo" className="settings__logo" />
+        <h2>THE PEG BOARD</h2>
+      </div>
       <div className="settings__row">
         <label htmlFor="courtCount">Courts</label>
         <div className="settings__control">
@@ -42,6 +45,9 @@ const Settings = ({ courtCount, playerCount, onChange }) => {
           <input id="playerCount" type="number" min={0} value={playerCount} onChange={handleNumberChange('playerCount')} />
           <button type="button" onClick={handleStep('playerCount', 1)}>+</button>
         </div>
+      </div>
+      <div className="settings__note">
+        Don't worry, you can add more players later as they arrive
       </div>
     </div>
   );

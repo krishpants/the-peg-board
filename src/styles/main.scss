@@ -4,6 +4,8 @@
 
 @use 'sass:color';
 
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@700;900&family=Russo+One&display=swap');
+
 // Variables
 // -----------------------------------------------------------------------------
 $border-radius: 16px;
@@ -36,6 +38,8 @@ $color-winner: rgba(46, 204, 113, 0.4);
 $color-loser: rgba(231, 76, 60, 0.4);
 $color-court: rgba(52, 152, 219, 0.4);
 $color-success-bg: rgba(46, 204, 113, 0.15);
+$color-warning: #fbbf24;
+$color-help: #b994ff;  // Soft lavender purple for help context
 
 // Base Layout
 // -----------------------------------------------------------------------------
@@ -217,6 +221,18 @@ body {
         box-shadow: 0 4px 12px rgba(#dc2626, 0.3);
       }
     }
+
+    &--secondary {
+      background: transparent;
+      color: rgba(255, 255, 255, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+
+      &:hover {
+        color: rgba(255, 255, 255, 0.6);
+        border-color: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.05);
+      }
+    }
   }
 
   &__message {
@@ -284,6 +300,63 @@ body {
   &--return {
     width: 450px;
   }
+
+  &--welcome {
+    width: 500px;
+    max-width: 90vw;
+    text-align: center;
+  }
+
+  &__header-icon {
+    font-size: 48px;
+    color: $color-help;
+    margin-bottom: 20px;
+    animation: wave 0.5s ease-in-out;
+  }
+
+  &__tips {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 24px 0;
+    text-align: left;
+  }
+
+  &__tip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: rgba($color-accent-indigo, 0.1);
+    border-radius: $border-radius-sm;
+    border: 1px solid rgba($color-accent-indigo, 0.2);
+
+    i {
+      font-size: 18px;
+      color: $color-accent-lavender;
+      width: 24px;
+      text-align: center;
+    }
+
+    span {
+      flex: 1;
+      color: #9fa0ff;
+      font-size: 14px;
+    }
+  }
+
+  &__footer-text {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    font-style: italic;
+    margin: 20px 0 24px;
+  }
+}
+
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
 }
 
 // Substitution Modal Styles
@@ -619,12 +692,30 @@ body {
 
 // Settings component styles
 .settings {
+  &__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  &__logo {
+    height: 64px;
+    width: auto;
+    object-fit: contain;
+  }
+
   h2 {
-    margin: 0 0 32px 0;
-    font-size: 28px;
-    font-weight: 600;
-    color: $color-dark-text;
+    margin: 0;
+    font-size: 36px;
+    font-weight: 400;
+    font-family: 'Bebas Neue', sans-serif;
+    color: #9fa0ff;
     text-align: center;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow: 0 2px 10px rgba(159, 160, 255, 0.3);
   }
 
   &__row {
@@ -636,7 +727,7 @@ body {
     label {
       font-size: 16px;
       font-weight: 500;
-      color: $color-dark-text;
+      color: #9fa0ff;
     }
   }
 
@@ -651,7 +742,7 @@ body {
       border-radius: $border-radius-sm;
       border: 1px solid $color-dark-border;
       background: $color-dark-card;
-      color: $color-dark-text;
+      color: #9fa0ff;
       font-size: 18px;
       font-weight: 600;
       cursor: pointer;
@@ -677,7 +768,7 @@ body {
       border-radius: $border-radius-sm;
       border: 1px solid $color-dark-border;
       background: $color-dark-card;
-      color: $color-dark-text;
+      color: #9fa0ff;
       font-size: 16px;
       font-weight: 500;
       text-align: center;
@@ -696,6 +787,15 @@ body {
       }
     }
   }
+
+  &__note {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+    text-align: center;
+    margin-top: -8px;
+    margin-bottom: 20px;
+  }
 }
 
 // Session container
@@ -710,10 +810,164 @@ body {
     display: flex;
     overflow: hidden;
 
-    // Stack on mobile
-    @media (max-width: 767px) {
-      flex-direction: column;
+  }
+}
+
+// Help bar styles
+.help-bar {
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  right: 465px; // Account for queue sidebar + margin
+  background: #161734;
+  border: 1px solid rgba($color-accent-indigo, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  z-index: 50;
+  transition: all 0.3s ease;
+  padding: $spacing-md;
+
+  &--expanded {
+    right: 15px; // Just margin when sidebar collapsed
+  }
+
+  // When queue is collapsed or in overlay mode
+  @media (max-width: 1350px) {
+    right: 15px; // Just margin
+
+    &--expanded {
+      right: 15px; // Same since sidebar is overlay
     }
+  }
+
+  // Full width on mobile
+  @media (max-width: 800px) {
+    right: 15px;
+
+    &--expanded {
+      right: 15px;
+    }
+  }
+
+  &__content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: $spacing-lg;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    font-size: 16px;
+    font-weight: 700;
+    color: $color-help;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding-right: $spacing-md;
+    border-right: 1px solid rgba($color-accent-indigo, 0.2);
+
+    i {
+      font-size: 18px;
+      color: $color-accent-indigo;
+    }
+  }
+
+  &__messages {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    flex: 1;
+  }
+
+  &__tips {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    flex: 1;
+  }
+
+  &__tips-header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    font-size: 16px;
+    font-weight: 700;
+    color: $color-help;
+    margin-bottom: $spacing-xs;
+
+    i {
+      font-size: 18px;
+      color: $color-accent-indigo;
+    }
+  }
+
+  &__finish-btn {
+    margin-left: auto;
+    padding: $spacing-xs $spacing-md;
+    background: rgba($color-help, 0.15);
+    border: 1px solid rgba($color-help, 0.3);
+    border-radius: $border-radius-sm;
+    color: $color-help;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+
+    i {
+      margin-right: $spacing-xs;
+    }
+
+    &:hover {
+      background: rgba($color-help, 0.25);
+      border-color: rgba($color-help, 0.5);
+      transform: translateY(-1px);
+    }
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+
+    i {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    &--primary {
+      i {
+        color: $color-help;
+      }
+
+      .help-bar__text {
+        color: $color-help;
+        font-weight: 600;
+      }
+    }
+
+    &--secondary {
+      i {
+        color: rgba($color-help, 0.6);
+      }
+
+      .help-bar__text {
+        color: rgba($color-help, 0.7);
+      }
+    }
+  }
+
+  &__text {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    line-height: 1.3;
   }
 }
 
@@ -724,11 +978,23 @@ body {
   flex-direction: column;
   min-height: 0;
   background: $color-dark-bg;
+  transition: margin-right 0.3s ease;
+
+  &--expanded {
+    margin-right: 0;
+  }
+
+  // Full width on medium screens
+  @media (max-width: 1350px) {
+    width: 100%;
+    margin-right: 0;
+  }
 
   &__content {
     flex: 1;
     overflow-y: auto;
     padding: 1rem;
+    padding-bottom: 60px; // Account for help bar
   }
 }
 
@@ -742,12 +1008,25 @@ body {
   border-bottom: 1px solid $color-dark-border;
 }
 
+.courts__header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .courts__header-title {
-  font-size: 12px;
-  font-weight: 500;
-  color: $color-dark-text-muted;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-family: 'Bebas Neue', sans-serif !important;
+  font-size: 26px !important;
+  font-weight: 400 !important;
+  color: #9fa0ff !important;
+  text-transform: uppercase !important;
+  letter-spacing: 2px !important;
+}
+
+.courts__header-logo {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
 }
 
 .courts__header-controls {
@@ -778,6 +1057,57 @@ body {
   }
 }
 
+// Floating action button for mobile queue toggle
+.queue-toggle-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba($color-accent-indigo, 0.15);
+  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba($color-accent-indigo, 0.25);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  z-index: 102;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $color-accent-indigo;
+    color: white;
+    border-color: $color-accent-indigo;
+  }
+
+  i {
+    font-size: 20px;
+  }
+}
+
+// Queue backdrop for overlay mode
+.queue-backdrop {
+  display: none;
+
+  @media (max-width: 1350px) {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+    cursor: pointer;
+  }
+
+  @media (max-width: 800px) {
+    background: rgba(0, 0, 0, 0.7);
+  }
+}
+
 // Queue column styles
 .queue-column {
   width: 450px;
@@ -786,14 +1116,145 @@ body {
   flex-direction: column;
   min-height: 0;
   background: $color-dark-surface;
+  position: relative;
+  transition: width 0.3s ease, transform 0.3s ease;
 
-  // On mobile, take full width and remove left border
-  @media (max-width: 767px) {
-    width: 100%;
-    border-left: none;
-    border-top: 1px solid $color-dark-border;
-    max-height: 40vh;
+  &--collapsed {
+    width: 0;
+    overflow: hidden;
   }
+
+  // Overlay mode for medium screens
+  @media (max-width: 1350px) {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 100;
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.5);
+
+    &--collapsed {
+      transform: translateX(100%);
+    }
+  }
+
+  // Full width overlay for small screens
+  @media (max-width: 800px) {
+    width: 100% !important;
+    left: 0;
+    right: 0;
+    border-left: none;
+
+    &--collapsed {
+      transform: translateX(100%);
+
+      .queue-column__toggle {
+        position: fixed;
+        z-index: 101;
+      }
+    }
+  }
+
+  &__toggle {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 64px;
+    background: rgba($color-accent-indigo, 0.15);
+    border: 1px solid rgba($color-accent-indigo, 0.25);
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: $color-accent-indigo;
+      color: white;
+      border-color: $color-accent-indigo;
+    }
+
+    i {
+      font-size: 14px;
+    }
+
+    // On small screens, make it a floating button
+    @media (max-width: 800px) {
+      top: auto;
+      bottom: 20px;
+      left: auto;
+      right: 20px;
+      transform: none;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 1px solid rgba($color-accent-indigo, 0.25);
+      background: rgba($color-accent-indigo, 0.15);
+      color: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+
+      &:hover {
+        width: 56px;
+        background: $color-accent-indigo;
+        color: white;
+        border-color: $color-accent-indigo;
+        transform: none;
+      }
+
+      i {
+        font-size: 20px;
+      }
+    }
+  }
+
+  &__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    width: 100%;
+    position: relative;
+  }
+
+  &__add-player {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    padding: $spacing-xs $spacing-md;
+    background: rgba($color-accent-indigo, 0.15);
+    color: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba($color-accent-indigo, 0.25);
+    border-radius: $border-radius-sm;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-xs;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+    z-index: 10;
+
+    &:hover {
+      background: $color-accent-indigo;
+      color: white;
+      border-color: $color-accent-indigo;
+    }
+
+    i {
+      font-size: 14px;
+    }
+  }
+
 
   // On smaller desktop screens, reduce width
   @media (max-width: 1200px) {
@@ -859,31 +1320,40 @@ body {
         cursor: not-allowed;
         background: rgba($color-dark-card, 0.3);
       }
+
+      &.active {
+        background: $color-accent-indigo;
+        color: white;
+        border-color: $color-accent-indigo;
+      }
+
+      // Icon-only on mobile
+      @media (max-width: 800px) {
+        padding: $spacing-sm;
+        min-width: 44px;
+        min-height: 44px;
+
+        i {
+          font-size: 20px;
+        }
+      }
+    }
+
+    // Compact layout on mobile
+    @media (max-width: 800px) {
+      gap: $spacing-sm;
+      flex: 1;
+      justify-content: space-evenly;
     }
   }
 }
 
 .courts-area {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   gap: $spacing-md;
-
-  // Default: 1 column on mobile
-  grid-template-columns: 1fr;
-
-  // Tablets and normal laptops: 2x2 grid (this includes 14" MBP)
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  // Large external monitors: 3 columns
-  @media (min-width: 1920px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  // Ultra-wide or multi-monitor setups: 4 columns
-  @media (min-width: 2400px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .court {
@@ -896,9 +1366,9 @@ body {
   display: flex;
   flex-direction: column;
   height: 320px;
-  max-width: 390px;
+  max-width: 340px;
   width: 100%;
-  margin: 0 auto;
+  flex: 0 1 340px;
 
   &__header {
     display: flex;
@@ -1150,7 +1620,7 @@ body {
       border-radius: $border-radius-sm;
       padding: $spacing-sm;
       cursor: pointer;
-      color: rgba(255, 255, 255, 0.85);
+      color: #9fa0ff;
       font-weight: 400;
       transition: all 0.3s ease;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
@@ -1234,6 +1704,51 @@ body {
       z-index: 1;
     }
   }
+
+  &__help-text {
+    text-align: center;
+    font-size: 11px;
+    color: #9fa0ff;
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-top: auto;
+    padding: $spacing-xs 0;
+
+    i {
+      font-size: 10px;
+      color: #9fa0ff;
+    }
+  }
+}
+
+// Help System - Global animations and pulse effects
+// -----------------------------------------------------------------------------
+@keyframes helpPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba($color-help, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 0 8px rgba($color-help, 0);
+  }
+}
+
+// Reusable help pulse class that overrides any element's styling
+.help-pulse {
+  animation: helpPulse 1s infinite !important;
+  background: rgba(0, 0, 0, 0.8) !important;
+  border-color: rgba($color-help, 0.8) !important;
+  color: $color-help !important;
+  text-shadow: 0 0 10px rgba($color-help, 0.8) !important;
+
+  &:hover {
+    animation: none !important;
+    background: rgba($color-help, 0.45) !important;
+    border-color: rgba($color-help, 0.8) !important;
+    color: #fff !important;
+  }
 }
 
 // Queue System
@@ -1248,6 +1763,7 @@ body {
     overflow-y: auto;
     overflow-x: hidden;
     padding: $spacing-md;
+    padding-bottom: 100px; // Extra padding for scrolling past content and fixed button
     min-height: 0;
   }
   &__header {
@@ -1273,29 +1789,35 @@ body {
     position: sticky;
     top: 0;
     z-index: 10;
-    background: linear-gradient(135deg, $color-accent-purple, $color-accent-blue);
-    color: white;
+    background: #0d0d17;
+    color: #9fa0ff;
     height: 68px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+    border-bottom: 1px solid rgba($color-accent-indigo, 0.2);
     transition: all 0.3s ease;
     animation: instructionPulse 0.6s ease-out;
 
     &--waiting {
-      background: linear-gradient(135deg, $color-dark-text-muted, color.adjust($color-dark-text-muted, $lightness: -10%));
-      color: white;
-      box-shadow: 0 4px 12px rgba(124, 128, 184, 0.2);
+      background: rgba($color-accent-indigo, 0.1);
+      color: rgba(255, 255, 255, 0.6);
+      box-shadow: none;
+      border-bottom: 1px solid rgba($color-accent-indigo, 0.2);
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     &--declaring {
-      background: linear-gradient(135deg, $color-accent-lavender, $color-accent-indigo);
-      color: white;
-      box-shadow: 0 4px 12px rgba(167, 139, 250, 0.3);
+      background: rgba($color-accent-lavender, 0.15);
+      color: $color-accent-lavender;
+      border-bottom: 1px solid rgba($color-accent-lavender, 0.3);
     }
   }
+
 
   @keyframes instructionPulse {
     0% {
@@ -1337,9 +1859,9 @@ body {
   }
 
   &__block {
-    background: rgba($color-dark-surface, 0.6);
+    background: #0d0d17;
     border-radius: $border-radius;
-    padding: $spacing-md;
+    padding: 18px 15px;
     border: 1px solid $color-dark-border;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     margin-bottom: $spacing-md;
@@ -1349,7 +1871,7 @@ body {
   &__block-title {
     font-size: 14px;
     font-weight: 700;
-    margin-bottom: $spacing-sm;
+    margin-bottom: 12px;
     color: $color-accent-lavender;
     letter-spacing: 0.3px;
   }
@@ -1741,7 +2263,7 @@ body {
 
   &__name {
     font-size: 18px;
-    color: rgba(255, 255, 255, 0.85);
+    color: #9fa0ff;
     font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
@@ -1830,7 +2352,7 @@ body {
 // -----------------------------------------------------------------------------
 .queue {
   &__block-title {
-    margin: 0 0 $spacing-sm;
+    margin: 0 0 12px;
     font-size: 0.95rem;
     color: $color-dark-text-muted;
     font-weight: 500;
@@ -1940,6 +2462,68 @@ body {
     padding: $spacing-lg;
     opacity: 0.6;
     font-style: italic;
+  }
+
+  // Preview block for showing where game results will go
+  &__preview-block {
+    background: rgba($color-dark-surface, 0.3);
+    border-radius: $border-radius;
+    padding: $spacing-md;
+    border: 1px dashed rgba($color-help, 0.4);
+    margin-bottom: $spacing-md;
+    opacity: 0.8;
+  }
+
+  &__preview-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: $spacing-sm;
+    color: rgba($color-help, 0.9);
+    text-align: center;
+
+    i {
+      margin-right: $spacing-xs;
+      font-size: 16px;
+    }
+  }
+
+  &__preview-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-lg;
+  }
+
+  &__preview-side {
+    flex: 1;
+    max-width: 140px;
+  }
+
+  &__preview-label {
+    display: block;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__preview-slots {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+  }
+
+  &__preview-slot {
+    height: 30px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    border-radius: $border-radius-sm;
+  }
+
+  &__preview-vs {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.3);
+    font-weight: 600;
   }
 }
 

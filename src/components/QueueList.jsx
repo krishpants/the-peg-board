@@ -1,7 +1,7 @@
 import React from 'react';
 import QueueBlock from './QueueBlock';
 
-const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAssignCourt, onPlayerClick, onPlayerHover }) => {
+const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAssignCourt, onPlayerClick, onPlayerHover, shouldHighlightFirstPlayer, shouldHighlightEntireBlock, shouldShowPreviewBlock, shouldHighlightBenchButton }) => {
   const visibleBlocks = blocks.filter((b) => b.players.length > 0);
 
   // Sort blocks: regular blocks first, then benched blocks
@@ -63,7 +63,7 @@ const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAs
 
       {/* Scrollable content area */}
       <div className="queue__content">
-        {sortedBlocks.map((block) => (
+        {sortedBlocks.map((block, index) => (
           <QueueBlock
             key={block.id}
             block={block}
@@ -73,8 +73,36 @@ const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAs
             onAssignCourt={onAssignCourt}
             onPlayerClick={onPlayerClick}
             onPlayerHover={onPlayerHover}
+            shouldHighlight={shouldHighlightFirstPlayer && index === 0 && !block.benchedType}
+            shouldHighlightEntireBlock={shouldHighlightEntireBlock && index === 0 && !block.benchedType}
+            shouldHighlightBenchButton={shouldHighlightBenchButton && index === 0 && !block.benchedType}
           />
         ))}
+
+        {shouldShowPreviewBlock && (
+          <div className="queue__preview-block help-pulse">
+            <h3 className="queue__preview-title">
+              Players will join the back of the queue here
+            </h3>
+            <div className="queue__preview-content">
+              <div className="queue__preview-side">
+                <span className="queue__preview-label">Winners</span>
+                <div className="queue__preview-slots">
+                  <div className="queue__preview-slot"></div>
+                  <div className="queue__preview-slot"></div>
+                </div>
+              </div>
+              <div className="queue__preview-vs">vs</div>
+              <div className="queue__preview-side">
+                <span className="queue__preview-label">Losers</span>
+                <div className="queue__preview-slots">
+                  <div className="queue__preview-slot"></div>
+                  <div className="queue__preview-slot"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {sortedBlocks.length === 0 && (
           <div className="queue__empty-state">
