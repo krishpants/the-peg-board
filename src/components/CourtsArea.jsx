@@ -34,11 +34,11 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
         const minutes = Math.floor(diff / 60000);
 
         if (minutes < 1) {
-          setPlayingTime('Just started');
+          setPlayingTime('< 1 Min');
         } else if (minutes === 1) {
-          setPlayingTime('Playing: 1 min');
+          setPlayingTime('1 Min');
         } else {
-          setPlayingTime(`Playing: ${minutes} mins`);
+          setPlayingTime(`${minutes} Mins`);
         }
       };
 
@@ -216,7 +216,7 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
               Courts Full
             </span>
           )}
-          {isPlaying && <span className="court__status-text court__status-text--playing">Playing</span>}
+          {isPlaying && <span className="court__status-text court__status-text--playing">{playingTime ? `Playing ${playingTime}` : 'Playing'}</span>}
           {isDeclaringResults && <span className="court__status-text court__status-text--declaring">Declaring Result</span>}
         </div>
       </div>

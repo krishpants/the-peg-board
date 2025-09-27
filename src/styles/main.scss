@@ -1216,7 +1216,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  background: $color-dark-surface;
+  background: #171f22;
   position: relative;
   transition: width 0.3s ease, transform 0.3s ease;
 
@@ -1483,7 +1483,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 10px 16px;  // Increased padding
-    background: #f5f5f5;  // White smoke
+    background: #314045;  // Dark blue-grey
     border-bottom: 2px solid #000000;  // Black border
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
@@ -1493,7 +1493,7 @@ body {
   &__title {
     font-size: 14px;
     font-weight: 700;
-    color: #000000;  // Black text
+    color: #c8ced1;  // Light grey-blue text
     text-transform: uppercase;
     letter-spacing: 1px;
     margin: 0;
@@ -1512,7 +1512,7 @@ body {
     letter-spacing: 0.8px;
     padding: 3px 8px 3px 10px;
     border-radius: 0;
-    color: #000000;  // Black text for all states
+    color: #c8ced1;  // Light grey-blue text for all states
     background: transparent;
     border-right: 5px solid #666666;  // Default grey for empty
 
@@ -1526,6 +1526,13 @@ body {
 
     &--declaring {
       border-right-color: #d1020e;  // Red border
+    }
+
+    &--time {
+      border-right: none;
+      color: #8a9195;  // Slightly darker than the main text
+      font-size: 11px;
+      margin-left: 8px;
     }
   }
 
@@ -1649,6 +1656,18 @@ body {
   &--priority {
     border: 2px solid rgba(255, 255, 255, 0.7);  // Bright white border
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);  // White glow
+    animation: priorityPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes priorityPulse {
+    0%, 100% {
+      border-color: rgba(255, 255, 255, 0.7);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+    50% {
+      border-color: rgba(255, 255, 255, 1);
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+    }
   }
 
   &__priority-arrow {
@@ -2090,7 +2109,7 @@ body {
     font-size: 14px;
     font-weight: 700;
     margin-bottom: 12px;
-    color: #f5f5f5;  // White smoke title
+    color: #97aab1;  // Light blue-grey matching court headers
     letter-spacing: 0.3px;
     text-transform: uppercase;
   }
@@ -2617,7 +2636,7 @@ body {
   &__block-title {
     margin: 0 0 12px;
     font-size: 0.95rem;
-    color: $color-dark-text-muted;
+    color: #97aab1;
     font-weight: 500;
     opacity: 0.9;
 
