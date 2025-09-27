@@ -1,0 +1,17 @@
+{
+  "short_name": "Badminton Queue",
+  "name": "Badminton Queue Manager",
+  "description": "Manage badminton court rotations and player queues",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#7c3aed",
+  "background_color": "#0d0e1e",
+  "orientation": "portrait"
+}

@@ -31,7 +31,8 @@ const QueueBlock = ({
   courtOccupancy,
   priorityCourtNum,
   onAssignCourt,
-  onPlayerClick
+  onPlayerClick,
+  onPlayerHover
 }) => {
   const [timeAgo, setTimeAgo] = useState('');
 
@@ -142,13 +143,14 @@ const QueueBlock = ({
                   key={player.playerNumber}
                   player={player}
                   onPlayerClick={() => onPlayerClick?.(player)}
-                  onAssignCourt={(playerNumber, courtNumber) => 
+                  onAssignCourt={(playerNumber, courtNumber) =>
                     onAssignCourt(block.id, playerNumber, courtNumber)
                   }
                   courtCount={courtCount}
                   courtOccupancy={courtOccupancy}
                   priorityCourtNum={priorityCourtNum}
                   showOnlyPriority={true}
+                  onHover={onPlayerHover}
                 />
               ))}
             </AnimatePresence>
@@ -173,13 +175,14 @@ const QueueBlock = ({
                   key={player.playerNumber}
                   player={player}
                   onPlayerClick={() => onPlayerClick?.(player)}
-                  onAssignCourt={(playerNumber, courtNumber) => 
+                  onAssignCourt={(playerNumber, courtNumber) =>
                     onAssignCourt(block.id, playerNumber, courtNumber)
                   }
                   courtCount={courtCount}
                   courtOccupancy={courtOccupancy}
                   priorityCourtNum={priorityCourtNum}
                   showOnlyPriority={true}
+                  onHover={onPlayerHover}
                 />
               ))}
             </AnimatePresence>
@@ -202,13 +205,14 @@ const QueueBlock = ({
                   key={player.playerNumber}
                   player={player}
                   onPlayerClick={() => onPlayerClick?.(player)}
-                  onAssignCourt={(playerNumber, courtNumber) => 
+                  onAssignCourt={(playerNumber, courtNumber) =>
                     onAssignCourt(block.id, playerNumber, courtNumber)
                   }
                   courtCount={courtCount}
                   courtOccupancy={courtOccupancy}
                   priorityCourtNum={priorityCourtNum}
                   showOnlyPriority={true}
+                  onHover={onPlayerHover}
                 />
               ))}
             </AnimatePresence>
@@ -231,13 +235,14 @@ const QueueBlock = ({
                   key={player.playerNumber}
                   player={player}
                   onPlayerClick={() => onPlayerClick?.(player)}
-                  onAssignCourt={(playerNumber, courtNumber) => 
+                  onAssignCourt={(playerNumber, courtNumber) =>
                     onAssignCourt(block.id, playerNumber, courtNumber)
                   }
                   courtCount={courtCount}
                   courtOccupancy={courtOccupancy}
                   priorityCourtNum={priorityCourtNum}
                   showOnlyPriority={true}
+                  onHover={onPlayerHover}
                 />
               ))}
             </AnimatePresence>

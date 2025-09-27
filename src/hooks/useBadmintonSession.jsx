@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+const STORAGE_KEY = 'badminton-session-state';
 
 export const createPlayer = (index) => ({
   onCourt: true,
@@ -9,15 +11,62 @@ export const createPlayer = (index) => ({
   benched: false,
 });
 
+// Load state from localStorage
+const loadStateFromStorage = () => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      return JSON.parse(saved);
+    }
+  } catch (error) {
+    console.error('Failed to load state from localStorage:', error);
+  }
+  return null;
+};
+
+// Save state to localStorage
+const saveStateToStorage = (state) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (error) {
+    console.error('Failed to save state to localStorage:', error);
+  }
+};
+
+// Clear localStorage
+const clearStorage = () => {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (error) {
+    console.error('Failed to clear localStorage:', error);
+  }
+};
+
 // Each queue block:
 // { id: number, sourceCourt: number, closed: boolean, players: Array<{playerNumber, playerName, lastState}> }
 export default function useBadmintonSession() {
-  const [courtCount, setCourtCount] = useState(4);
-  const [playerCount, setPlayerCount] = useState(20);
-  const [sessionStarted, setSessionStarted] = useState(false);
-  const [players, setPlayers] = useState([]);
-  const [queueBlocks, setQueueBlocks] = useState([]);
-  const [undoStack, setUndoStack] = useState([]);
+  // Try to load saved state
+  const savedState = loadStateFromStorage();
+
+  const [courtCount, setCourtCount] = useState(savedState?.courtCount ?? 4);
+  const [playerCount, setPlayerCount] = useState(savedState?.playerCount ?? 20);
+  const [sessionStarted, setSessionStarted] = useState(savedState?.sessionStarted ?? false);
+  const [players, setPlayers] = useState(savedState?.players ?? []);
+  const [queueBlocks, setQueueBlocks] = useState(savedState?.queueBlocks ?? []);
+  const [undoStack, setUndoStack] = useState(savedState?.undoStack ?? []);
+
+  // Auto-save state to localStorage whenever it changes
+  useEffect(() => {
+    const stateToSave = {
+      courtCount,
+      playerCount,
+      sessionStarted,
+      players,
+      queueBlocks,
+      undoStack
+    };
+    saveStateToStorage(stateToSave);
+  }, [courtCount, playerCount, sessionStarted, players, queueBlocks, undoStack]);
 
   const setCounts = ({ courtCount: cc, playerCount: pc }) => {
     if (typeof cc === 'number') setCourtCount(Math.max(1, cc));
@@ -93,34 +142,48 @@ export default function useBadmintonSession() {
       lastState: 'waiting'
     };
 
-    // Add new arrivals to the back of the queue
+    // Add new arrivals to the queue - respecting chronological order
     setQueueBlocks((prev) => {
-      // Check if the last block is a new arrivals block
-      const lastBlock = prev[prev.length - 1];
-      const canAddToLastBlock = lastBlock && 
-                               lastBlock.sourceCourt === -1 && 
-                               !lastBlock.closed;
-      
+      // Find where benched blocks start (if any)
+      const firstBenchedIndex = prev.findIndex(block => block.benchedType);
+      const nonBenchedBlocks = firstBenchedIndex === -1 ? prev : prev.slice(0, firstBenchedIndex);
+
+      // Check if the LAST non-benched block is a new arrivals block
+      const lastNonBenchedBlock = nonBenchedBlocks[nonBenchedBlocks.length - 1];
+      const canAddToLastBlock = lastNonBenchedBlock &&
+                               lastNonBenchedBlock.sourceCourt === -1 &&
+                               !lastNonBenchedBlock.closed &&
+                               !lastNonBenchedBlock.benchedType;
+
       if (canAddToLastBlock) {
         // Add to the existing new arrivals block at the end
-        return prev.map((block, index) => 
-          index === prev.length - 1
+        return prev.map(block =>
+          block.id === lastNonBenchedBlock.id
             ? { ...block, players: [...block.players, newPlayer] }
             : block
         );
       } else {
-        // Create new arrivals block at the end
-        const nextQueueId = (prev[prev.length - 1]?.id || 0) + 1;
-        return [
-          ...prev,
-          {
-            id: nextQueueId,
-            sourceCourt: -1,
-            closed: false,
-            timestamp: Date.now(),
-            players: [newPlayer]
-          }
-        ];
+        // Create new arrivals block - always goes after all regular blocks but before benched
+        const nextQueueId = Math.max(0, ...prev.map(b => b.id || 0)) + 1;
+        const newBlock = {
+          id: nextQueueId,
+          sourceCourt: -1,
+          closed: false,
+          timestamp: Date.now(),
+          players: [newPlayer]
+        };
+
+        if (firstBenchedIndex === -1) {
+          // No benched blocks, add at the end
+          return [...prev, newBlock];
+        } else {
+          // Insert before benched blocks
+          return [
+            ...prev.slice(0, firstBenchedIndex),
+            newBlock,
+            ...prev.slice(firstBenchedIndex)
+          ];
+        }
       }
     });
   };
@@ -130,6 +193,7 @@ export default function useBadmintonSession() {
     setQueueBlocks([]);
     setSessionStarted(false);
     clearUndoStack();
+    clearStorage(); // Clear localStorage when starting new session
   };
 
   // keep names in sync everywhere (on court + queued)
@@ -338,6 +402,7 @@ export default function useBadmintonSession() {
         courtNumber: courtNum,
         benched: false,
         startTime: Date.now(),  // Track when they started playing
+        pairingIndex: 0,  // Track pairing rotation state (0, 1, or 2)
       };
 
       setPlayers((prev) => [...prev, newPlayer]);
@@ -345,6 +410,15 @@ export default function useBadmintonSession() {
       // Reset processing flag after a short delay
       setTimeout(() => setProcessingAssignment(false), 300);
     }, 50);
+  };
+
+  const updatePairingIndex = (courtNumber, pairingIndex) => {
+    // Update the pairing index for all players on the specified court
+    setPlayers((prev) => prev.map(player =>
+      player.onCourt && player.courtNumber === courtNumber
+        ? { ...player, pairingIndex }
+        : player
+    ));
   };
 
   const setBenchedStatus = (player, status) => {
@@ -494,6 +568,7 @@ export default function useBadmintonSession() {
       courtNumber: courtPlayer.courtNumber,
       benched: false,
       startTime: Date.now(),  // Track when they started playing
+      pairingIndex: 0,  // Reset pairing when substituting
     };
 
     setPlayers((prev) => [...prev, newCourtPlayer]);
@@ -533,6 +608,7 @@ export default function useBadmintonSession() {
     assignCourtFromQueue,
     substitutePlayer,
     setBenchedStatus,
+    updatePairingIndex,
     undo,
     canUndo: undoStack.length > 0,
   };

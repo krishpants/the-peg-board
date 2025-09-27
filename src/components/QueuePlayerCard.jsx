@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 const QueuePlayerCard = ({
@@ -8,9 +8,10 @@ const QueuePlayerCard = ({
   courtCount,
   courtOccupancy = [],
   priorityCourtNum = null,
-  showOnlyPriority = false
+  showOnlyPriority = false,
+  onHover = null
 }) => {
-  const [isAssigning, setIsAssigning] = React.useState(false);
+  const [isAssigning, setIsAssigning] = useState(false);
 
   const handleAssignCourt = (playerNumber, courtNumber) => {
     if (isAssigning) return;
@@ -47,39 +48,44 @@ const QueuePlayerCard = ({
           duration: 0.2
         }
       }}
+      onClick={() => {
+        if (priorityCourtNum && showOnlyPriority) {
+          handleAssignCourt(player.playerNumber, priorityCourtNum);
+        }
+      }}
+      onMouseEnter={() => {
+        if (priorityCourtNum && showOnlyPriority && onHover) {
+          onHover(player, priorityCourtNum);
+        }
+      }}
+      onMouseLeave={() => {
+        if (onHover) {
+          onHover(null, null);
+        }
+      }}
+      style={{ cursor: priorityCourtNum && showOnlyPriority ? 'pointer' : 'default' }}
     >
+      <div className="queue-player-card__content">
+        <span className="queue-player-card__name">
+          {player.playerName || `Player #${player.playerNumber}`}
+        </span>
+      </div>
+
       <button
         type="button"
-        className="queue-player-card__name-button"
+        className="queue-player-card__options-btn"
         title="Player options"
-        onClick={() => onPlayerClick?.(player)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onPlayerClick?.(player);
+        }}
       >
-        {player.playerName || `Player #${player.playerNumber}`}
+        <i className="fas fa-ellipsis-v"></i>
       </button>
 
-      <div className="queue-player-card__action">
-        {showOnlyPriority ? (
-          priorityCourtNum ? (
-            // Show select button when court available
-            <motion.button
-              type="button"
-              className="queue-btn queue-btn--court queue-btn--priority"
-              onClick={() => handleAssignCourt(player.playerNumber, priorityCourtNum)}
-              title={`Send to Court ${priorityCourtNum}`}
-              whileHover={{ scale: isAssigning ? 1 : 1.05 }}
-              whileTap={{ scale: isAssigning ? 1 : 0.95 }}
-              disabled={isAssigning}
-              style={{ opacity: isAssigning ? 0.6 : 1 }}
-            >
-              ← Court {priorityCourtNum}
-            </motion.button>
-          ) : (
-            // Show waiting message when no courts available
-            <span className="queue-player-card__waiting">Waiting</span>
-          )
-        ) : (
-          // Show all court buttons (fallback)
-          Array.from({ length: courtCount }).map((_, idx) => {
+      {!showOnlyPriority && (
+        <div className="queue-player-card__action">
+          {Array.from({ length: courtCount }).map((_, idx) => {
             const num = idx + 1;
             const isFull = (courtOccupancy[idx] ?? 0) >= 4;
             const isPriority = !isFull && priorityCourtNum === num;
@@ -89,7 +95,10 @@ const QueuePlayerCard = ({
                 key={`court-${num}`}
                 type="button"
                 className={`queue-btn queue-btn--court ${isPriority ? 'queue-btn--priority' : ''}`}
-                onClick={() => handleAssignCourt(player.playerNumber, num)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAssignCourt(player.playerNumber, num);
+                }}
                 disabled={isFull || isAssigning}
                 title={
                   isFull
@@ -102,12 +111,12 @@ const QueuePlayerCard = ({
                 whileTap={{ scale: isFull || isAssigning ? 1 : 0.95 }}
                 style={{ opacity: isAssigning ? 0.6 : 1 }}
               >
-                {num} →
+                {num}
               </motion.button>
             );
-          })
-        )}
-      </div>
+          })}
+        </div>
+      )}
     </motion.div>
   );
 };

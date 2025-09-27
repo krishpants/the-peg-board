@@ -1,7 +1,7 @@
 import React from 'react';
 import QueueBlock from './QueueBlock';
 
-const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAssignCourt, onPlayerClick }) => {
+const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAssignCourt, onPlayerClick, onPlayerHover }) => {
   const visibleBlocks = blocks.filter((b) => b.players.length > 0);
 
   // Sort blocks: regular blocks first, then benched blocks
@@ -72,6 +72,7 @@ const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAs
             priorityCourtNum={priorityCourtNum}
             onAssignCourt={onAssignCourt}
             onPlayerClick={onPlayerClick}
+            onPlayerHover={onPlayerHover}
           />
         ))}
 

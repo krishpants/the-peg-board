@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import PlayerList from './PlayerList';
 
-const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameResult, onPlayerClick, queueBlocks = [], isPriority = false }) => {
+const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameResult, onPlayerClick, queueBlocks = [], isPriority = false, onUpdatePairing, ghostPlayer = null }) => {
   const playerCount = players.length;
   const courtNumber = parseInt(title.replace('Court ', '')) || 0;
 
   // State for pairing inference
   const [clickOrder, setClickOrder] = useState([]);
-  const [currentPairingIndex, setCurrentPairingIndex] = useState(0);
+  // Use pairing index from first player if available, otherwise default to 0
+  const initialPairingIndex = players.length > 0 && players[0].pairingIndex !== undefined ? players[0].pairingIndex : 0;
+  const [currentPairingIndex, setCurrentPairingIndex] = useState(initialPairingIndex);
   const [previousPairing, setPreviousPairing] = useState(null);
   const [hoveredPair, setHoveredPair] = useState(null);
   const [playingTime, setPlayingTime] = useState('');
@@ -16,7 +17,9 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
   // Reset click order and hover state when players change
   useEffect(() => {
     setClickOrder([]);
-    setCurrentPairingIndex(0);
+    // Set pairing index from players or reset to 0
+    const pairingFromPlayers = players.length > 0 && players[0].pairingIndex !== undefined ? players[0].pairingIndex : 0;
+    setCurrentPairingIndex(pairingFromPlayers);
     setHoveredPair(null);
   }, [players.map(p => p.playerNumber).join(',')]);
 
@@ -110,8 +113,14 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
   const rotatePairing = () => {
     setIsRotating(true);
     setPreviousPairing(currentPairing);
-    setCurrentPairingIndex((prev) => (prev + 1) % allPairings.length);
+    const newIndex = (currentPairingIndex + 1) % allPairings.length;
+    setCurrentPairingIndex(newIndex);
     setTimeout(() => setIsRotating(false), 600);
+
+    // Update the global state with the new pairing index
+    if (onUpdatePairing) {
+      onUpdatePairing(courtNumber, newIndex);
+    }
   };
 
   // Get position for player based on their position in pairing
@@ -232,11 +241,11 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
                   x: position.x,
                   y: position.y,
                   transform: isPair1 ?
-                    (currentPairing.pair1[0].playerNumber === player.playerNumber ? 'translate(calc(-50% - 70px), calc(-50% - 65px))' :
-                     currentPairing.pair1[1].playerNumber === player.playerNumber ? 'translate(calc(-50% + 70px), calc(-50% - 65px))' :
+                    (currentPairing.pair1[0].playerNumber === player.playerNumber ? 'translate(calc(-50% - 85px), calc(-50% - 65px))' :
+                     currentPairing.pair1[1].playerNumber === player.playerNumber ? 'translate(calc(-50% + 85px), calc(-50% - 65px))' :
                      'translate(-50%, calc(-50% - 65px))') :
-                    (currentPairing.pair2[0].playerNumber === player.playerNumber ? 'translate(calc(-50% - 70px), calc(-50% + 65px))' :
-                     currentPairing.pair2[1].playerNumber === player.playerNumber ? 'translate(calc(-50% + 70px), calc(-50% + 65px))' :
+                    (currentPairing.pair2[0].playerNumber === player.playerNumber ? 'translate(calc(-50% - 85px), calc(-50% + 65px))' :
+                     currentPairing.pair2[1].playerNumber === player.playerNumber ? 'translate(calc(-50% + 85px), calc(-50% + 65px))' :
                      'translate(-50%, calc(-50% + 65px))')
                 }}
                 transition={{
@@ -305,19 +314,104 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
         )}
 
         {!isPlaying && (
-        <PlayerList
-          players={players}
-          onPlayerClick={handlePlayerClick}
-          onEditName={(playerNumber) => {
-            const player = players.find(p => p.playerNumber === playerNumber);
-            if (player) onPlayerClick?.(player);
-          }}
-          isWaitingForPlayers={isWaitingForPlayers}
-          isPlaying={isPlaying}
-          showQueueButtons={false}
-          clickOrder={clickOrder}
-          currentPairing={currentPairing}
-        />
+        <div className="court__pairing-container court__pairing-container--empty">
+          {/* Always show 4 slots in 2x2 layout */}
+          {[0, 1, 2, 3].map((slotIndex) => {
+            const player = players[slotIndex];
+            const isGhostSlot = !player && ghostPlayer && slotIndex === players.length;
+
+            // Calculate position for each slot
+            const slotPosition = {
+              0: 'translate(calc(-50% - 85px), calc(-50% - 65px))',
+              1: 'translate(calc(-50% + 85px), calc(-50% - 65px))',
+              2: 'translate(calc(-50% - 85px), calc(-50% + 65px))',
+              3: 'translate(calc(-50% + 85px), calc(-50% + 65px))'
+            }[slotIndex];
+
+            return (
+              <div
+                key={`slot-${slotIndex}`}
+                className="court__slot"
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: slotPosition
+                }}
+              >
+                {player ? (
+                  <div className="court__pair-player court__pair-player--waiting">
+                    <button
+                      type="button"
+                      className="player-card__name-button"
+                      onClick={() => onPlayerClick?.(player)}
+                    >
+                      {player.playerName || `Player #${player.playerNumber}`}
+                    </button>
+                  </div>
+                ) : isGhostSlot ? (
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key="ghost"
+                      className="court__slot-ghost"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.15 }}
+                    >
+                      {ghostPlayer.playerName || `Player #${ghostPlayer.playerNumber}`}
+                    </motion.div>
+                  </AnimatePresence>
+                ) : (
+                  <div className="court__slot-empty">
+                    <span>Empty</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {/* Trophy buttons - very transparent when not full */}
+          <button
+            type="button"
+            className="queue-btn winner court__pair-win-btn court__pair-win-btn--top court__pair-win-btn--disabled"
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, calc(-50% - 40px))',
+              opacity: 0.2,
+              pointerEvents: 'none'
+            }}
+          >
+            <i className="fas fa-trophy"></i>
+          </button>
+
+          <div className="court__vs-divider" style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            opacity: 0.3
+          }}>
+            <span>vs</span>
+          </div>
+
+          <button
+            type="button"
+            className="queue-btn winner court__pair-win-btn court__pair-win-btn--bottom court__pair-win-btn--disabled"
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, calc(-50% + 40px))',
+              opacity: 0.2,
+              pointerEvents: 'none'
+            }}
+          >
+            <i className="fas fa-trophy"></i>
+          </button>
+        </div>
         )}
       </div>
 
@@ -342,7 +436,7 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
   );
 };
 
-const CourtsArea = ({ players, courtCount, onQueueWinner, onQueueLoser, onQueueGameResult, onPlayerClick, queueBlocks, priorityCourtNum }) => {
+const CourtsArea = ({ players, courtCount, onQueueWinner, onQueueLoser, onQueueGameResult, onPlayerClick, queueBlocks, priorityCourtNum, onUpdatePairing, hoveredPlayer, hoveredTargetCourt }) => {
   const courts = Array.from({ length: courtCount }, (_, i) => {
     const num = i + 1;
     return {
@@ -364,6 +458,8 @@ const CourtsArea = ({ players, courtCount, onQueueWinner, onQueueLoser, onQueueG
           onPlayerClick={onPlayerClick}
           queueBlocks={queueBlocks}
           isPriority={c.num === priorityCourtNum}
+          onUpdatePairing={onUpdatePairing}
+          ghostPlayer={c.num === hoveredTargetCourt ? hoveredPlayer : null}
         />
       ))}
     </div>

@@ -27,6 +27,7 @@ const BadmintonQueue = () => {
     assignCourtFromQueue,
     substitutePlayer,
     setBenchedStatus,
+    updatePairingIndex,
     undo,
     canUndo,
   } = useBadmintonSession();
@@ -48,6 +49,11 @@ const BadmintonQueue = () => {
     open: false,
     player: null,
   });
+
+  const [confirmNewSessionModal, setConfirmNewSessionModal] = useState(false);
+
+  const [hoveredQueuePlayer, setHoveredQueuePlayer] = useState(null);
+  const [hoveredTargetCourt, setHoveredTargetCourt] = useState(null);
 
 
   const openNameModal = (playerNumber, initialName = '') =>
@@ -95,6 +101,11 @@ const BadmintonQueue = () => {
     if (setBenchedStatus) {
       setBenchedStatus(player, status);
     }
+  };
+
+  const handlePlayerHover = (player, courtNum) => {
+    setHoveredQueuePlayer(player);
+    setHoveredTargetCourt(courtNum);
   };
 
   const handleSettingsChange = (patch) => setCounts(patch);
@@ -155,13 +166,17 @@ const BadmintonQueue = () => {
                     disabled={!canUndo}
                     title={canUndo ? `Undo: ${undoStack[undoStack.length - 1]?.action}` : 'Nothing to undo'}
                   >
-                    Undo ({undoStack.length})
+                    <i className="fas fa-undo"></i> Undo ({undoStack.length})
                   </button>
-                  <button type="button" onClick={addPlayer}>Add Player</button>
+                  <button type="button" onClick={addPlayer}>
+                    <i className="fas fa-user-plus"></i> Add Player
+                  </button>
                   <button type="button" onClick={() => setBulkRenameModal(true)}>
                     <i className="fas fa-edit"></i> Rename Players
                   </button>
-                  <button type="button" onClick={resetSession}>End Session</button>
+                  <button type="button" onClick={() => setConfirmNewSessionModal(true)}>
+                    <i className="fas fa-sync-alt"></i> New Session
+                  </button>
                 </div>
               </div>
               <div className="court-area__content">
@@ -174,6 +189,9 @@ const BadmintonQueue = () => {
                   onPlayerClick={openSubstitutionModal}
                   queueBlocks={queueBlocks}
                   priorityCourtNum={priorityCourtNum}
+                  onUpdatePairing={updatePairingIndex}
+                  hoveredPlayer={hoveredQueuePlayer}
+                  hoveredTargetCourt={hoveredTargetCourt}
                 />
               </div>
             </div>
@@ -187,6 +205,7 @@ const BadmintonQueue = () => {
                 players={activePlayers}
                 onAssignCourt={assignCourtFromQueue}
                 onPlayerClick={openBenchModal}
+                onPlayerHover={handlePlayerHover}
               />
             </div>
           </div>
@@ -224,6 +243,43 @@ const BadmintonQueue = () => {
         onSetStatus={handleSetPlayerStatus}
         onClose={closeBenchModal}
       />
+
+      {confirmNewSessionModal && (
+        <div
+          className="modal-backdrop"
+          onClick={(e) => e.target === e.currentTarget && setConfirmNewSessionModal(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="modal modal--confirm">
+            <h3 className="modal__title">
+              Start New Session?
+            </h3>
+            <p className="modal__message">
+              This will clear all current players, courts, and queue data. Are you sure you want to start a new session?
+            </p>
+            <div className="modal__actions">
+              <button
+                type="button"
+                onClick={() => setConfirmNewSessionModal(false)}
+                className="modal__btn modal__btn--cancel"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  resetSession();
+                  setConfirmNewSessionModal(false);
+                }}
+                className="modal__btn modal__btn--danger"
+              >
+                Yes, Start New Session
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
