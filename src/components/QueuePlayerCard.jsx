@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 const QueuePlayerCard = ({
   player,
   onPlayerClick,
+  onPlayerOptions,
   onAssignCourt,
   courtCount,
   courtOccupancy = [],
@@ -11,7 +12,8 @@ const QueuePlayerCard = ({
   showOnlyPriority = false,
   onHover = null,
   shouldPulse = false,
-  shouldPulseBenchButton = false
+  shouldPulseBenchButton = false,
+  nextGamePlayers = []
 }) => {
   const [isAssigning, setIsAssigning] = useState(false);
 
@@ -27,10 +29,14 @@ const QueuePlayerCard = ({
 
   // Check if any court has space
   const hasAvailableSpace = courtOccupancy.some((occupancy, idx) => (occupancy ?? 0) < 4);
+  // Check if all courts are full
+  const allCourtsFull = courtOccupancy.length > 0 && courtOccupancy.every(n => n === 4);
+  // Check if Next Game has space
+  const nextGameHasSpace = nextGamePlayers.length < 4;
 
   return (
     <motion.div
-      className={`queue-player-card ${shouldPulse ? 'help-pulse' : ''} ${!hasAvailableSpace ? 'queue-player-card--no-space' : ''}`}
+      className={`queue-player-card ${shouldPulse ? 'help-pulse' : ''} ${priorityCourtNum && showOnlyPriority ? 'queue-player-card--priority' : ''} ${!priorityCourtNum && nextGameHasSpace ? 'queue-player-card--next-game' : ''}`}
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{
@@ -57,6 +63,8 @@ const QueuePlayerCard = ({
       onClick={() => {
         if (priorityCourtNum && showOnlyPriority) {
           handleAssignCourt(player.playerNumber, priorityCourtNum);
+        } else if (!priorityCourtNum && nextGameHasSpace) {
+          onPlayerClick?.(player);
         }
       }}
       onMouseEnter={() => {
@@ -69,7 +77,7 @@ const QueuePlayerCard = ({
           onHover(null, null);
         }
       }}
-      style={{ cursor: priorityCourtNum && showOnlyPriority ? 'pointer' : 'default' }}
+      style={{ cursor: (priorityCourtNum && showOnlyPriority) || (!priorityCourtNum && nextGameHasSpace) ? 'pointer' : 'default' }}
     >
       <div className="queue-player-card__content">
         <span className="queue-player-card__name">
@@ -83,13 +91,13 @@ const QueuePlayerCard = ({
         title="Player options"
         onClick={(e) => {
           e.stopPropagation();
-          onPlayerClick?.(player);
+          onPlayerOptions?.(player);
         }}
       >
         <i className="fas fa-ellipsis-v"></i>
       </button>
 
-      {!showOnlyPriority && (
+      {!showOnlyPriority && !allCourtsFull && (
         <div className="queue-player-card__action">
           {Array.from({ length: courtCount }).map((_, idx) => {
             const num = idx + 1;

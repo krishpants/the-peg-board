@@ -138,13 +138,45 @@ body {
     flex-direction: column;
   }
 
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
   &__title {
-    margin: 0 0 20px 0;
+    margin: 0;
     font-size: 20px;
     font-weight: 700;
     color: #ffffff;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+  }
+
+  &__header-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.5);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    i {
+      font-size: 12px;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.3);
+      color: rgba(255, 255, 255, 0.8);
+    }
   }
 
   &__player-number {
@@ -217,6 +249,17 @@ body {
         background: #e5121f;  // Brighter red
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(209, 2, 14, 0.3);
+      }
+    }
+
+    &--fill {
+      background: #4a5568;  // Grey-blue
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+
+      &:hover {
+        background: #5a6578;
+        transform: translateY(-1px);
       }
     }
 
@@ -1670,6 +1713,17 @@ body {
     }
   }
 
+  @keyframes newGamePulse {
+    0%, 100% {
+      opacity: 0.8;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+  }
+
   &__priority-arrow {
     position: absolute;
     top: -30px;
@@ -1974,14 +2028,23 @@ body {
   &__help-text {
     text-align: center;
     font-size: 11px;
-    color: #ffffff;
-    font-style: italic;
+    color: #b4b4b4;
+    font-weight: 300;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 4px;
     margin-top: auto;
     padding: $spacing-xs 0;
+
+    &--new-game {
+      color: #a2ffa2;  // Soft mint green
+      font-weight: 700;
+      font-style: normal;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      animation: newGamePulse 1.5s ease-in-out infinite;
+    }
 
     i {
       font-size: 10px;
@@ -2098,11 +2161,10 @@ body {
   &__block {
     background: #0d0d17;
     border-radius: 15px;  // 15px border radius
-    padding: 12px 15px;  // Reduced vertical padding
+    padding: 20px 15px;  // Reduced vertical padding
     border: 1px solid $color-dark-border;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     margin-bottom: $spacing-md;
-    backdrop-filter: blur(10px);
   }
 
   &__block-title {
@@ -2493,27 +2555,52 @@ body {
   border-radius: 20px;  // Pill shape
   border: none;
   margin-bottom: 4px;  // Reduced spacing between cards
-  background: #f5f5f5;  // White smoke background
+  background: #cacaca;  // White smoke background
   transition: all 0.2s ease;
   position: relative;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
-  &:hover:not(.queue-player-card--no-space) {
-    background: #ffffff;  // Pure white on hover
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  &--priority {
+    &:hover {
+      background: #ffffff;  // Pure white on hover
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 
-    .queue-player-card__content::before {
-      content: '\f060';  // Font Awesome left arrow
-      font-family: 'Font Awesome 5 Free';
-      font-weight: 900;
-      color: #000000;  // Black arrow
-      font-size: 14px;
-      margin-right: 0;
-      width: 20px;
-      opacity: 1;
-      transition: all 0.3s ease;
+      .queue-player-card__content::before {
+        content: '\f060';  // Font Awesome left arrow
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        color: #000000;  // Black arrow
+        font-size: 14px;
+        margin-right: 0;
+        width: 20px;
+        opacity: 1;
+        transition: all 0.3s ease;
+      }
     }
   }
+
+  // Next game state - when all courts are full
+  &--next-game {
+    cursor: pointer;
+
+    &:hover {
+      background: #ffffff;  // Pure white on hover
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+
+      .queue-player-card__content::before {
+        content: '\f062';  // Font Awesome up arrow
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        color: #000000;  // Black arrow
+        font-size: 14px;
+        margin-right: 0;
+        width: 20px;
+        opacity: 1;
+        transition: all 0.3s ease;
+      }
+    }
+  }
+
 
   &--no-space {
     cursor: default !important;
@@ -2745,6 +2832,134 @@ body {
     padding: $spacing-lg;
     opacity: 0.6;
     font-style: italic;
+  }
+
+  // Next Game Block (when all courts are full)
+  &__next-game {
+    background: #1a1a1a;
+    border-radius: 15px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 2px solid #3a3a3a;
+  }
+
+  &__next-game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+  }
+
+  &__next-game-actions {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+  }
+
+  &__next-game-title {
+    color: #97aab1;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  &__next-game-send {
+    background: #d1020e;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: darken(#d1020e, 10%);
+      transform: translateY(-1px);
+    }
+
+    i {
+      font-size: 0.8rem;
+    }
+  }
+
+  &__next-game-clear {
+    background: #444;
+    color: #999;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #555;
+      color: #ccc;
+    }
+
+    i {
+      font-size: 0.8rem;
+    }
+  }
+
+  &__next-game-slots {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  &__next-game-slot {
+    min-height: 35px;
+  }
+
+  &__next-game-player {
+    background: #cacaca;
+    color: #1a1a1a;
+    padding: 0.4rem 0.6rem;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  &__next-game-remove {
+    background: transparent;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    padding: 0.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #d1020e;
+    }
+
+    i {
+      font-size: 0.8rem;
+    }
+  }
+
+  &__next-game-empty {
+    background: #3a3a3a;
+    color: #666;
+    padding: 0.4rem 0.6rem;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    border: 2px dashed #4a4a4a;
   }
 
   // Preview block for showing where game results will go

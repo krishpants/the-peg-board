@@ -13,6 +13,7 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
   const [previousPairing, setPreviousPairing] = useState(null);
   const [hoveredPair, setHoveredPair] = useState(null);
   const [playingTime, setPlayingTime] = useState('');
+  const [playingTimeMs, setPlayingTimeMs] = useState(0);
   
   // Reset click order and hover state when players change
   useEffect(() => {
@@ -31,6 +32,7 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
         const earliestStartTime = Math.min(...players.map(p => p.startTime || Date.now()));
         const now = Date.now();
         const diff = now - earliestStartTime;
+        setPlayingTimeMs(diff); // Store raw milliseconds
         const minutes = Math.floor(diff / 60000);
 
         if (minutes < 1) {
@@ -48,6 +50,7 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
       return () => clearInterval(interval);
     } else {
       setPlayingTime('');
+      setPlayingTimeMs(0);
     }
   }, [playerCount, players]);
 
@@ -213,7 +216,7 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
           {playerCount === 0 && <span className="court__status-text">Empty</span>}
           {isWaitingForPlayers && (
             <span className="court__status-text court__status-text--waiting">
-              Courts Full
+              {4 - playerCount} More Player{4 - playerCount !== 1 ? 's' : ''}
             </span>
           )}
           {isPlaying && <span className="court__status-text court__status-text--playing">{playingTime ? `Playing ${playingTime}` : 'Playing'}</span>}
@@ -409,8 +412,12 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
       </div>
 
       {isPlaying && (
-        <div className="court__help-text">
-          <i className="fas fa-trophy"></i> When finished, click winning pair
+        <div className={`court__help-text ${playingTimeMs < 60000 ? 'court__help-text--new-game' : ''}`}>
+          {playingTimeMs < 60000 ? (
+            <>NEW GAME</>
+          ) : (
+            <>When finished, click winning pair</>
+          )}
         </div>
       )}
 

@@ -1,8 +1,13 @@
 import React from 'react';
 import QueueBlock from './QueueBlock';
 
-const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAssignCourt, onPlayerClick, onPlayerHover, shouldHighlightFirstPlayer, shouldHighlightEntireBlock, shouldShowPreviewBlock, shouldHighlightBenchButton }) => {
-  const visibleBlocks = blocks.filter((b) => b.players.length > 0);
+const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAssignCourt, onPlayerClick, onPlayerHover, shouldHighlightFirstPlayer, shouldHighlightEntireBlock, shouldShowPreviewBlock, shouldHighlightBenchButton, nextGamePlayers = [], onAddToNextGame, onRemoveFromNextGame, onClearNextGame, onSendNextGameToCourt }) => {
+  // Filter out players in Next Game when checking if blocks are visible
+  const nextGamePlayerNumbers = nextGamePlayers.map(p => p.playerNumber);
+  const visibleBlocks = blocks.filter((b) => {
+    const remainingPlayers = b.players.filter(p => !nextGamePlayerNumbers.includes(p.playerNumber));
+    return remainingPlayers.length > 0;
+  });
 
   // Sort blocks: regular blocks first, then benched blocks
   const sortedBlocks = [...visibleBlocks].sort((a, b) => {
@@ -50,10 +55,23 @@ const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAs
     }
   }
 
+  // Check if all courts are full (all have 4 players)
+  const allCourtsFull = courtOccupancy.length > 0 && courtOccupancy.every(n => n === 4);
+
+  // Find a court with enough space for Next Game players
+  let courtForNextGame = null;
+  if (nextGamePlayers.length > 0) {
+    const spaceNeeded = nextGamePlayers.length;
+    const courtIndex = courtOccupancy.findIndex(occupancy => (4 - occupancy) >= spaceNeeded);
+    if (courtIndex !== -1) {
+      courtForNextGame = courtIndex + 1;
+    }
+  }
+
   return (
     <div className="queue">
       {/* Queue instruction header - sticky */}
-      {sortedBlocks.length > 0 && (
+      {courtCount > 0 && (
         <div
           className={`queue__instruction ${isAnyCourtDeclaring ? 'queue__instruction--declaring' : priorityCourtNum ? '' : 'queue__instruction--waiting'}`}
         >
@@ -75,6 +93,63 @@ const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAs
 
       {/* Scrollable content area */}
       <div className="queue__content">
+        {/* Next Game Block - show when courts are full or there are players in it */}
+        {(nextGamePlayers.length > 0 || allCourtsFull) && (
+          <div className="queue__next-game">
+            <div className="queue__next-game-header">
+              <h3 className="queue__next-game-title">Next Game</h3>
+              <div className="queue__next-game-actions">
+                {nextGamePlayers.length > 0 && (
+                  <button
+                    type="button"
+                    className="queue__next-game-clear"
+                    onClick={() => onClearNextGame?.()}
+                    title="Clear all players from Next Game"
+                  >
+                    <i className="fas fa-times"></i>
+                    Clear
+                  </button>
+                )}
+                {nextGamePlayers.length > 0 && courtForNextGame && (
+                  <button
+                    type="button"
+                    className="queue__next-game-send"
+                    onClick={() => onSendNextGameToCourt?.(courtForNextGame)}
+                  >
+                    <i className="fas fa-arrow-left"></i>
+                    Send to Court {courtForNextGame}
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="queue__next-game-slots">
+              {[0, 1, 2, 3].map((index) => {
+                const player = nextGamePlayers[index];
+                return (
+                  <div key={index} className="queue__next-game-slot">
+                    {player ? (
+                      <div className="queue__next-game-player">
+                        <span>{player.playerName || `Player #${player.playerNumber}`}</span>
+                        <button
+                          type="button"
+                          className="queue__next-game-remove"
+                          onClick={() => onRemoveFromNextGame?.(player.playerNumber)}
+                        >
+                          <i className="fas fa-times"></i>
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="queue__next-game-empty">
+                        <span>Empty</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {sortedBlocks.map((block, index) => (
           <QueueBlock
             key={block.id}
@@ -88,6 +163,9 @@ const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAs
             shouldHighlight={shouldHighlightFirstPlayer && index === 0 && !block.benchedType}
             shouldHighlightEntireBlock={shouldHighlightEntireBlock && index === 0 && !block.benchedType}
             shouldHighlightBenchButton={shouldHighlightBenchButton && index === 0 && !block.benchedType}
+            allCourtsFull={allCourtsFull}
+            onAddToNextGame={onAddToNextGame}
+            nextGamePlayers={nextGamePlayers}
           />
         ))}
 
@@ -118,7 +196,7 @@ const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAs
 
         {sortedBlocks.length === 0 && (
           <div className="queue__empty-state">
-            No one queued yet. Add players to Queue to form blocks of 4.
+            No Players Left In Queue
           </div>
         )}
       </div>

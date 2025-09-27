@@ -35,7 +35,10 @@ const QueueBlock = ({
   onPlayerHover,
   shouldHighlight,
   shouldHighlightEntireBlock,
-  shouldHighlightBenchButton
+  shouldHighlightBenchButton,
+  allCourtsFull,
+  onAddToNextGame,
+  nextGamePlayers = []
 }) => {
   const [timeAgo, setTimeAgo] = useState('');
 
@@ -51,12 +54,16 @@ const QueueBlock = ({
     return () => clearInterval(interval);
   }, [block.timestamp]);
 
-  const winners = block.players.filter(p => p.lastState === 'winner');
-  const losers = block.players.filter(p => p.lastState === 'loser');
-  const readyPlayers = block.players.filter(p => p.lastState === 'ready');
-  const waitingPlayers = block.players.filter(p => p.lastState === 'waiting');
-  const restingPlayers = block.players.filter(p => p.lastState === 'resting');
-  const leftPlayers = block.players.filter(p => p.lastState === 'left');
+  // Filter out players that are in Next Game
+  const nextGamePlayerNumbers = nextGamePlayers.map(p => p.playerNumber);
+  const visiblePlayers = block.players.filter(p => !nextGamePlayerNumbers.includes(p.playerNumber));
+
+  const winners = visiblePlayers.filter(p => p.lastState === 'winner');
+  const losers = visiblePlayers.filter(p => p.lastState === 'loser');
+  const readyPlayers = visiblePlayers.filter(p => p.lastState === 'ready');
+  const waitingPlayers = visiblePlayers.filter(p => p.lastState === 'waiting');
+  const restingPlayers = visiblePlayers.filter(p => p.lastState === 'resting');
+  const leftPlayers = visiblePlayers.filter(p => p.lastState === 'left');
 
   // Show vs only if we have both winners and losers (not ready/waiting players)
   const showVs = winners.length > 0 && losers.length > 0;
@@ -145,14 +152,20 @@ const QueueBlock = ({
                 <QueuePlayerCard
                   key={player.playerNumber}
                   player={player}
-                  onPlayerClick={() => onPlayerClick?.(player)}
+                  nextGamePlayers={nextGamePlayers}
+                  onPlayerClick={() => {
+                    if (onAddToNextGame && nextGamePlayers.length < 4) {
+                      onAddToNextGame(player);
+                    }
+                  }}
+                  onPlayerOptions={onPlayerClick}
                   onAssignCourt={(playerNumber, courtNumber) =>
                     onAssignCourt(block.id, playerNumber, courtNumber)
                   }
                   courtCount={courtCount}
                   courtOccupancy={courtOccupancy}
                   priorityCourtNum={priorityCourtNum}
-                  showOnlyPriority={true}
+                  showOnlyPriority={!allCourtsFull}
                   onHover={onPlayerHover}
                   shouldPulse={shouldHighlight && index === 0}
                   shouldPulseBenchButton={shouldHighlightBenchButton && index === 0}
@@ -179,14 +192,20 @@ const QueueBlock = ({
                 <QueuePlayerCard
                   key={player.playerNumber}
                   player={player}
-                  onPlayerClick={() => onPlayerClick?.(player)}
+                  nextGamePlayers={nextGamePlayers}
+                  onPlayerClick={() => {
+                    if (onAddToNextGame && nextGamePlayers.length < 4) {
+                      onAddToNextGame(player);
+                    }
+                  }}
+                  onPlayerOptions={onPlayerClick}
                   onAssignCourt={(playerNumber, courtNumber) =>
                     onAssignCourt(block.id, playerNumber, courtNumber)
                   }
                   courtCount={courtCount}
                   courtOccupancy={courtOccupancy}
                   priorityCourtNum={priorityCourtNum}
-                  showOnlyPriority={true}
+                  showOnlyPriority={!allCourtsFull}
                   onHover={onPlayerHover}
                   shouldPulse={shouldHighlight && winners.length === 0 && index === 0}
                   shouldPulseBenchButton={shouldHighlightBenchButton && winners.length === 0 && index === 0}
@@ -211,14 +230,20 @@ const QueueBlock = ({
                 <QueuePlayerCard
                   key={player.playerNumber}
                   player={player}
-                  onPlayerClick={() => onPlayerClick?.(player)}
+                  nextGamePlayers={nextGamePlayers}
+                  onPlayerClick={() => {
+                    if (onAddToNextGame && nextGamePlayers.length < 4) {
+                      onAddToNextGame(player);
+                    }
+                  }}
+                  onPlayerOptions={onPlayerClick}
                   onAssignCourt={(playerNumber, courtNumber) =>
                     onAssignCourt(block.id, playerNumber, courtNumber)
                   }
                   courtCount={courtCount}
                   courtOccupancy={courtOccupancy}
                   priorityCourtNum={priorityCourtNum}
-                  showOnlyPriority={true}
+                  showOnlyPriority={!allCourtsFull}
                   onHover={onPlayerHover}
                   shouldPulse={shouldHighlight && winners.length === 0 && losers.length === 0 && index === 0}
                   shouldPulseBenchButton={shouldHighlightBenchButton && winners.length === 0 && losers.length === 0 && index === 0}
@@ -243,14 +268,20 @@ const QueueBlock = ({
                 <QueuePlayerCard
                   key={player.playerNumber}
                   player={player}
-                  onPlayerClick={() => onPlayerClick?.(player)}
+                  nextGamePlayers={nextGamePlayers}
+                  onPlayerClick={() => {
+                    if (onAddToNextGame && nextGamePlayers.length < 4) {
+                      onAddToNextGame(player);
+                    }
+                  }}
+                  onPlayerOptions={onPlayerClick}
                   onAssignCourt={(playerNumber, courtNumber) =>
                     onAssignCourt(block.id, playerNumber, courtNumber)
                   }
                   courtCount={courtCount}
                   courtOccupancy={courtOccupancy}
                   priorityCourtNum={priorityCourtNum}
-                  showOnlyPriority={true}
+                  showOnlyPriority={!allCourtsFull}
                   onHover={onPlayerHover}
                   shouldPulse={shouldHighlight && winners.length === 0 && losers.length === 0 && readyPlayers.length === 0 && index === 0}
                   shouldPulseBenchButton={shouldHighlightBenchButton && winners.length === 0 && losers.length === 0 && readyPlayers.length === 0 && index === 0}
