@@ -173,7 +173,7 @@ const BulkRenameModal = ({ open, players, onSave, onClose }) => {
           </div>
         </form>
 
-        <p className="modal__tip">
+        <p className="modal__tip modal__tip--keyboard">
           Tip: Press <kbd>Tab</kbd> to move between fields, <kbd>Enter</kbd> to save or <kbd>Esc</kbd> to cancel.
         </p>
       </div>
