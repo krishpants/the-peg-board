@@ -60,11 +60,11 @@ const BadmintonQueue = () => {
   const [queueCollapsed, setQueueCollapsed] = useState(false);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1400);
 
-  // Load help preference from localStorage, default to true for first-time users
+  // Show help/tutorial, but remember if dismissed during current session
   const [showHelp, setShowHelp] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedPreference = localStorage.getItem('badminton-help-completed');
-      return savedPreference !== 'true'; // Show help if not completed
+      return savedPreference !== 'true';
     }
     return true;
   });
@@ -139,15 +139,6 @@ const BadmintonQueue = () => {
 
   const handleSettingsChange = (patch) => setCounts(patch);
 
-  const handleToggleHelp = () => {
-    const newShowHelp = !showHelp;
-    setShowHelp(newShowHelp);
-    // If manually showing help, clear the completed state
-    if (newShowHelp) {
-      localStorage.removeItem('badminton-help-completed');
-    }
-  };
-
   const handleFinishTutorial = () => {
     setShowHelp(false);
     localStorage.setItem('badminton-help-completed', 'true');
@@ -167,9 +158,19 @@ const BadmintonQueue = () => {
     players.filter((p) => p.onCourt && p.courtNumber === i + 1).length
   );
 
-  // Calculate priority court (first non-full court)
-  const nextIdx = courtOccupancy.findIndex((n) => n < 4);
-  const priorityCourtNum = nextIdx !== -1 ? nextIdx + 1 : null;
+  // Calculate priority court (prioritize partially filled over empty)
+  let priorityCourtNum = null;
+  // First, look for partially filled courts (1-3 players)
+  const partialIdx = courtOccupancy.findIndex((n) => n > 0 && n < 4);
+  if (partialIdx !== -1) {
+    priorityCourtNum = partialIdx + 1;
+  } else {
+    // If no partial courts, find first empty court
+    const emptyIdx = courtOccupancy.findIndex((n) => n === 0);
+    if (emptyIdx !== -1) {
+      priorityCourtNum = emptyIdx + 1;
+    }
+  }
 
   // Check if all players have default names
   const allDefaultNames = allPlayersForRename.every(p =>
@@ -248,10 +249,11 @@ const BadmintonQueue = () => {
                 type="button"
                 className="start-session-btn"
                 onClick={() => {
+                  // Reset tutorial preference on new session
+                  localStorage.removeItem('badminton-help-completed');
+                  setShowHelp(true);
                   startSession();
-                  if (showHelp) {
-                    setShowWelcomeModal(true);
-                  }
+                  setShowWelcomeModal(true);
                 }}
                 disabled={courtCount < 1 || playerCount < 1}
               >
@@ -264,58 +266,53 @@ const BadmintonQueue = () => {
 
       {sessionStarted && (
         <div className="session">
-          <div className="session__layout">
-            {/* Court Area (fills remaining space) */}
+          {/* Full-width menu bar */}
+          <div className="session__menu">
+            <div className="session__menu-brand">
+              <img src="/peg_white.png" alt="Logo" className="session__menu-logo" />
+              {windowWidth > 800 && <span className="session__menu-title">THE PEG BOARD</span>}
+              <button type="button" onClick={() => setConfirmNewSessionModal(true)} title="New Session" className="session__menu-new">
+                <i className="fas fa-plus"></i>
+                {windowWidth > 800 && <span> New Session</span>}
+              </button>
+            </div>
+            <div className="session__menu-controls">
+              <button
+                type="button"
+                onClick={undo}
+                disabled={!canUndo}
+                title={canUndo ? `Undo: ${undoStack[undoStack.length - 1]?.action}` : 'Nothing to undo'}
+                className={shouldShowFinalTips ? 'help-pulse' : ''}
+              >
+                <i className="fas fa-undo"></i>
+                {windowWidth > 800 && <span> Undo</span>}
+              </button>
+              <button
+                type="button"
+                onClick={() => setBulkRenameModal(true)}
+                title="Rename Players"
+                className={showHelp && allDefaultNames && noPlayersOnCourt ? 'help-pulse' : ''}
+              >
+                <i className="fas fa-edit"></i>
+                {windowWidth > 800 && <span> Rename Players</span>}
+              </button>
+              <button
+                type="button"
+                onClick={() => setQueueCollapsed(!queueCollapsed)}
+                title={queueCollapsed ? "Show Court Queue" : "Hide Court Queue"}
+                className={`${shouldPulseQueueToggle ? 'help-pulse' : ''} ${queueCollapsed ? 'active' : ''}`}
+              >
+                <i className="fas fa-list"></i>
+                {windowWidth > 800 && <span> {queueCollapsed ? 'Show' : 'Hide'} Court Queue</span>}
+              </button>
+            </div>
+          </div>
+
+          {/* Main content area */}
+          <div className="session__content">
+            {/* Court Area */}
             <div className={`court-area ${queueCollapsed ? 'court-area--expanded' : ''}`}>
-              <div className="courts__header">
-                <div className="courts__header-brand">
-                  <img src="/peg.png" alt="Logo" className="courts__header-logo" />
-                  {windowWidth > 800 && <span className="courts__header-title">THE PEG BOARD</span>}
-                </div>
-                <div className="courts__header-controls">
-                  <button
-                    type="button"
-                    onClick={undo}
-                    disabled={!canUndo}
-                    title={canUndo ? `Undo: ${undoStack[undoStack.length - 1]?.action}` : 'Nothing to undo'}
-                    className={shouldShowFinalTips ? 'help-pulse' : ''}
-                  >
-                    <i className="fas fa-undo"></i>
-                    {windowWidth > 800 && <span> Undo ({undoStack.length})</span>}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setBulkRenameModal(true)}
-                    title="Rename Players"
-                    className={showHelp && allDefaultNames && noPlayersOnCourt ? 'help-pulse' : ''}
-                  >
-                    <i className="fas fa-edit"></i>
-                    {windowWidth > 800 && <span> Rename Players</span>}
-                  </button>
-                  <button type="button" onClick={() => setConfirmNewSessionModal(true)} title="New Session">
-                    <i className="fas fa-sync-alt"></i>
-                    {windowWidth > 800 && <span> New Session</span>}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleToggleHelp}
-                    title={showHelp ? "Hide Help" : "Show Help"}
-                    className={showHelp ? 'active' : ''}
-                  >
-                    <i className="fas fa-question-circle"></i>
-                    {windowWidth > 800 && <span> {showHelp ? 'Hide' : 'Show'} Help</span>}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setQueueCollapsed(!queueCollapsed)}
-                    title={queueCollapsed ? "Show Queue" : "Hide Queue"}
-                    className={`${shouldPulseQueueToggle ? 'help-pulse' : ''} ${queueCollapsed ? 'active' : ''}`}
-                  >
-                    <i className={`fas fa-chevron-${queueCollapsed ? 'left' : 'right'}`}></i>
-                  </button>
-                </div>
-              </div>
-              <div className="court-area__content">
+              <div className="court-area__inner">
                 <CourtsArea
                   players={activePlayers}
                   courtCount={courtCount}
@@ -334,6 +331,14 @@ const BadmintonQueue = () => {
                 />
                 {showHelp && (
                   <div className={`help-bar ${queueCollapsed ? 'help-bar--expanded' : ''}`}>
+                    <button
+                      type="button"
+                      className="help-bar__close"
+                      onClick={handleFinishTutorial}
+                      title="Skip Tutorial"
+                    >
+                      <i className="fas fa-times"></i>
+                    </button>
                     <div className="help-bar__content">
                       <div className="help-bar__title">
                         <i className="fas fa-graduation-cap"></i>
@@ -415,7 +420,7 @@ const BadmintonQueue = () => {
                             <div className="help-bar__item help-bar__item--primary">
                               <i className="fas fa-trophy"></i>
                               <span className="help-bar__text">
-                                When a game ends, click the button to declare the winner
+                                When a game ends, click the trophy button to declare the winner
                               </span>
                             </div>
                             {canContinueAddingPlayers && (
@@ -496,20 +501,6 @@ const BadmintonQueue = () => {
               </div>
             </div>
 
-            {/* Backdrop for overlay mode */}
-            <AnimatePresence>
-              {!queueCollapsed && windowWidth <= 1350 && (
-                <motion.div
-                  className="queue-backdrop"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  onClick={() => setQueueCollapsed(true)}
-                />
-              )}
-            </AnimatePresence>
-
             {/* Queue Area (collapsible column) */}
             <div className={`queue-column ${queueCollapsed ? 'queue-column--collapsed' : ''}`}>
               <AnimatePresence>
@@ -547,6 +538,20 @@ const BadmintonQueue = () => {
                 )}
               </AnimatePresence>
             </div>
+
+            {/* Backdrop for overlay mode */}
+            <AnimatePresence>
+              {!queueCollapsed && windowWidth <= 1350 && (
+                <motion.div
+                  className="queue-backdrop"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={() => setQueueCollapsed(true)}
+                />
+              )}
+            </AnimatePresence>
           </div>
         </div>
       )}
@@ -608,6 +613,9 @@ const BadmintonQueue = () => {
               <button
                 type="button"
                 onClick={() => {
+                  // Reset tutorial preference on new session
+                  localStorage.removeItem('badminton-help-completed');
+                  setShowHelp(true);
                   resetSession();
                   setConfirmNewSessionModal(false);
                 }}

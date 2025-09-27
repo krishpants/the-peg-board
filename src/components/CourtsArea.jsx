@@ -202,16 +202,23 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
   
   return (
     <div className={`court ${isWaitingForPlayers ? 'court--waiting' : ''} ${isPlaying ? 'court--playing' : ''} ${isDeclaringResults ? 'court--declaring' : ''} ${isPriority ? 'court--priority' : ''}`}>
+      {isPriority && (
+        <div className="court__priority-arrow">
+          <i className="fas fa-arrow-down"></i>
+        </div>
+      )}
       <div className="court__header">
-        {isPlaying && (
-          <button
-            type="button"
-            className="queue-btn court__rotate-btn"
-            onClick={rotatePairing}
-          >
-            Rotate Pairing
-          </button>
-        )}
+        <h3 className="court__title">{title}</h3>
+        <div className="court__status">
+          {playerCount === 0 && <span className="court__status-text">Empty</span>}
+          {isWaitingForPlayers && (
+            <span className="court__status-text court__status-text--waiting">
+              Courts Full
+            </span>
+          )}
+          {isPlaying && <span className="court__status-text court__status-text--playing">Playing</span>}
+          {isDeclaringResults && <span className="court__status-text court__status-text--declaring">Declaring Result</span>}
+        </div>
       </div>
 
       <div className="court__content">
@@ -231,6 +238,11 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
                   isPair1 && hoveredPair === 2 ? 'losing' :
                   isPair2 && hoveredPair === 2 ? 'winning' :
                   isPair2 && hoveredPair === 1 ? 'losing' : ''
+                } ${
+                  isPair1 && currentPairing.pair1[0].playerNumber === player.playerNumber ? 'court__pair-player--top-left' :
+                  isPair1 && currentPairing.pair1[1].playerNumber === player.playerNumber ? 'court__pair-player--top-right' :
+                  isPair2 && currentPairing.pair2[0].playerNumber === player.playerNumber ? 'court__pair-player--bottom-left' :
+                  isPair2 && currentPairing.pair2[1].playerNumber === player.playerNumber ? 'court__pair-player--bottom-right' : ''
                 }`}
                 style={{
                   position: 'absolute',
@@ -241,11 +253,11 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
                   x: position.x,
                   y: position.y,
                   transform: isPair1 ?
-                    (currentPairing.pair1[0].playerNumber === player.playerNumber ? 'translate(calc(-50% - 85px), calc(-50% - 65px))' :
-                     currentPairing.pair1[1].playerNumber === player.playerNumber ? 'translate(calc(-50% + 85px), calc(-50% - 65px))' :
+                    (currentPairing.pair1[0].playerNumber === player.playerNumber ? 'translate(calc(-50% - 75px), calc(-50% - 65px))' :
+                     currentPairing.pair1[1].playerNumber === player.playerNumber ? 'translate(calc(-50% + 75px), calc(-50% - 65px))' :
                      'translate(-50%, calc(-50% - 65px))') :
-                    (currentPairing.pair2[0].playerNumber === player.playerNumber ? 'translate(calc(-50% - 85px), calc(-50% + 65px))' :
-                     currentPairing.pair2[1].playerNumber === player.playerNumber ? 'translate(calc(-50% + 85px), calc(-50% + 65px))' :
+                    (currentPairing.pair2[0].playerNumber === player.playerNumber ? 'translate(calc(-50% - 75px), calc(-50% + 65px))' :
+                     currentPairing.pair2[1].playerNumber === player.playerNumber ? 'translate(calc(-50% + 75px), calc(-50% + 65px))' :
                      'translate(-50%, calc(-50% + 65px))')
                 }}
                 transition={{
@@ -274,7 +286,7 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
               position: 'absolute',
               top: '50%',
               left: '50%',
-              transform: 'translate(-50%, calc(-50% - 40px))',
+              transform: 'translate(-50%, calc(-50% - 65px))',
               transformOrigin: 'center center'
             }}
             onClick={() => handlePairWinner(currentPairing.pair1)}
@@ -301,7 +313,7 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
               position: 'absolute',
               top: '50%',
               left: '50%',
-              transform: 'translate(-50%, calc(-50% + 40px))',
+              transform: 'translate(-50%, calc(-50% + 65px))',
               transformOrigin: 'center center'
             }}
             onClick={() => handlePairWinner(currentPairing.pair2)}
@@ -322,10 +334,17 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
 
             // Calculate position for each slot
             const slotPosition = {
-              0: 'translate(calc(-50% - 85px), calc(-50% - 65px))',
-              1: 'translate(calc(-50% + 85px), calc(-50% - 65px))',
-              2: 'translate(calc(-50% - 85px), calc(-50% + 65px))',
-              3: 'translate(calc(-50% + 85px), calc(-50% + 65px))'
+              0: 'translate(calc(-50% - 75px), calc(-50% - 65px))',
+              1: 'translate(calc(-50% + 75px), calc(-50% - 65px))',
+              2: 'translate(calc(-50% - 75px), calc(-50% + 65px))',
+              3: 'translate(calc(-50% + 75px), calc(-50% + 65px))'
+            }[slotIndex];
+
+            const positionClass = {
+              0: 'court__pair-player--top-left',
+              1: 'court__pair-player--top-right',
+              2: 'court__pair-player--bottom-left',
+              3: 'court__pair-player--bottom-right'
             }[slotIndex];
 
             return (
@@ -340,7 +359,7 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
                 }}
               >
                 {player ? (
-                  <div className="court__pair-player court__pair-player--waiting">
+                  <div className={`court__pair-player court__pair-player--waiting ${positionClass}`}>
                     <button
                       type="button"
                       className="player-card__name-button"
@@ -353,7 +372,7 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
                   <AnimatePresence mode="wait">
                     <motion.div
                       key="ghost"
-                      className="court__slot-ghost"
+                      className={`court__slot-ghost ${positionClass}`}
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}
@@ -363,7 +382,7 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
                     </motion.div>
                   </AnimatePresence>
                 ) : (
-                  <div className={`court__slot-empty ${
+                  <div className={`court__slot-empty ${positionClass} ${
                     (shouldHighlightFirstEmptySlot && slotIndex === players.length) ||
                     (shouldHighlightRemainingSlots && slotIndex >= players.length)
                       ? 'help-pulse' : ''
@@ -375,22 +394,7 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
             );
           })}
 
-          {/* Trophy buttons - very transparent when not full */}
-          <button
-            type="button"
-            className="queue-btn winner court__pair-win-btn court__pair-win-btn--top court__pair-win-btn--disabled"
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, calc(-50% - 40px))',
-              opacity: 0.2,
-              pointerEvents: 'none'
-            }}
-          >
-            <i className="fas fa-trophy"></i>
-          </button>
-
+          {/* VS divider - always show */}
           <div className="court__vs-divider" style={{
             position: 'absolute',
             top: '50%',
@@ -400,47 +404,34 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
           }}>
             <span>vs</span>
           </div>
-
-          <button
-            type="button"
-            className="queue-btn winner court__pair-win-btn court__pair-win-btn--bottom court__pair-win-btn--disabled"
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, calc(-50% + 40px))',
-              opacity: 0.2,
-              pointerEvents: 'none'
-            }}
-          >
-            <i className="fas fa-trophy"></i>
-          </button>
         </div>
         )}
       </div>
 
       {isPlaying && (
         <div className="court__help-text">
-          <i className="fas fa-trophy"></i> When game ends, click the winning pair
+          <i className="fas fa-trophy"></i> When finished, click winning pair
         </div>
       )}
 
       <div className="court__footer">
-        <h3 className="court__title">{title}</h3>
-        <div className="court__status">
-          {playerCount === 0 && <span className="court__status-text">Empty</span>}
-          {isWaitingForPlayers && (
-            <span className="court__status-text court__status-text--waiting">
-              Waiting ({playerCount}/4)
-            </span>
-          )}
-          {isDeclaringResults && (
-            <span className="court__status-text court__status-text--declaring">
-              Select winner
-            </span>
-          )}
-          {isPlaying && <span className="court__status-text court__status-text--playing">{playingTime || 'Playing'}</span>}
-        </div>
+        {isPlaying ? (
+          <button
+            type="button"
+            className="court__footer court__footer--button"
+            onClick={rotatePairing}
+          >
+            <i className="fas fa-sync-alt"></i> Rotate Pairing
+          </button>
+        ) : playerCount === 0 ? (
+          <span className="court__footer-text">
+            <i className="fas fa-user-plus"></i> Add players from queue
+          </span>
+        ) : (
+          <span className="court__footer-text">
+            <i className="fas fa-users"></i> {4 - playerCount} more needed
+          </span>
+        )}
       </div>
     </div>
   );

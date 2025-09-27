@@ -24,9 +24,13 @@ const QueuePlayerCard = ({
     // Reset after animation completes
     setTimeout(() => setIsAssigning(false), 500);
   };
+
+  // Check if any court has space
+  const hasAvailableSpace = courtOccupancy.some((occupancy, idx) => (occupancy ?? 0) < 4);
+
   return (
     <motion.div
-      className={`queue-player-card ${shouldPulse ? 'help-pulse' : ''}`}
+      className={`queue-player-card ${shouldPulse ? 'help-pulse' : ''} ${!hasAvailableSpace ? 'queue-player-card--no-space' : ''}`}
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{

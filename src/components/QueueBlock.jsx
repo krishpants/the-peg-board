@@ -118,7 +118,7 @@ const QueueBlock = ({
     >
       <h3 className="queue__block-title">
         {block.sourceCourt === -1
-          ? 'New Arrivals (Not Played Yet)'
+          ? <>New Arrivals <span className="queue__block-subtitle">(Not Played Yet)</span></>
           : block.sourceCourt === -2
           ? 'Substituted Out'
           : block.sourceCourt === -3

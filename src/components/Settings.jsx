@@ -26,7 +26,7 @@ const Settings = ({ courtCount, playerCount, onChange }) => {
   return (
     <div className="settings">
       <div className="settings__header">
-        <img src="/peg.png" alt="Peg Board Logo" className="settings__logo" />
+        <img src="/peg_red.png" alt="Peg Board Logo" className="settings__logo" />
         <h2>THE PEG BOARD</h2>
       </div>
       <div className="settings__row">

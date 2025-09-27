@@ -34,15 +34,27 @@ const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAs
   }).some(Boolean);
 
   // Only show priority court if no courts are declaring results
-  const nextIdx = courtOccupancy.findIndex((n) => n < 4);
-  const priorityCourtNum = !isAnyCourtDeclaring && nextIdx !== -1 ? nextIdx + 1 : null;
+  // Prioritize partially filled courts (1-3 players) over empty courts (0 players)
+  let priorityCourtNum = null;
+  if (!isAnyCourtDeclaring) {
+    // First, look for partially filled courts (1-3 players)
+    const partialIdx = courtOccupancy.findIndex((n) => n > 0 && n < 4);
+    if (partialIdx !== -1) {
+      priorityCourtNum = partialIdx + 1;
+    } else {
+      // If no partial courts, find first empty court
+      const emptyIdx = courtOccupancy.findIndex((n) => n === 0);
+      if (emptyIdx !== -1) {
+        priorityCourtNum = emptyIdx + 1;
+      }
+    }
+  }
 
   return (
     <div className="queue">
       {/* Queue instruction header - sticky */}
       {sortedBlocks.length > 0 && (
         <div
-          key={isAnyCourtDeclaring ? 'declaring' : (priorityCourtNum || 'full')}
           className={`queue__instruction ${isAnyCourtDeclaring ? 'queue__instruction--declaring' : priorityCourtNum ? '' : 'queue__instruction--waiting'}`}
         >
           {isAnyCourtDeclaring ? (
@@ -55,7 +67,7 @@ const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAs
             </div>
           ) : (
             <div className="queue__instruction-text">
-              All courts full - players waiting
+              All Courts Full
             </div>
           )}
         </div>

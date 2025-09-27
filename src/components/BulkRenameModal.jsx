@@ -53,7 +53,7 @@ const BulkRenameModal = ({ open, players, onSave, onClose }) => {
       aria-modal="true"
     >
       <div className="modal modal--bulk-rename">
-        <h3 className="modal__title">Rename All Players</h3>
+        <h3 className="modal__title">Rename Players</h3>
 
         <form onSubmit={handleSubmit} className="modal__form">
           <div className="modal__bulk-grid">

@@ -4,33 +4,33 @@
 
 @use 'sass:color';
 
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@700;900&family=Russo+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Montserrat:wght@600;700;800;900&family=Bebas+Neue&family=Orbitron:wght@700;900&family=Russo+One&display=swap');
 
 // Variables
 // -----------------------------------------------------------------------------
-$border-radius: 16px;
-$border-radius-sm: 10px;
+$border-radius: 4px;  // Squared up for athletic look
+$border-radius-sm: 4px;  // Consistent square corners
 $spacing-xs: 6px;
 $spacing-sm: 8px;
 $spacing-md: 12px;
 $spacing-lg: 16px;
 
-// Dark theme - Inky blues/purples color scheme
-$color-dark-bg: #0d0e1e;          // Deep navy background (layer 1)
-$color-dark-surface: #161729;     // Slightly lighter purple-blue surface (layer 2)
-$color-dark-card: #1f2037;        // Player cards background (layer 3)
-$color-dark-card-hover: #272842;  // Player cards hover state
-$color-dark-surface-hover: #1e1f3a; // Hover state
-$color-dark-border: rgba(138, 143, 226, 0.12); // Soft purple border
-$color-dark-border-strong: rgba(138, 143, 226, 0.25); // Stronger purple border
-$color-dark-text: #d4d6f4;        // Soft lavender text
-$color-dark-text-muted: #7c80b8;  // Muted purple-grey text
+// Dark theme - Athletic red/grey/white scheme
+$color-dark-bg: #0a0a0a;          // Very dark grey background (layer 1)
+$color-dark-surface: #1a1a1a;     // Dark grey surface (layer 2)
+$color-dark-card: #2a2a2a;        // Medium dark grey cards (layer 3)
+$color-dark-card-hover: #3a3a3a;  // Lighter grey hover state
+$color-dark-surface-hover: #2d2d2d; // Surface hover state
+$color-dark-border: rgba(255, 255, 255, 0.1); // Subtle white border
+$color-dark-border-strong: rgba(255, 255, 255, 0.2); // Stronger white border
+$color-dark-text: #ffffff;        // Pure white text
+$color-dark-text-muted: whitesmoke;  // Muted grey text
 
-// Accent colors - purple/blue palette
-$color-accent-purple: #7c3aed;    // Vibrant purple
-$color-accent-blue: #4f46e5;      // Deep blue
-$color-accent-indigo: #6366f1;    // Bright indigo
-$color-accent-lavender: #a78bfa;  // Soft lavender
+// Accent colors - Athletic red palette
+$color-accent-purple: #dc2626;    // Primary red (keeping var name for compatibility)
+$color-accent-blue: #ef4444;      // Bright red
+$color-accent-indigo: #dc2626;    // Primary red
+$color-accent-lavender: #f87171;  // Light red
 
 // All legacy colors removed - using dark theme only
 
@@ -39,13 +39,14 @@ $color-loser: rgba(231, 76, 60, 0.4);
 $color-court: rgba(52, 152, 219, 0.4);
 $color-success-bg: rgba(46, 204, 113, 0.15);
 $color-warning: #fbbf24;
-$color-help: #b994ff;  // Soft lavender purple for help context
+$color-help: #ef4444;  // Bright red for help context
 
 // Base Layout
 // -----------------------------------------------------------------------------
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-weight: 500;  // Medium weight for body text
   background: $color-dark-bg;
   color: $color-dark-text;
 }
@@ -85,20 +86,22 @@ body {
 }
 
 .start-session-btn {
-  padding: 12px 32px;
-  font-size: 16px;
-  font-weight: 600;
-  background: $color-accent-purple;
+  padding: 14px 40px;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: #d1020e;  // Athletic red
   color: white;
   border: none;
-  border-radius: $border-radius-sm;
+  border-radius: 4px;  // Squared up
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover:not(:disabled) {
-    background: color.adjust($color-accent-purple, $lightness: 8%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba($color-accent-purple, 0.3);
+    background: #e5121f;  // Brighter red on hover
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(209, 2, 14, 0.4);
   }
 
   &:disabled {
@@ -111,22 +114,22 @@ body {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 50;
-  backdrop-filter: blur(4px);
+  z-index: 200;
+  backdrop-filter: blur(8px);
 }
 
 .modal {
-  background: $color-dark-surface;
+  background: #1a1a1a;  // Dark grey
   border-radius: $border-radius;
   padding: 24px;
   width: 400px;
   max-width: 90vw;
-  border: 1px solid $color-dark-border;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  border: 2px solid #d1020e;  // Red border
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
 
   &--bulk-rename {
     width: 90vw;
@@ -137,9 +140,11 @@ body {
 
   &__title {
     margin: 0 0 20px 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: $color-dark-text;
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   &__player-number {
@@ -154,22 +159,24 @@ body {
   &__input {
     width: 100%;
     padding: 12px 16px;
-    border-radius: $border-radius-sm;
-    border: 1px solid $color-dark-border;
-    background: $color-dark-card;
-    color: $color-dark-text;
+    border-radius: 20px;  // Pill shape
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
     font-size: 16px;
+    font-weight: 500;
     outline: none;
     box-sizing: border-box;
     transition: all 0.2s ease;
 
     &::placeholder {
-      color: $color-dark-text-muted;
+      color: rgba(255, 255, 255, 0.5);
     }
 
     &:focus {
-      border-color: $color-accent-lavender;
-      background: $color-dark-card-hover;
+      border-color: #d1020e;
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 0 3px rgba(209, 2, 14, 0.2);
     }
   }
 
@@ -181,33 +188,35 @@ body {
   }
 
   &__btn {
-    padding: 8px 20px;
+    padding: 10px 24px;
     border-radius: $border-radius-sm;
     font-size: 14px;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     cursor: pointer;
     transition: all 0.2s ease;
     border: none;
 
     &--cancel {
-      background: transparent;
-      color: $color-dark-text-muted;
-      border: 1px solid $color-dark-border;
+      background: #2a2a2a;  // Dark grey
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
 
       &:hover {
-        background: rgba($color-dark-card, 0.5);
-        color: $color-dark-text;
+        background: #3a3a3a;
+        color: #ffffff;
       }
     }
 
     &--save {
-      background: $color-accent-purple;
+      background: #d1020e;  // Athletic red
       color: white;
 
       &:hover {
-        background: color.adjust($color-accent-purple, $lightness: 8%);
+        background: #e5121f;  // Brighter red
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba($color-accent-purple, 0.3);
+        box-shadow: 0 4px 12px rgba(209, 2, 14, 0.3);
       }
     }
 
@@ -224,13 +233,24 @@ body {
 
     &--secondary {
       background: transparent;
-      color: rgba(255, 255, 255, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.2);
 
       &:hover {
-        color: rgba(255, 255, 255, 0.6);
-        border-color: rgba(255, 255, 255, 0.2);
-        background: rgba(255, 255, 255, 0.05);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    &--primary {
+      background: #d1020e;  // Athletic red
+      color: white;
+
+      &:hover {
+        background: #e5121f;  // Brighter red
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(209, 2, 14, 0.3);
       }
     }
   }
@@ -274,16 +294,16 @@ body {
   }
 
   &__input--default {
-    color: $color-dark-text-muted;
+    color: rgba(255, 255, 255, 0.4);
     font-style: italic;
-    border-color: rgba(251, 191, 36, 0.2);
-    background: rgba(251, 191, 36, 0.02);
+    border-color: rgba(255, 255, 255, 0.1);
+    background: transparent;
 
     &:focus {
-      color: $color-dark-text;
+      color: #ffffff;
       font-style: normal;
-      border-color: $color-accent-purple;
-      background: $color-dark-bg;
+      border-color: #d1020e;
+      background: rgba(255, 255, 255, 0.1);
     }
   }
 
@@ -309,7 +329,7 @@ body {
 
   &__header-icon {
     font-size: 48px;
-    color: $color-help;
+    color: #d1020e;  // Athletic red
     margin-bottom: 20px;
     animation: wave 0.5s ease-in-out;
   }
@@ -326,22 +346,24 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px;
-    background: rgba($color-accent-indigo, 0.1);
+    padding: 14px;
+    background: #2a2a2a;  // Dark grey
     border-radius: $border-radius-sm;
-    border: 1px solid rgba($color-accent-indigo, 0.2);
+    border-left: 3px solid #d1020e;  // Red accent on left
 
     i {
       font-size: 18px;
-      color: $color-accent-lavender;
+      color: #d1020e;  // Red icons
       width: 24px;
       text-align: center;
     }
 
     span {
       flex: 1;
-      color: #9fa0ff;
+      color: #ffffff;
       font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
     }
   }
 
@@ -711,11 +733,11 @@ body {
     font-size: 36px;
     font-weight: 400;
     font-family: 'Bebas Neue', sans-serif;
-    color: #9fa0ff;
+    color: #d1020e;  // Athletic red
     text-align: center;
     letter-spacing: 3px;
     text-transform: uppercase;
-    text-shadow: 0 2px 10px rgba(159, 160, 255, 0.3);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   }
 
   &__row {
@@ -726,8 +748,10 @@ body {
 
     label {
       font-size: 16px;
-      font-weight: 500;
-      color: #9fa0ff;
+      font-weight: 600;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
   }
 
@@ -739,10 +763,10 @@ body {
     button {
       width: 36px;
       height: 36px;
-      border-radius: $border-radius-sm;
-      border: 1px solid $color-dark-border;
-      background: $color-dark-card;
-      color: #9fa0ff;
+      border-radius: 4px;  // Squared up
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: #2a2a2a;  // Dark grey
+      color: #ffffff;
       font-size: 18px;
       font-weight: 600;
       cursor: pointer;
@@ -752,8 +776,8 @@ body {
       justify-content: center;
 
       &:hover {
-        background: $color-dark-card-hover;
-        border-color: $color-accent-lavender;
+        background: #3a3a3a;
+        border-color: #d1020e;  // Red accent on hover
       }
 
       &:active {
@@ -765,19 +789,19 @@ body {
       width: 80px;
       height: 36px;
       padding: 0 12px;
-      border-radius: $border-radius-sm;
-      border: 1px solid $color-dark-border;
-      background: $color-dark-card;
-      color: #9fa0ff;
+      border-radius: 4px;  // Squared up
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: #1a1a1a;  // Darker background for input
+      color: #ffffff;
       font-size: 16px;
-      font-weight: 500;
+      font-weight: 600;
       text-align: center;
       transition: all 0.2s ease;
 
       &:focus {
         outline: none;
-        border-color: $color-accent-lavender;
-        background: $color-dark-card-hover;
+        border-color: #d1020e;  // Red accent on focus
+        background: #2a2a2a;
       }
 
       &::-webkit-inner-spin-button,
@@ -789,9 +813,9 @@ body {
   }
 
   &__note {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.5);
-    font-style: italic;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    font-style: normal;
     text-align: center;
     margin-top: -8px;
     margin-bottom: 20px;
@@ -800,16 +824,125 @@ body {
 
 // Session container
 .session {
-  flex: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 
-  &__layout {
+  &__menu {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-md $spacing-lg;
+    background: #d1020e;  // Athletic red
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+  }
+
+  &__menu-brand {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+  }
+
+  &__menu-new {
+    margin-left: $spacing-lg;
+    background: transparent;  // Transparent like other buttons
+    border: none;
+    border-left: 1px solid rgba(0, 0, 0, 0.2);  // Match other buttons
+    color: #000000;  // Black text
+    padding: 8px 16px;
+    border-radius: 0;  // No rounding like others
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);  // Subtle hover
+      color: #ffffff;
+    }
+
+    i {
+      font-size: 14px;
+    }
+  }
+
+  &__menu-logo {
+    width: 32px;
+    height: 32px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+
+  &__menu-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    color: #ffffff;  // White text
+    letter-spacing: 1px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);  // Black shadow for contrast
+  }
+
+  &__menu-controls {
+    display: flex;
+    gap: 0;  // No gap so borders connect
+
+    button {
+      background: transparent !important;
+      border: none;
+      border-left: 1px solid rgba(0, 0, 0, 0.2);  // Thin line spacer on left
+      color: #000000;  // Black text
+      padding: 8px 16px !important;
+      border-radius: 0;  // No rounding
+      font-size: 16px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      &:first-child {
+        border-left: none;  // No border on first button
+      }
+
+      &:hover:not(:disabled) {
+        background: rgba(0, 0, 0, 0.1) !important;
+        color: #ffffff;
+        transform: none;
+        box-shadow: none;
+      }
+
+      &.active {
+        background: rgba(0, 0, 0, 0.15);
+        color: #ffffff;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      i {
+        font-size: 14px;
+      }
+    }
+  }
+
+  &__content {
     flex: 1;
     display: flex;
     overflow: hidden;
-
+    width: 100%;
   }
 }
 
@@ -819,15 +952,34 @@ body {
   bottom: 15px;
   left: 15px;
   right: 465px; // Account for queue sidebar + margin
-  background: #161734;
-  border: 1px solid rgba($color-accent-indigo, 0.2);
-  border-radius: 16px;
+  background: #f5f5f5;  // White smoke
+  border: 2px solid #000000;  // Black border
+  border-radius: 8px;  // Less rounded
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   z-index: 50;
   transition: all 0.3s ease;
   padding: $spacing-md;
+
+  &__close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: #666666;  // Grey
+    cursor: pointer;
+    padding: 4px;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    z-index: 1;
+
+    &:hover {
+      color: #000000;  // Black on hover
+      transform: scale(1.1);
+    }
+  }
 
   &--expanded {
     right: 15px; // Just margin when sidebar collapsed
@@ -845,6 +997,8 @@ body {
   // Full width on mobile
   @media (max-width: 800px) {
     right: 15px;
+    top: 70px; // Account for menu bar
+    bottom: auto;
 
     &--expanded {
       right: 15px;
@@ -864,15 +1018,15 @@ body {
     gap: $spacing-sm;
     font-size: 16px;
     font-weight: 700;
-    color: $color-help;
+    color: #000000;  // Black
     text-transform: uppercase;
     letter-spacing: 1px;
     padding-right: $spacing-md;
-    border-right: 1px solid rgba($color-accent-indigo, 0.2);
+    border-right: 1px solid rgba(0, 0, 0, 0.2);  // Black border
 
     i {
       font-size: 18px;
-      color: $color-accent-indigo;
+      color: #000000;  // Black icon
     }
   }
 
@@ -896,24 +1050,26 @@ body {
     gap: $spacing-xs;
     font-size: 16px;
     font-weight: 700;
-    color: $color-help;
+    color: #000000;  // Black
     margin-bottom: $spacing-xs;
 
     i {
       font-size: 18px;
-      color: $color-accent-indigo;
+      color: #000000;  // Black icon
     }
   }
 
   &__finish-btn {
     margin-left: auto;
     padding: $spacing-xs $spacing-md;
-    background: rgba($color-help, 0.15);
-    border: 1px solid rgba($color-help, 0.3);
+    background: #000000;  // Black button
+    border: 1px solid #000000;
     border-radius: $border-radius-sm;
-    color: $color-help;
+    color: #ffffff;  // White text
     font-weight: 600;
     font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;
@@ -923,8 +1079,8 @@ body {
     }
 
     &:hover {
-      background: rgba($color-help, 0.25);
-      border-color: rgba($color-help, 0.5);
+      background: #d1020e;  // Red on hover
+      border-color: #d1020e;
       transform: translateY(-1px);
     }
   }
@@ -938,34 +1094,34 @@ body {
       font-size: 18px;
       width: 24px;
       text-align: center;
-      color: rgba(255, 255, 255, 0.9);
+      color: #000000;  // Black icons
     }
 
     &--primary {
       i {
-        color: $color-help;
+        color: #d1020e;  // Red icons for primary
       }
 
       .help-bar__text {
-        color: $color-help;
+        color: #000000;  // Black text
         font-weight: 600;
       }
     }
 
     &--secondary {
       i {
-        color: rgba($color-help, 0.6);
+        color: #666666;  // Grey icons for secondary
       }
 
       .help-bar__text {
-        color: rgba($color-help, 0.7);
+        color: #666666;  // Grey text for secondary
       }
     }
   }
 
   &__text {
     font-size: 16px;
-    color: rgba(255, 255, 255, 0.8);
+    color: #000000;  // Black text
     font-weight: 500;
     line-height: 1.3;
   }
@@ -990,72 +1146,17 @@ body {
     margin-right: 0;
   }
 
-  &__content {
+  &__inner {
     flex: 1;
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
     padding: 1rem;
     padding-bottom: 60px; // Account for help bar
   }
 }
 
-// Courts header styles
-.courts__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: $spacing-sm $spacing-lg;
-  background: rgba($color-dark-surface, 0.5);
-  border-bottom: 1px solid $color-dark-border;
-}
-
-.courts__header-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.courts__header-title {
-  font-family: 'Bebas Neue', sans-serif !important;
-  font-size: 26px !important;
-  font-weight: 400 !important;
-  color: #9fa0ff !important;
-  text-transform: uppercase !important;
-  letter-spacing: 2px !important;
-}
-
-.courts__header-logo {
-  height: 32px;
-  width: auto;
-  object-fit: contain;
-}
-
-.courts__header-controls {
-  display: flex;
-  gap: $spacing-sm;
-
-  button {
-    padding: 4px 10px;
-    border-radius: $border-radius-sm;
-    border: 1px solid rgba($color-dark-border, 0.5);
-    background: rgba($color-dark-card, 0.5);
-    color: $color-dark-text-muted;
-    font-size: 11px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    &:hover:not(:disabled) {
-      background: rgba($color-dark-card, 0.8);
-      border-color: $color-dark-border;
-      color: $color-dark-text;
-    }
-
-    &:disabled {
-      opacity: 0.3;
-      cursor: not-allowed;
-    }
-  }
-}
+// Courts header styles - now removed as we moved it to session__menu
 
 // Floating action button for mobile queue toggle
 .queue-toggle-fab {
@@ -1094,10 +1195,10 @@ body {
   @media (max-width: 1350px) {
     display: block;
     position: fixed;
-    top: 0;
+    top: 60px; // Account for menu bar
     left: 0;
     width: 100%;
-    height: 100vh;
+    height: calc(100vh - 60px);
     background: rgba(0, 0, 0, 0.5);
     z-index: 99;
     cursor: pointer;
@@ -1128,8 +1229,8 @@ body {
   @media (max-width: 1350px) {
     position: fixed;
     right: 0;
-    top: 0;
-    height: 100vh;
+    top: 60px; // Account for menu bar
+    height: calc(100vh - 60px);
     z-index: 100;
     box-shadow: -4px 0 12px rgba(0, 0, 0, 0.5);
 
@@ -1143,6 +1244,8 @@ body {
     width: 100% !important;
     left: 0;
     right: 0;
+    top: 60px; // Account for menu bar
+    height: calc(100vh - 60px);
     border-left: none;
 
     &--collapsed {
@@ -1228,26 +1331,30 @@ body {
     left: 50%;
     transform: translateX(-50%);
     width: 200px;
-    padding: $spacing-xs $spacing-md;
-    background: rgba($color-accent-indigo, 0.15);
-    color: rgba(255, 255, 255, 0.6);
-    border: 1px solid rgba($color-accent-indigo, 0.25);
-    border-radius: $border-radius-sm;
+    padding: 10px $spacing-md;
+    background: #f5f5f5;  // White smoke
+    color: #000000;  // Black text
+    border: 2px solid #000000;  // Black border
+    border-radius: 25px;  // Pill shape
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: $spacing-xs;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     transition: all 0.2s ease;
     z-index: 10;
 
     &:hover {
-      background: $color-accent-indigo;
-      color: white;
-      border-color: $color-accent-indigo;
+      background: #d1020e;  // Red on hover
+      color: #ffffff;  // White text
+      border-color: #d1020e;
+      transform: translateX(-50%) translateY(-2px);
+      box-shadow: 0 4px 10px rgba(209, 2, 14, 0.3);
     }
 
     i {
@@ -1351,124 +1458,182 @@ body {
 .courts-area {
   display: flex;
   flex-wrap: wrap;
-  gap: $spacing-md;
+  gap: 32px;  // Increased gap between courts
   justify-content: center;
   align-items: flex-start;
+  padding: 40px 15px;  // Add padding for arrow visibility
 }
 
 .court {
   background: $color-dark-surface;
-  border-radius: $border-radius;
-  padding: $spacing-md;
+  border-radius: 15px;  // 15px border radius
   border: 1px solid $color-dark-border;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
-  height: 320px;
-  max-width: 340px;
+  max-width: 280px;  // Reduced by 20px more
   width: 100%;
-  flex: 0 1 340px;
+  flex: 0 1 280px;  // Reduced flex basis
+  overflow: visible;  // Allow players to overhang
+  position: relative;  // For arrow positioning
 
   &__header {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: $spacing-md;
-    min-height: 28px;
+    padding: 10px 16px;  // Increased padding
+    background: #f5f5f5;  // White smoke
+    border-bottom: 2px solid #000000;  // Black border
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    overflow: hidden;
+  }
+
+  &__title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #000000;  // Black text
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+  }
+
+  &__status {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+  }
+
+  &__status-text {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 3px 8px 3px 10px;
+    border-radius: 0;
+    color: #000000;  // Black text for all states
+    background: transparent;
+    border-right: 5px solid #666666;  // Default grey for empty
+
+    &--waiting {
+      border-right-color: #fbbf24;  // Yellow border
+    }
+
+    &--playing {
+      border-right-color: #22c55e;  // Green border
+    }
+
+    &--declaring {
+      border-right-color: #d1020e;  // Red border
+    }
   }
 
   &__content {
     flex: 1;
+    padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 200px;  // Ensure reasonable minimum height
   }
 
-  &__rotate-btn {
-    font-size: 12px;
-    padding: $spacing-xs $spacing-sm;
-    white-space: nowrap;
-    background: $color-accent-lavender;
-    border-color: transparent;
-    color: white;
-    font-weight: 600;
+  &__help-text {
+    padding: 4px $spacing-md;
+    background: rgba(251, 191, 36, 0.05);  // Very faint yellow background
+    color: rgba(251, 191, 36, 0.5);  // Yellow text
+    font-size: 10px;
+    font-weight: 400;
+    font-style: italic;
+    text-align: center;
+    border-top: 1px solid rgba(251, 191, 36, 0.1);
+    border-bottom: 1px solid rgba(251, 191, 36, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-xs;
+    text-transform: none;
+    letter-spacing: normal;
 
-    &:hover {
-      background: color.adjust($color-accent-lavender, $lightness: 10%);
-      box-shadow: 0 2px 8px rgba(167, 139, 250, 0.4);
+    i {
+      font-size: 10px;
+      color: rgba(251, 191, 36, 0.6);  // Subtle gold
     }
   }
 
   &__footer {
+    padding: $spacing-sm $spacing-md;
+    background: rgba(255, 255, 255, 0.02);  // Very subtle white background
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    margin-top: $spacing-md;
-    padding-top: $spacing-sm;
-    border-top: 1px solid $color-dark-border;
+    min-height: 36px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: rgba(255, 255, 255, 0.4);
+    transition: all 0.2s ease;
+    overflow: hidden;
+
+    &--button {
+      border: none;
+      cursor: pointer;
+      width: 100%;
+
+      i {
+        font-size: 12px;
+        margin-right: 6px;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.08);  // Lighter on hover
+        color: #ffffff;
+        border-top-color: rgba(255, 255, 255, 0.15);
+      }
+
+      &:active {
+        background: rgba(255, 255, 255, 0.05);
+      }
+    }
   }
+
+  &__footer-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 11px;
+    font-style: italic;
+
+    i {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+  }
+
 
   &__ghost-player {
     margin-top: $spacing-sm;
   }
 
-  &__title {
-    margin: 0;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: $color-dark-text-muted;
-    opacity: 0.8;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
 
   &__status {
     display: flex;
     align-items: center;
   }
 
-  &__status-text {
-    font-size: 12px;
-    padding: 2px $spacing-xs;
-    border-radius: 12px;
-    font-weight: 500;
-    
-    &--waiting {
-      background: rgba(251, 191, 36, 0.2);
-      color: #fbbf24;
-      border: 1px solid rgba(251, 191, 36, 0.4);
-      font-weight: 600;
-    }
-
-    &--playing {
-      background: rgba(74, 222, 128, 0.2);
-      color: #4ade80;
-      border: 1px solid rgba(74, 222, 128, 0.4);
-      font-weight: 600;
-    }
-
-    &--warmup {
-      background: rgba(108, 117, 125, 0.15);
-      color: #6c757d;
-      border: 1px solid rgba(108, 117, 125, 0.3);
-    }
-
-    &--declaring {
-      background: rgba(248, 113, 113, 0.2);
-      color: #f87171;
-      border: 1px solid rgba(248, 113, 113, 0.4);
-      font-weight: 600;
-    }
-  }
 
   // Court state modifiers
   &--waiting {
-    border: 2px solid $color-dark-text-muted;
-    box-shadow: 0 2px 8px rgba(124, 128, 184, 0.2);
+    // No special styling for waiting courts
   }
 
   &--playing {
-    border: 2px solid $color-accent-indigo;
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
-    background: rgba(99, 102, 241, 0.03);
+    // No special styling for playing courts
   }
 
   &--warmup {
@@ -1477,13 +1642,33 @@ body {
   }
 
   &--declaring {
-    border: 2px solid $color-accent-lavender;
-    box-shadow: 0 2px 8px rgba(167, 139, 250, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.5);  // White border
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
   }
 
   &--priority {
-    border: 2px solid $color-accent-purple;
-    box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.7);  // Bright white border
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);  // White glow
+  }
+
+  &__priority-arrow {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ffffff;
+    font-size: 24px;
+    animation: bounce 2s infinite;
+    z-index: 1;
+
+    i {
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(5px); }
   }
 
   &__empty {
@@ -1532,36 +1717,76 @@ body {
   }
 
   &__slot-empty {
-    width: 100%;
+    width: 150px;
     height: 36px;
-    border: 2px dashed rgba($color-dark-border, 0.3);
-    border-radius: $border-radius-sm;
-    background: rgba($color-dark-surface, 0.3);
+    border: 2px dashed #666666;
+    border-radius: 18px;  // Default pill shape
+    background: #171717;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: rgba(255, 255, 255, 0.3);
-    font-size: 14px;
-    font-weight: 500;
+    color: #666666;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    // Apply position-based border radius
+    &.court__pair-player--top-left {
+      border-radius: 18px 0 0 18px;
+      border-right: 2px dashed #666666;
+    }
+    &.court__pair-player--top-right {
+      border-radius: 0 18px 18px 0;
+      border-left: none;
+    }
+    &.court__pair-player--bottom-left {
+      border-radius: 18px 0 0 18px;
+      border-right: 2px dashed #666666;
+    }
+    &.court__pair-player--bottom-right {
+      border-radius: 0 18px 18px 0;
+      border-left: none;
+    }
   }
 
   &__slot-ghost {
-    width: 100%;
+    width: 150px;
     height: 36px;
-    border: 2px dashed rgba($color-accent-indigo, 0.3);
-    border-radius: $border-radius-sm;
-    background: rgba($color-accent-indigo, 0.08);
+    border: 2px dashed #999999;
+    border-radius: 18px;  // Default pill shape
+    background: #3a3a3a;  // Even lighter solid background
     display: flex;
     align-items: center;
     justify-content: center;
-    color: rgba(159, 160, 255, 0.6);
-    font-size: 14px;
-    font-weight: 500;
+    color: #999999;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     padding: 0 $spacing-sm;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     opacity: 0.8;
+
+    // Apply position-based border radius
+    &.court__pair-player--top-left {
+      border-radius: 18px 0 0 18px;
+      border-right: 1px solid rgba(0, 0, 0, 0.15);
+    }
+    &.court__pair-player--top-right {
+      border-radius: 0 18px 18px 0;
+      border-left: 1px solid rgba(0, 0, 0, 0.15);
+    }
+    &.court__pair-player--bottom-left {
+      border-radius: 18px 0 0 18px;
+      border-right: 1px solid rgba(0, 0, 0, 0.15);
+    }
+    &.court__pair-player--bottom-right {
+      border-radius: 0 18px 18px 0;
+      border-left: 1px solid rgba(0, 0, 0, 0.15);
+    }
   }
 
   &__pair-row {
@@ -1588,43 +1813,40 @@ body {
 
     &--waiting {
       .player-card__name-button {
-        background: rgba(251, 191, 36, 0.15) !important;
-        border: 1px solid rgba(251, 191, 36, 0.4) !important;
-        color: #fbbf24 !important;
-        box-shadow: 0 0 8px rgba(251, 191, 36, 0.2) !important;
+        background: #fbbf24 !important;  // Yellow background
+        color: #000000 !important;  // Black text
+        box-shadow: 0 2px 4px rgba(251, 191, 36, 0.3) !important;
       }
     }
 
     &.winning {
       .player-card__name-button {
-        background: rgba(74, 222, 128, 0.3);
-        border: 1px solid rgba(74, 222, 128, 0.6);
-        color: #4ade80;
-        box-shadow: 0 2px 8px rgba(74, 222, 128, 0.3);
+        background: #22c55e;  // Green background
+        color: #ffffff;  // White text for contrast
+        box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3);
       }
     }
 
     &.losing {
       .player-card__name-button {
-        background: rgba(248, 113, 113, 0.3);
-        border: 1px solid rgba(248, 113, 113, 0.6);
-        color: #f87171;
-        box-shadow: 0 2px 8px rgba(248, 113, 113, 0.3);
+        background: #ef4444;  // Red background
+        color: #ffffff;  // White text for contrast
+        box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
       }
     }
 
     .player-card__name-button {
       width: 150px;
       height: 36px;
-      background: rgba($color-accent-indigo, 0.25);
-      border: 1px solid rgba($color-accent-indigo, 0.5);
-      border-radius: $border-radius-sm;
+      background: #f5f5f5;  // White smoke
+      border: none;
+      border-radius: 18px;  // Pill shape
       padding: $spacing-sm;
       cursor: pointer;
-      color: #9fa0ff;
-      font-weight: 400;
+      color: #000000;  // Black text
+      font-weight: 600;
       transition: all 0.3s ease;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1632,17 +1854,41 @@ body {
       overflow: hidden;
       text-overflow: ellipsis;
       box-sizing: border-box;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 14px;
 
       &:hover {
-        background: rgba($color-accent-indigo, 0.25);
-        border-color: rgba($color-accent-indigo, 0.5);
-        box-shadow: 0 0 8px rgba(99, 102, 241, 0.2);
+        background: #ffffff;  // Pure white on hover
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+        transform: translateY(-1px);
       }
 
       &.player-card--clicked {
-        background: rgba(167, 139, 250, 0.2);
-        border-color: $color-accent-lavender;
+        background: #e5e5e5;  // Slightly darker grey when clicked
+        transform: translateY(0);
       }
+    }
+
+    // Flatten inner corners based on position (facing center)
+    &--top-left .player-card__name-button {
+      border-radius: 18px 0 0 18px;  // Flatten right side (both corners)
+      border-right: 1px solid rgba(0, 0, 0, 0.2);  // Thin border on flat edge
+    }
+
+    &--top-right .player-card__name-button {
+      border-radius: 0 18px 18px 0;  // Flatten left side (both corners)
+      border-left: 1px solid rgba(0, 0, 0, 0.2);  // Thin border on flat edge
+    }
+
+    &--bottom-left .player-card__name-button {
+      border-radius: 18px 0 0 18px;  // Flatten right side (both corners)
+      border-right: 1px solid rgba(0, 0, 0, 0.2);  // Thin border on flat edge
+    }
+
+    &--bottom-right .player-card__name-button {
+      border-radius: 0 18px 18px 0;  // Flatten left side (both corners)
+      border-left: 1px solid rgba(0, 0, 0, 0.2);  // Thin border on flat edge
     }
   }
 
@@ -1652,13 +1898,13 @@ body {
   }
 
   &__pair-win-btn {
-    width: 42px !important;
-    height: 42px !important;
+    width: 50px !important;
+    height: 50px !important;
     padding: 0 !important;
-    font-size: 1.75rem;
-    min-width: 42px !important;
-    min-height: 42px !important;
-    border-radius: 21px !important;
+    font-size: 2rem;
+    min-width: 50px !important;
+    min-height: 50px !important;
+    border-radius: 25px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -1672,7 +1918,7 @@ body {
     }
 
     i {
-      font-size: 1.75rem;
+      font-size: 2rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1700,7 +1946,7 @@ body {
       font-size: 14px;
       text-transform: uppercase;
       letter-spacing: 1px;
-      background: #101124;
+      background: #1a1a1a;
       padding: 2px 12px;
       z-index: 1;
     }
@@ -1709,7 +1955,7 @@ body {
   &__help-text {
     text-align: center;
     font-size: 11px;
-    color: #9fa0ff;
+    color: #ffffff;
     font-style: italic;
     display: flex;
     align-items: center;
@@ -1720,7 +1966,7 @@ body {
 
     i {
       font-size: 10px;
-      color: #9fa0ff;
+      color: #ffffff;
     }
   }
 }
@@ -1729,27 +1975,17 @@ body {
 // -----------------------------------------------------------------------------
 @keyframes helpPulse {
   0% {
-    box-shadow: 0 0 0 0 rgba($color-help, 0.8);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.8);
   }
   100% {
-    box-shadow: 0 0 0 8px rgba($color-help, 0);
+    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0);
   }
 }
 
-// Reusable help pulse class that overrides any element's styling
+// Reusable help pulse class that adds a white pulsing effect
 .help-pulse {
   animation: helpPulse 1s infinite !important;
-  background: rgba(0, 0, 0, 0.8) !important;
-  border-color: rgba($color-help, 0.8) !important;
-  color: $color-help !important;
-  text-shadow: 0 0 10px rgba($color-help, 0.8) !important;
-
-  &:hover {
-    animation: none !important;
-    background: rgba($color-help, 0.45) !important;
-    border-color: rgba($color-help, 0.8) !important;
-    color: #fff !important;
-  }
+  position: relative !important;
 }
 
 // Queue System
@@ -1790,22 +2026,21 @@ body {
     position: sticky;
     top: 0;
     z-index: 10;
-    background: #0d0d17;
-    color: #9fa0ff;
-    height: 68px;
+    background: #000000;
+    color: #ffffff;
+    padding: $spacing-sm $spacing-md;
+    margin-top: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    border-bottom: 1px solid rgba($color-accent-indigo, 0.2);
-    transition: all 0.3s ease;
-    animation: instructionPulse 0.6s ease-out;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
     &--waiting {
-      background: rgba($color-accent-indigo, 0.1);
+      background: rgba(0, 0, 0, 0.9);
       color: rgba(255, 255, 255, 0.6);
       box-shadow: none;
-      border-bottom: 1px solid rgba($color-accent-indigo, 0.2);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       font-weight: 400;
       display: flex;
       align-items: center;
@@ -1813,27 +2048,9 @@ body {
     }
 
     &--declaring {
-      background: rgba($color-accent-lavender, 0.15);
-      color: $color-accent-lavender;
-      border-bottom: 1px solid rgba($color-accent-lavender, 0.3);
-    }
-  }
-
-
-  @keyframes instructionPulse {
-    0% {
-      transform: scale(0.95);
-      opacity: 0.7;
-      box-shadow: 0 2px 10px rgba(102, 126, 234, 0.1);
-    }
-    50% {
-      transform: scale(1.02);
-      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-      box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+      background: rgba(209, 2, 14, 0.15);
+      color: #ffffff;
+      border-bottom: 1px solid rgba(209, 2, 14, 0.3);
     }
   }
 
@@ -1861,8 +2078,8 @@ body {
 
   &__block {
     background: #0d0d17;
-    border-radius: $border-radius;
-    padding: 18px 15px;
+    border-radius: 15px;  // 15px border radius
+    padding: 12px 15px;  // Reduced vertical padding
     border: 1px solid $color-dark-border;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     margin-bottom: $spacing-md;
@@ -1873,8 +2090,9 @@ body {
     font-size: 14px;
     font-weight: 700;
     margin-bottom: 12px;
-    color: $color-accent-lavender;
+    color: #f5f5f5;  // White smoke title
     letter-spacing: 0.3px;
+    text-transform: uppercase;
   }
 
   &__block-time {
@@ -2014,36 +2232,50 @@ body {
 
   // Win button style
   &.winner {
-    background: linear-gradient(135deg, #cbd5e1, #94a3b8);
-    border: 1px solid rgba(203, 213, 225, 0.5);
+    background: #f5f5f5;  // White smoke
+    border: 2px solid #000000;  // Black border
     color: #000000;
-    font-weight: 600;
+    font-weight: 700;
     min-width: 50px;
     transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 
     .fas.fa-trophy {
-      font-size: 16px;
+      font-size: 20px;
       display: inline-block;
       transition: all 0.3s ease;
+      color: #000000;  // Black trophy
     }
 
     &.losing {
-      opacity: 0.3;
-      filter: grayscale(100%);
-      background: linear-gradient(135deg, #475569, #334155);
+      background: transparent;  // Transparent background
+      border-color: rgba(239, 68, 68, 0.2);  // Very faint red border
+      color: rgba(239, 68, 68, 0.2);  // Very faint red text
+      opacity: 0.15;  // Nearly invisible
+      transform: scale(0.95);  // Slightly smaller
+
+      .fas.fa-trophy {
+        color: rgba(239, 68, 68, 0.3);  // Very faint red trophy
+      }
 
       &:hover {
-        opacity: 0.3;
-        transform: scale(1);
+        opacity: 0.15;
+        transform: scale(0.95);
         box-shadow: none;
+        background: transparent;  // Stay transparent
       }
     }
 
     &:hover:not(.losing) {
-      background: linear-gradient(135deg, #fbbf24, #f59e0b);
-      color: #000000;
-      box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+      background: #22c55e;  // Green for winner
+      border-color: #22c55e;
+      color: #ffffff;
+      box-shadow: 0 3px 6px rgba(34, 197, 94, 0.3);
       transform: scale(1.05);
+
+      .fas.fa-trophy {
+        color: #ffffff;
+      }
     }
   }
 
@@ -2238,20 +2470,35 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: $spacing-sm;
-  padding: 1px $spacing-md;
-  border-radius: $border-radius-sm;
-  border: 1px solid rgba($color-accent-indigo, 0.2);
-  margin-bottom: $spacing-xs;
-  background: rgba($color-accent-indigo, 0.08);
+  padding: 4px 16px;  // Increased vertical padding
+  border-radius: 20px;  // Pill shape
+  border: none;
+  margin-bottom: 4px;  // Reduced spacing between cards
+  background: #f5f5f5;  // White smoke background
   transition: all 0.2s ease;
   position: relative;
-  min-height: 32px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
-  &:hover {
-    background: rgba($color-accent-indigo, 0.2);
-    border-color: rgba($color-accent-indigo, 0.5);
-    box-shadow: 0 0 12px rgba(99, 102, 241, 0.4), inset 0 0 20px rgba(99, 102, 241, 0.1);
-    transform: translateY(-1px);
+  &:hover:not(.queue-player-card--no-space) {
+    background: #ffffff;  // Pure white on hover
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+
+    .queue-player-card__content::before {
+      content: '\f060';  // Font Awesome left arrow
+      font-family: 'Font Awesome 5 Free';
+      font-weight: 900;
+      color: #000000;  // Black arrow
+      font-size: 14px;
+      margin-right: 0;
+      width: 20px;
+      opacity: 1;
+      transition: all 0.3s ease;
+    }
+  }
+
+  &--no-space {
+    cursor: default !important;
+    opacity: 0.7;  // Slightly muted when no space
   }
 
   &__content {
@@ -2260,12 +2507,25 @@ body {
     gap: $spacing-sm;
     flex: 1;
     min-width: 0;
+
+    &::before {
+      content: '\f060';  // Font Awesome left arrow
+      font-family: 'Font Awesome 5 Free';
+      font-weight: 900;
+      color: #000000;  // Black arrow
+      font-size: 14px;
+      margin-right: -8px;  // Hidden by default
+      width: 0;
+      opacity: 0;
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
   }
 
   &__name {
-    font-size: 18px;
-    color: #9fa0ff;
-    font-weight: 500;
+    font-size: 16px;  // Reduced from 18px
+    color: #000000;  // Black text
+    font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2275,7 +2535,7 @@ body {
   &__options-btn {
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.5);
+    color: #d1020e;  // Red dots
     cursor: pointer;
     padding: 4px 8px;
     border-radius: 4px;
@@ -2283,24 +2543,26 @@ body {
     font-size: 14px;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: rgba(255, 255, 255, 0.8);
+      background: rgba(209, 2, 14, 0.1);  // Light red background
+      color: #d1020e;  // Stay red
     }
   }
 
   &__number {
-    padding: 2px $spacing-xs;
-    border: 1px solid $color-dark-border-strong;
-    border-radius: $spacing-xs;
-    background: $color-dark-card;
+    padding: 2px 8px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 12px;  // Pill shape
+    background: rgba(0, 0, 0, 0.05);
     cursor: pointer;
     font-size: 12px;
+    font-weight: 600;
     transition: background-color 0.2s ease;
-    min-width: 24px;
+    min-width: 28px;
     text-align: center;
+    color: #666666;  // Grey number
 
     &:hover {
-      background: $color-dark-card-hover;
+      background: rgba(0, 0, 0, 0.1);
     }
   }
 
@@ -2434,7 +2696,7 @@ body {
 
   &__block--benched {
     .queue__block-title {
-      color: #94a3b8;  // Muted blue-gray for resting
+      color: #f5f5f5;  // White smoke
     }
 
     .queue__benched-player {
@@ -2443,7 +2705,7 @@ body {
 
     &.queue__block--left {
       .queue__block-title {
-        color: #f87171;  // Red for left
+        color: #f5f5f5;  // White smoke
       }
 
       .queue__benched-player {
@@ -2453,9 +2715,10 @@ body {
   }
 
   &__block-subtitle {
-    opacity: 0.7;
+    opacity: 0.5;  // More subtle
     font-size: 12px;
     font-weight: normal;
+    color: rgba(255, 255, 255, 0.5);  // Muted white
   }
 
   &__empty-state {
