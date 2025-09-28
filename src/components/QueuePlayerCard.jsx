@@ -12,7 +12,8 @@ const QueuePlayerCard = ({
   onHover = null,
   shouldPulse = false,
   shouldPulseBenchButton = false,
-  nextGamePlayers = []
+  nextGamePlayers = [],
+  inNextGameArea = false
 }) => {
   const [isAssigning, setIsAssigning] = useState(false);
 
@@ -35,21 +36,25 @@ const QueuePlayerCard = ({
 
   return (
     <div
-      className={`queue-player-card ${shouldPulse ? 'help-pulse' : ''} ${priorityCourtNum && showOnlyPriority ? 'queue-player-card--priority' : ''} ${!priorityCourtNum && nextGameHasSpace ? 'queue-player-card--next-game' : ''}`}
+      className={`queue-player-card ${shouldPulse ? 'help-pulse' : ''} ${priorityCourtNum && showOnlyPriority ? 'queue-player-card--priority' : ''}`}
       style={{
         marginBottom: 8,
-        cursor: (priorityCourtNum && showOnlyPriority) || (!priorityCourtNum && nextGameHasSpace) ? 'pointer' : 'default'
+        cursor: (priorityCourtNum && showOnlyPriority) || onPlayerClick ? 'pointer' : 'default'
       }}
       onClick={() => {
         if (priorityCourtNum && showOnlyPriority) {
           handleAssignCourt(player.playerNumber, priorityCourtNum);
-        } else if (!priorityCourtNum && nextGameHasSpace) {
-          onPlayerClick?.(player);
+        } else if (onPlayerClick) {
+          onPlayerClick(player);
         }
       }}
       onMouseEnter={() => {
-        if (priorityCourtNum && showOnlyPriority && onHover) {
-          onHover(player, priorityCourtNum);
+        if (onHover) {
+          if (priorityCourtNum && showOnlyPriority) {
+            onHover(player, priorityCourtNum);
+          } else if (allCourtsFull && nextGameHasSpace) {
+            onHover(player, null); // Hovering for Next Game
+          }
         }
       }}
       onMouseLeave={() => {
@@ -76,7 +81,7 @@ const QueuePlayerCard = ({
         <i className="fas fa-ellipsis-v"></i>
       </button>
 
-      {!showOnlyPriority && !allCourtsFull && (
+      {!showOnlyPriority && hasAvailableSpace && (
         <div className="queue-player-card__action">
           {Array.from({ length: courtCount }).map((_, idx) => {
             const num = idx + 1;

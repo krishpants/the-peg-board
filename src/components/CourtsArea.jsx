@@ -223,9 +223,11 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
   };
   
   // Check if there are players from this court already in queue (indicating game ended)
-  const playersInQueueFromThisCourt = queueBlocks
-    .filter(block => block.sourceCourt === courtNumber && !block.closed)
+  const activeBlocksFromThisCourt = queueBlocks
+    .filter(block => block.sourceCourt === courtNumber && !block.closed);
+  const playersInQueueFromThisCourt = activeBlocksFromThisCourt
     .flatMap(block => block.players).length;
+
   
   const isDeclaringResults = playerCount > 0 && playerCount < 4 && playersInQueueFromThisCourt > 0;
   const isWaitingForPlayers = playerCount > 0 && playerCount < 4 && playersInQueueFromThisCourt === 0;

@@ -534,6 +534,7 @@ const BadmintonQueue = () => {
                       onRemoveFromNextGame={removeFromNextGame}
                       onClearNextGame={clearNextGame}
                       onSendNextGameToCourt={sendNextGameToCourt}
+                      hoveredQueuePlayer={hoveredQueuePlayer}
                     />
                     <button
                       type="button"

@@ -368,6 +368,9 @@ export default function useBadmintonSession() {
     setTimeout(() => {
       saveStateToUndoStack(`Assign Player #${playerNumber} to Court ${courtNum}`);
 
+      // Always remove from Next Game first if they're in it
+      setNextGamePlayers((prev) => prev.filter(p => p.playerNumber !== playerNumber));
+
       // Find and extract the player info first
       let playerInfo = null;
 
@@ -531,13 +534,14 @@ export default function useBadmintonSession() {
 
   // Add player to Next Game staging area
   const addToNextGame = (player) => {
-    // Add to next game if not already there (keep player in queue block)
     setNextGamePlayers((prev) => {
+      // Check if already in next game
       if (prev.some(p => p.playerNumber === player.playerNumber)) {
         return prev;
       }
+      // Check if full (4 players max)
       if (prev.length >= 4) {
-        return prev; // Max 4 players
+        return prev;
       }
       return [...prev, player];
     });
@@ -545,7 +549,6 @@ export default function useBadmintonSession() {
 
   // Remove player from Next Game
   const removeFromNextGame = (playerNumber) => {
-    // Just remove from next game (they stay in their original queue block)
     setNextGamePlayers((prev) => prev.filter(p => p.playerNumber !== playerNumber));
   };
 
@@ -554,36 +557,6 @@ export default function useBadmintonSession() {
     setNextGamePlayers([]);
   };
 
-  // Send all Next Game players to a court
-  const sendNextGameToCourt = (courtNumber) => {
-    if (nextGamePlayers.length === 0) return;
-
-    // Remove these players from their queue blocks
-    const playerNumbers = nextGamePlayers.map(p => p.playerNumber);
-    setQueueBlocks((prev) =>
-      prev.map(block => ({
-        ...block,
-        players: block.players.filter(p => !playerNumbers.includes(p.playerNumber))
-      })).filter(block => block.players.length > 0)
-    );
-
-    // Add players to court
-    nextGamePlayers.forEach(player => {
-      const newPlayer = {
-        ...player,
-        playerNumber: player.playerNumber,
-        playerName: player.playerName || `Player #${player.playerNumber}`,
-        onCourt: true,
-        courtNumber,
-        benched: false,
-        startTime: Date.now(),
-        pairingIndex: 0
-      };
-      setPlayers((prev) => [...prev.filter(p => p.playerNumber !== player.playerNumber), newPlayer]);
-    });
-
-    setNextGamePlayers([]);
-  };
 
   const substitutePlayer = (courtPlayer, queuePlayer) => {
     saveStateToUndoStack(`Substitute ${courtPlayer.playerName || `#${courtPlayer.playerNumber}`} with ${queuePlayer.playerName || `#${queuePlayer.playerNumber}`}`);
@@ -674,6 +647,5 @@ export default function useBadmintonSession() {
     addToNextGame,
     removeFromNextGame,
     clearNextGame,
-    sendNextGameToCourt,
   };
 }

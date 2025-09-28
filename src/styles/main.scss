@@ -1873,6 +1873,16 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.5px;
 
+    &--departed {
+      border-style: solid;
+      border-color: #444444;
+      background: #222222;
+      color: #888888;
+      text-transform: none;
+      font-style: italic;
+      opacity: 0.7;
+    }
+
     // Apply position-based border radius
     &.court__pair-player--top-left {
       border-radius: 18px 0 0 18px;
@@ -3015,6 +3025,15 @@ body {
     align-items: center;
     font-size: 0.9rem;
     font-weight: 500;
+    transition: all 0.2s ease;
+
+    &--clickable {
+      &:hover {
+        background: #b0b0b0;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+    }
   }
 
   &__next-game-remove {
@@ -3046,6 +3065,18 @@ body {
     align-items: center;
     font-size: 0.9rem;
     border: 2px dashed #4a4a4a;
+    transition: all 0.2s ease;
+
+    &--ghost {
+      background: rgba(#cacaca, 0.1);
+      border-color: rgba(#cacaca, 0.3);
+      color: rgba(#cacaca, 0.6);
+    }
+  }
+
+  &__next-game-ghost {
+    opacity: 0.6;
+    font-style: italic;
   }
 
   // Preview block for showing where game results will go

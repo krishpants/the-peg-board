@@ -1,10 +1,11 @@
 import React from 'react';
 import { AnimatePresence } from 'framer-motion';
 import QueueBlock from './QueueBlock';
+import QueuePlayerCard from './QueuePlayerCard';
 
-const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAssignCourt, onPlayerClick, onPlayerHover, shouldHighlightFirstPlayer, shouldHighlightEntireBlock, shouldShowPreviewBlock, shouldHighlightBenchButton, nextGamePlayers = [], onAddToNextGame, onRemoveFromNextGame, onClearNextGame, onSendNextGameToCourt }) => {
+const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAssignCourt, onPlayerClick, onPlayerHover, shouldHighlightFirstPlayer, shouldHighlightEntireBlock, shouldShowPreviewBlock, shouldHighlightBenchButton, nextGamePlayers = [], onAddToNextGame, onRemoveFromNextGame, onClearNextGame, onSendNextGameToCourt, hoveredQueuePlayer = null }) => {
   // Filter out players in Next Game when checking if blocks are visible
-  const nextGamePlayerNumbers = nextGamePlayers.map(p => p.playerNumber);
+  const nextGamePlayerNumbers = nextGamePlayers.filter(p => p !== null).map(p => p.playerNumber);
   const visibleBlocks = blocks.filter((b) => {
     const remainingPlayers = b.players.filter(p => !nextGamePlayerNumbers.includes(p.playerNumber));
     return remainingPlayers.length > 0;
@@ -95,7 +96,7 @@ const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAs
       {/* Scrollable content area */}
       <div className="queue__content">
         {/* Next Game Block - show when courts are full or there are players in it */}
-        {(nextGamePlayers.length > 0 || allCourtsFull) && (
+        {(nextGamePlayers.some(p => p !== null) || allCourtsFull) && (
           <div className="queue__next-game">
             <div className="queue__next-game-header">
               <h3 className="queue__next-game-title">Next Game</h3>
@@ -111,38 +112,58 @@ const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAs
                     Clear
                   </button>
                 )}
-                {nextGamePlayers.length > 0 && courtForNextGame && (
-                  <button
-                    type="button"
-                    className="queue__next-game-send"
-                    onClick={() => onSendNextGameToCourt?.(courtForNextGame)}
-                  >
-                    <i className="fas fa-arrow-left"></i>
-                    Send to Court {courtForNextGame}
-                  </button>
-                )}
               </div>
             </div>
             <div className="queue__next-game-slots">
-              {[0, 1, 2, 3].map((index) => {
-                const player = nextGamePlayers[index];
+              {nextGamePlayers.map((player) => {
+                // Find which block this player is in (search in ALL blocks, not just visible ones)
+                const playerBlock = blocks.find(block =>
+                  block.players.some(p => p.playerNumber === player.playerNumber)
+                );
+
                 return (
-                  <div key={index} className="queue__next-game-slot">
-                    {player ? (
-                      <div className="queue__next-game-player">
-                        <span>{player.playerName || `Player #${player.playerNumber}`}</span>
-                        <button
-                          type="button"
-                          className="queue__next-game-remove"
-                          onClick={() => onRemoveFromNextGame?.(player.playerNumber)}
-                        >
-                          <i className="fas fa-times"></i>
-                        </button>
-                      </div>
+                  <QueuePlayerCard
+                    key={player.playerNumber}
+                    player={player}
+                    nextGamePlayers={nextGamePlayers}
+                    onPlayerClick={null} // No special click behavior - just send to court
+                    onPlayerOptions={onPlayerClick} // Standard player options
+                    onAssignCourt={(playerNumber, courtNumber) => {
+                      if (playerBlock) {
+                        onAssignCourt(playerBlock.id, playerNumber, courtNumber);
+                      }
+                    }}
+                    courtCount={courtCount}
+                    courtOccupancy={courtOccupancy}
+                    priorityCourtNum={priorityCourtNum}
+                    showOnlyPriority={!allCourtsFull}
+                    onHover={onPlayerHover}
+                    shouldPulse={false}
+                    shouldPulseBenchButton={false}
+                    inNextGameArea={true}
+                  />
+                );
+              })}
+              {/* Show empty slots with ghost player on hover */}
+              {Array.from({ length: Math.max(0, 4 - nextGamePlayers.length) }).map((_, index) => {
+                const actualIndex = nextGamePlayers.length + index;
+                const showGhost = hoveredQueuePlayer &&
+                                allCourtsFull &&
+                                actualIndex === nextGamePlayers.length && // Only show in first empty slot
+                                !nextGamePlayers.some(p => p.playerNumber === hoveredQueuePlayer.playerNumber);
+
+                return (
+                  <div
+                    key={`empty-${index}`}
+                    className={`queue__next-game-empty ${showGhost ? 'queue__next-game-empty--ghost' : ''}`}
+                    style={{ marginBottom: 8 }}
+                  >
+                    {showGhost ? (
+                      <span className="queue__next-game-ghost">
+                        {hoveredQueuePlayer.playerName || `Player #${hoveredQueuePlayer.playerNumber}`}
+                      </span>
                     ) : (
-                      <div className="queue__next-game-empty">
-                        <span>Empty</span>
-                      </div>
+                      <span>Empty</span>
                     )}
                   </div>
                 );
