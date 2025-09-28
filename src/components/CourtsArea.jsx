@@ -14,19 +14,37 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
   const [hoveredPair, setHoveredPair] = useState(null);
   const [playingTime, setPlayingTime] = useState('');
   const [playingTimeMs, setPlayingTimeMs] = useState(0);
-  
+  const [justStartedPlaying, setJustStartedPlaying] = useState(false);
+  const lastPlayerNumbers = useRef(players.map(p => p.playerNumber).join(','));
+  const lastPlayerCount = useRef(playerCount);
+
   // Reset click order and hover state when players change
   useEffect(() => {
-    setClickOrder([]);
-    setHoveredPair(null);
-    // Don't reset pairing index if we're in the middle of rotating
-    // Use ref to avoid stale closure issues in Firefox
-    if (!isRotatingRef.current) {
-      // Set pairing index from players or reset to 0
-      const pairingFromPlayers = players.length > 0 && players[0].pairingIndex !== undefined ? players[0].pairingIndex : 0;
-      setCurrentPairingIndex(pairingFromPlayers);
+    const currentPlayerNumbers = players.map(p => p.playerNumber).join(',');
+
+    // Only run if players actually changed (not just pairing index)
+    if (currentPlayerNumbers !== lastPlayerNumbers.current) {
+      setClickOrder([]);
+      setHoveredPair(null);
+
+      // Check if court just transitioned to playing (from 3 to 4 players)
+      if (lastPlayerCount.current === 3 && playerCount === 4) {
+        setJustStartedPlaying(true);
+        setTimeout(() => setJustStartedPlaying(false), 600); // Clear after animation
+      }
+
+      // Don't reset pairing index if we're in the middle of rotating
+      // Use ref to avoid stale closure issues in Firefox
+      if (!isRotatingRef.current) {
+        // Set pairing index from players or reset to 0
+        const pairingFromPlayers = players.length > 0 && players[0].pairingIndex !== undefined ? players[0].pairingIndex : 0;
+        setCurrentPairingIndex(pairingFromPlayers);
+      }
+
+      lastPlayerNumbers.current = currentPlayerNumbers;
+      lastPlayerCount.current = playerCount;
     }
-  }, [players.map(p => p.playerNumber).join(',')]);
+  }, [players, playerCount]);
 
   // Update playing time for games in progress
   useEffect(() => {
@@ -125,36 +143,37 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
     const newIndex = (currentPairingIndex + 1) % allPairings.length;
     setCurrentPairingIndex(newIndex);
 
+    // Update the global state with slight delay to avoid interference with animation
+    setTimeout(() => {
+      if (onUpdatePairing) {
+        onUpdatePairing(courtNumber, newIndex);
+      }
+    }, 100);
+
     setTimeout(() => {
       setIsRotating(false);
       isRotatingRef.current = false;
-    }, 700);
-
-    // Update the global state with the new pairing index
-    if (onUpdatePairing) {
-      onUpdatePairing(courtNumber, newIndex);
-    }
+    }, 300);
   };
 
-  // Get position for player based on their position in pairing
-  const getPlayerPosition = (playerNumber) => {
-    if (!currentPairing) return { x: 0, y: 0 };
+  // Get x,y position for player based on their position in pairing
+  const getXYForPlayer = (player, pairing) => {
+    if (!pairing) return { x: -75, y: -18 };
+    const pid = player.playerNumber;
 
-    // Find where this player is in the current pairing
-    if (currentPairing.pair1[0].playerNumber === playerNumber) {
-      return { x: 0, y: 0 }; // Top pair - left player (centered for now)
-    }
-    if (currentPairing.pair1[1].playerNumber === playerNumber) {
-      return { x: 0, y: 0 }; // Top pair - right player (stacked for now)
-    }
-    if (currentPairing.pair2[0].playerNumber === playerNumber) {
-      return { x: 0, y: 100 }; // Bottom left
-    }
-    if (currentPairing.pair2[1].playerNumber === playerNumber) {
-      return { x: 160, y: 100 }; // Bottom right
-    }
+    // Shift everything 75px left (half of 150px width) and 18px up (half of 36px height)
+    const positions = {
+      topLeft:  { x: -150, y: -83 },  // -65 - 18
+      topRight: { x:  0, y: -83 },     // -65 - 18
+      botLeft:  { x: -150, y:  47 },   // 65 - 18
+      botRight: { x:  0, y:  47 },     // 65 - 18
+    };
 
-    return { x: 0, y: 0 };
+    if (pairing.pair1[0].playerNumber === pid) return positions.topLeft;
+    if (pairing.pair1[1].playerNumber === pid) return positions.topRight;
+    if (pairing.pair2[0].playerNumber === pid) return positions.botLeft;
+    if (pairing.pair2[1].playerNumber === pid) return positions.botRight;
+    return { x: -75, y: -18 };
   };
 
   // Get movement info for a player
@@ -239,14 +258,16 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
         <div className="court__pairing-container">
           {/* Render all players in stable order, only animating positions */}
           {players.map((player) => {
-            const position = getPlayerPosition(player.playerNumber);
             const isPair1 = currentPairing.pair1.some(p => p.playerNumber === player.playerNumber);
             const isPair2 = currentPairing.pair2.some(p => p.playerNumber === player.playerNumber);
 
             return (
               <motion.div
                 key={`court-player-${player.playerNumber}`}
-                className={`court__pair-player court__pair-player--absolute ${
+                initial={getXYForPlayer(player, currentPairing)}
+                className={`court__pair-player court__pair-player--absolute court__pair-player--playing ${
+                  justStartedPlaying ? 'court__pair-player--entering-play' : ''
+                } ${
                   isPair1 && hoveredPair === 1 ? 'winning' :
                   isPair1 && hoveredPair === 2 ? 'losing' :
                   isPair2 && hoveredPair === 2 ? 'winning' :
@@ -260,24 +281,15 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
                 style={{
                   position: 'absolute',
                   top: '50%',
-                  left: '50%'
+                  left: '50%',
+                  x: '-50%',
+                  y: '-50%'
                 }}
-                animate={{
-                  x: position.x,
-                  y: position.y,
-                  transform: isPair1 ?
-                    (currentPairing.pair1[0].playerNumber === player.playerNumber ? 'translate(calc(-50% - 75px), calc(-50% - 65px))' :
-                     currentPairing.pair1[1].playerNumber === player.playerNumber ? 'translate(calc(-50% + 75px), calc(-50% - 65px))' :
-                     'translate(-50%, calc(-50% - 65px))') :
-                    (currentPairing.pair2[0].playerNumber === player.playerNumber ? 'translate(calc(-50% - 75px), calc(-50% + 65px))' :
-                     currentPairing.pair2[1].playerNumber === player.playerNumber ? 'translate(calc(-50% + 75px), calc(-50% + 65px))' :
-                     'translate(-50%, calc(-50% + 65px))')
-                }}
+                animate={getXYForPlayer(player, currentPairing)}
                 transition={{
-                  type: "spring",
-                  stiffness: 260,
-                  damping: 20,
-                  mass: 0.8
+                  type: "tween",
+                  duration: isRotating ? 0.25 : 0,
+                  ease: "linear"
                 }}
               >
                 <button
@@ -372,7 +384,10 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
                 }}
               >
                 {player ? (
-                  <div className={`court__pair-player court__pair-player--waiting ${positionClass}`}>
+                  <div
+                    key={`player-${player.playerNumber}-${slotIndex}`}
+                    className={`court__pair-player court__pair-player--waiting court__pair-player--entering ${positionClass}`}
+                  >
                     <button
                       type="button"
                       className="player-card__name-button"

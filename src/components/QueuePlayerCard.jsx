@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
 
 const QueuePlayerCard = ({
   player,
@@ -35,32 +34,12 @@ const QueuePlayerCard = ({
   const nextGameHasSpace = nextGamePlayers.length < 4;
 
   return (
-    <motion.div
+    <div
       className={`queue-player-card ${shouldPulse ? 'help-pulse' : ''} ${priorityCourtNum && showOnlyPriority ? 'queue-player-card--priority' : ''} ${!priorityCourtNum && nextGameHasSpace ? 'queue-player-card--next-game' : ''}`}
-      initial={{
-        opacity: 0,
-        y: -20,
-        scaleY: 0.6
+      style={{
+        marginBottom: 8,
+        cursor: (priorityCourtNum && showOnlyPriority) || (!priorityCourtNum && nextGameHasSpace) ? 'pointer' : 'default'
       }}
-      animate={{
-        opacity: 1,
-        y: 0,
-        scaleY: 1
-      }}
-      exit={{
-        opacity: 0,
-        y: -20,
-        scaleY: 0.6,
-        transition: {
-          duration: 0.2,
-          ease: "easeIn"
-        }
-      }}
-      transition={{
-        duration: 0.3,
-        ease: "easeOut"
-      }}
-      style={{ transformOrigin: "top", marginBottom: 8 }}
       onClick={() => {
         if (priorityCourtNum && showOnlyPriority) {
           handleAssignCourt(player.playerNumber, priorityCourtNum);
@@ -78,7 +57,6 @@ const QueuePlayerCard = ({
           onHover(null, null);
         }
       }}
-      style={{ cursor: (priorityCourtNum && showOnlyPriority) || (!priorityCourtNum && nextGameHasSpace) ? 'pointer' : 'default' }}
     >
       <div className="queue-player-card__content">
         <span className="queue-player-card__name">
@@ -106,7 +84,7 @@ const QueuePlayerCard = ({
             const isPriority = !isFull && priorityCourtNum === num;
 
             return (
-              <motion.button
+              <button
                 key={`court-${num}`}
                 type="button"
                 className={`queue-btn queue-btn--court ${isPriority ? 'queue-btn--priority' : ''}`}
@@ -122,17 +100,15 @@ const QueuePlayerCard = ({
                     ? `Suggested: Court ${num}`
                     : `Send to Court ${num}`
                 }
-                whileHover={{ scale: isFull || isAssigning ? 1 : 1.05 }}
-                whileTap={{ scale: isFull || isAssigning ? 1 : 0.95 }}
                 style={{ opacity: isAssigning ? 0.6 : 1 }}
               >
                 {num}
-              </motion.button>
+              </button>
             );
           })}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 };
 

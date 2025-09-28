@@ -1,4 +1,5 @@
 import React from 'react';
+import { AnimatePresence } from 'framer-motion';
 import QueueBlock from './QueueBlock';
 
 const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAssignCourt, onPlayerClick, onPlayerHover, shouldHighlightFirstPlayer, shouldHighlightEntireBlock, shouldShowPreviewBlock, shouldHighlightBenchButton, nextGamePlayers = [], onAddToNextGame, onRemoveFromNextGame, onClearNextGame, onSendNextGameToCourt }) => {
@@ -150,24 +151,26 @@ const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAs
           </div>
         )}
 
-        {sortedBlocks.map((block, index) => (
-          <QueueBlock
-            key={block.id}
-            block={block}
-            courtCount={courtCount}
-            courtOccupancy={courtOccupancy}
-            priorityCourtNum={priorityCourtNum}
-            onAssignCourt={onAssignCourt}
-            onPlayerClick={onPlayerClick}
-            onPlayerHover={onPlayerHover}
-            shouldHighlight={shouldHighlightFirstPlayer && index === 0 && !block.benchedType}
-            shouldHighlightEntireBlock={shouldHighlightEntireBlock && index === 0 && !block.benchedType}
-            shouldHighlightBenchButton={shouldHighlightBenchButton && index === 0 && !block.benchedType}
-            allCourtsFull={allCourtsFull}
-            onAddToNextGame={onAddToNextGame}
-            nextGamePlayers={nextGamePlayers}
-          />
-        ))}
+        <AnimatePresence>
+          {sortedBlocks.map((block, index) => (
+            <QueueBlock
+              key={block.id}
+              block={block}
+              courtCount={courtCount}
+              courtOccupancy={courtOccupancy}
+              priorityCourtNum={priorityCourtNum}
+              onAssignCourt={onAssignCourt}
+              onPlayerClick={onPlayerClick}
+              onPlayerHover={onPlayerHover}
+              shouldHighlight={shouldHighlightFirstPlayer && index === 0 && !block.benchedType}
+              shouldHighlightEntireBlock={shouldHighlightEntireBlock && index === 0 && !block.benchedType}
+              shouldHighlightBenchButton={shouldHighlightBenchButton && index === 0 && !block.benchedType}
+              allCourtsFull={allCourtsFull}
+              onAddToNextGame={onAddToNextGame}
+              nextGamePlayers={nextGamePlayers}
+            />
+          ))}
+        </AnimatePresence>
 
         {shouldShowPreviewBlock && (
           <div className="queue__preview-block help-pulse">

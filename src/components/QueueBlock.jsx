@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import QueuePlayerCard from './QueuePlayerCard';
 
 const labelForCourt = (n) => {
@@ -76,15 +76,10 @@ const QueueBlock = ({
     return (
       <motion.div
         className={`queue__block queue__block--benched ${block.benchedType === 'left' ? 'queue__block--left' : ''}`}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        layout
-        transition={{
-          type: "spring",
-          stiffness: 400,
-          damping: 30
-        }}
+        initial={{ opacity: 0, height: 0 }}
+        animate={{ opacity: 1, height: 'auto' }}
+        exit={{ opacity: 0, height: 0 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
       >
         <h3 className="queue__block-title queue__block-title--benched">
           <i className={`fas ${block.benchedType === 'resting' ? 'fa-pause-circle' : 'fa-sign-out-alt'}`}></i>
@@ -113,15 +108,10 @@ const QueueBlock = ({
   return (
     <motion.div
       className={`queue__block ${shouldHighlightEntireBlock ? 'help-pulse' : ''}`}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      layout
-      transition={{
-        type: "spring",
-        stiffness: 400,
-        damping: 30
-      }}
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: 'auto' }}
+      exit={{ opacity: 0, height: 0 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
     >
       <h3 className="queue__block-title">
         {block.sourceCourt === -1
@@ -138,16 +128,12 @@ const QueueBlock = ({
 
       <div className={`queue__game ${!showVs ? 'queue__game--single-side' : ''}`}>
         {winners.length > 0 && (
-          <motion.div 
+          <div
             className="queue__side queue__side--winner"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
           >
             <div className="queue__side-label">
               {winners.length === 1 ? 'Winner' : 'Winners'}
             </div>
-            <AnimatePresence>
               {winners.map((player, index) => (
                 <QueuePlayerCard
                   key={player.playerNumber}
@@ -171,23 +157,18 @@ const QueueBlock = ({
                   shouldPulseBenchButton={shouldHighlightBenchButton && index === 0}
                 />
               ))}
-            </AnimatePresence>
-          </motion.div>
+          </div>
         )}
 
         {showVs && <div className="queue__vs">vs</div>}
         
         {losers.length > 0 && (
-          <motion.div 
+          <div
             className="queue__side queue__side--loser"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
           >
             <div className="queue__side-label">
               {losers.length === 1 ? 'Loser' : 'Losers'}
             </div>
-            <AnimatePresence>
               {losers.map((player, index) => (
                 <QueuePlayerCard
                   key={player.playerNumber}
@@ -211,21 +192,16 @@ const QueueBlock = ({
                   shouldPulseBenchButton={shouldHighlightBenchButton && winners.length === 0 && index === 0}
                 />
               ))}
-            </AnimatePresence>
-          </motion.div>
+          </div>
         )}
 
         {readyPlayers.length > 0 && (
-          <motion.div 
+          <div
             className="queue__side queue__side--ready"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
           >
             <div className="queue__side-label">
               {readyPlayers.length === 1 ? 'Ready' : 'Ready'}
             </div>
-            <AnimatePresence>
               {readyPlayers.map((player, index) => (
                 <QueuePlayerCard
                   key={player.playerNumber}
@@ -249,21 +225,16 @@ const QueueBlock = ({
                   shouldPulseBenchButton={shouldHighlightBenchButton && winners.length === 0 && losers.length === 0 && index === 0}
                 />
               ))}
-            </AnimatePresence>
-          </motion.div>
+          </div>
         )}
 
         {waitingPlayers.length > 0 && (
-          <motion.div 
+          <div
             className="queue__side queue__side--waiting"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
           >
             <div className="queue__side-label">
               {waitingPlayers.length === 1 ? 'Waiting' : 'Waiting'}
             </div>
-            <AnimatePresence>
               {waitingPlayers.map((player, index) => (
                 <QueuePlayerCard
                   key={player.playerNumber}
@@ -287,8 +258,7 @@ const QueueBlock = ({
                   shouldPulseBenchButton={shouldHighlightBenchButton && winners.length === 0 && losers.length === 0 && readyPlayers.length === 0 && index === 0}
                 />
               ))}
-            </AnimatePresence>
-          </motion.div>
+          </div>
         )}
       </div>
     </motion.div>
