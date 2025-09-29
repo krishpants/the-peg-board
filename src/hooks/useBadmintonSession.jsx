@@ -54,7 +54,8 @@ export default function useBadmintonSession() {
   const [players, setPlayers] = useState(savedState?.players ?? []);
   const [queueBlocks, setQueueBlocks] = useState(savedState?.queueBlocks ?? []);
   const [undoStack, setUndoStack] = useState(savedState?.undoStack ?? []);
-  const [nextGamePlayers, setNextGamePlayers] = useState(savedState?.nextGamePlayers ?? []);
+  // Planned games will replace Next Game feature
+  const [plannedGames, setPlannedGames] = useState(savedState?.plannedGames ?? []);
 
   // Auto-save state to localStorage whenever it changes
   useEffect(() => {
@@ -65,10 +66,10 @@ export default function useBadmintonSession() {
       players,
       queueBlocks,
       undoStack,
-      nextGamePlayers
+      plannedGames
     };
     saveStateToStorage(stateToSave);
-  }, [courtCount, playerCount, sessionStarted, players, queueBlocks, undoStack, nextGamePlayers]);
+  }, [courtCount, playerCount, sessionStarted, players, queueBlocks, undoStack, plannedGames]);
 
   const setCounts = ({ courtCount: cc, playerCount: pc }) => {
     if (typeof cc === 'number') setCourtCount(Math.max(1, cc));
@@ -368,8 +369,7 @@ export default function useBadmintonSession() {
     setTimeout(() => {
       saveStateToUndoStack(`Assign Player #${playerNumber} to Court ${courtNum}`);
 
-      // Always remove from Next Game first if they're in it
-      setNextGamePlayers((prev) => prev.filter(p => p.playerNumber !== playerNumber));
+      // TODO: Remove from planned games if they're in any
 
       // Find and extract the player info first
       let playerInfo = null;
@@ -532,29 +532,38 @@ export default function useBadmintonSession() {
     });
   };
 
-  // Add player to Next Game staging area
-  const addToNextGame = (player) => {
-    setNextGamePlayers((prev) => {
-      // Check if already in next game
-      if (prev.some(p => p.playerNumber === player.playerNumber)) {
-        return prev;
-      }
-      // Check if full (4 players max)
-      if (prev.length >= 4) {
-        return prev;
-      }
-      return [...prev, player];
-    });
+  // Create a new planned game
+  const createPlannedGame = () => {
+    const newGame = {
+      id: 'game-' + Date.now(),
+      slots: [null, null, null, null],
+      createdAt: Date.now()
+    };
+    setPlannedGames(prev => [...prev, newGame]);
+    return newGame.id;
   };
 
-  // Remove player from Next Game
-  const removeFromNextGame = (playerNumber) => {
-    setNextGamePlayers((prev) => prev.filter(p => p.playerNumber !== playerNumber));
+  // Update a slot in a planned game
+  const updatePlannedGameSlot = (gameId, slotIndex, player) => {
+    setPlannedGames(prev => prev.map(game =>
+      game.id === gameId
+        ? { ...game, slots: game.slots.map((s, i) => i === slotIndex ? player : s) }
+        : game
+    ));
   };
 
-  // Clear all players from Next Game
-  const clearNextGame = () => {
-    setNextGamePlayers([]);
+  // Remove a planned game
+  const removePlannedGame = (gameId) => {
+    setPlannedGames(prev => prev.filter(game => game.id !== gameId));
+  };
+
+  // Clear all slots in a planned game
+  const clearPlannedGame = (gameId) => {
+    setPlannedGames(prev => prev.map(game =>
+      game.id === gameId
+        ? { ...game, slots: [null, null, null, null] }
+        : game
+    ));
   };
 
 
@@ -628,7 +637,7 @@ export default function useBadmintonSession() {
     players,
     queueBlocks,
     undoStack,
-    nextGamePlayers,
+    plannedGames,
     // actions
     setCounts,
     startSession,
@@ -643,9 +652,10 @@ export default function useBadmintonSession() {
     updatePairingIndex,
     undo,
     canUndo: undoStack.length > 0,
-    // Next Game actions
-    addToNextGame,
-    removeFromNextGame,
-    clearNextGame,
+    // Planned Games actions
+    createPlannedGame,
+    updatePlannedGameSlot,
+    removePlannedGame,
+    clearPlannedGame,
   };
 }

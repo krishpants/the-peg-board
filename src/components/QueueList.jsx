@@ -3,13 +3,9 @@ import { AnimatePresence } from 'framer-motion';
 import QueueBlock from './QueueBlock';
 import QueuePlayerCard from './QueuePlayerCard';
 
-const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAssignCourt, onPlayerClick, onPlayerHover, shouldHighlightFirstPlayer, shouldHighlightEntireBlock, shouldShowPreviewBlock, shouldHighlightBenchButton, nextGamePlayers = [], onAddToNextGame, onRemoveFromNextGame, onClearNextGame, onSendNextGameToCourt, hoveredQueuePlayer = null }) => {
-  // Filter out players in Next Game when checking if blocks are visible
-  const nextGamePlayerNumbers = nextGamePlayers.filter(p => p !== null).map(p => p.playerNumber);
-  const visibleBlocks = blocks.filter((b) => {
-    const remainingPlayers = b.players.filter(p => !nextGamePlayerNumbers.includes(p.playerNumber));
-    return remainingPlayers.length > 0;
-  });
+const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], activePlayers = [], onAssignCourt, onPlayerClick, onPlayerHover, shouldHighlightFirstPlayer, shouldHighlightEntireBlock, shouldShowPreviewBlock, shouldHighlightBenchButton, plannedGames = [], onCreatePlannedGame, onUpdatePlannedGameSlot, onRemovePlannedGame, onClearPlannedGame, hoveredQueuePlayer = null }) => {
+  // For now, show all blocks (planned games will be handled separately)
+  const visibleBlocks = blocks;
 
   // Sort blocks: regular blocks first, then benched blocks
   const sortedBlocks = [...visibleBlocks].sort((a, b) => {
@@ -60,15 +56,7 @@ const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAs
   // Check if all courts are full (all have 4 players)
   const allCourtsFull = courtOccupancy.length > 0 && courtOccupancy.every(n => n === 4);
 
-  // Find a court with enough space for Next Game players
-  let courtForNextGame = null;
-  if (nextGamePlayers.length > 0) {
-    const spaceNeeded = nextGamePlayers.length;
-    const courtIndex = courtOccupancy.findIndex(occupancy => (4 - occupancy) >= spaceNeeded);
-    if (courtIndex !== -1) {
-      courtForNextGame = courtIndex + 1;
-    }
-  }
+  // TODO: Implement court assignment for planned games
 
   return (
     <div className="queue">
@@ -95,102 +83,71 @@ const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], onAs
 
       {/* Scrollable content area */}
       <div className="queue__content">
-        {/* Next Game Block - show when courts are full or there are players in it */}
-        {(nextGamePlayers.some(p => p !== null) || allCourtsFull) && (
-          <div className="queue__next-game">
-            <div className="queue__next-game-header">
-              <h3 className="queue__next-game-title">Next Game</h3>
-              <div className="queue__next-game-actions">
-                {nextGamePlayers.length > 0 && (
-                  <button
-                    type="button"
-                    className="queue__next-game-clear"
-                    onClick={() => onClearNextGame?.()}
-                    title="Clear all players from Next Game"
-                  >
-                    <i className="fas fa-times"></i>
-                    Clear
-                  </button>
-                )}
-              </div>
-            </div>
-            <div className="queue__next-game-slots">
-              {nextGamePlayers.map((player) => {
-                // Find which block this player is in (search in ALL blocks, not just visible ones)
-                const playerBlock = blocks.find(block =>
-                  block.players.some(p => p.playerNumber === player.playerNumber)
-                );
+        {/* Add Plan a Game button */}
+        <button
+          type="button"
+          className="queue__add-planned-game"
+          onClick={() => onCreatePlannedGame()}
+        >
+          <i className="fas fa-clipboard-list"></i>
+          Plan a Game
+        </button>
 
-                return (
-                  <QueuePlayerCard
-                    key={player.playerNumber}
-                    player={player}
-                    nextGamePlayers={nextGamePlayers}
-                    onPlayerClick={null} // No special click behavior - just send to court
-                    onPlayerOptions={onPlayerClick} // Standard player options
-                    onAssignCourt={(playerNumber, courtNumber) => {
-                      if (playerBlock) {
-                        onAssignCourt(playerBlock.id, playerNumber, courtNumber);
-                      }
-                    }}
-                    courtCount={courtCount}
-                    courtOccupancy={courtOccupancy}
-                    priorityCourtNum={priorityCourtNum}
-                    showOnlyPriority={!allCourtsFull}
-                    onHover={onPlayerHover}
-                    shouldPulse={false}
-                    shouldPulseBenchButton={false}
-                    inNextGameArea={true}
-                  />
-                );
-              })}
-              {/* Show empty slots with ghost player on hover */}
-              {Array.from({ length: Math.max(0, 4 - nextGamePlayers.length) }).map((_, index) => {
-                const actualIndex = nextGamePlayers.length + index;
-                const showGhost = hoveredQueuePlayer &&
-                                allCourtsFull &&
-                                actualIndex === nextGamePlayers.length && // Only show in first empty slot
-                                !nextGamePlayers.some(p => p.playerNumber === hoveredQueuePlayer.playerNumber);
-
-                return (
-                  <div
-                    key={`empty-${index}`}
-                    className={`queue__next-game-empty ${showGhost ? 'queue__next-game-empty--ghost' : ''}`}
-                    style={{ marginBottom: 8 }}
-                  >
-                    {showGhost ? (
-                      <span className="queue__next-game-ghost">
-                        {hoveredQueuePlayer.playerName || `Player #${hoveredQueuePlayer.playerNumber}`}
-                      </span>
-                    ) : (
-                      <span>Empty</span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
+        {/* Display merged queue blocks and planned games */}
         <AnimatePresence>
-          {sortedBlocks.map((block, index) => (
-            <QueueBlock
-              key={block.id}
-              block={block}
-              courtCount={courtCount}
-              courtOccupancy={courtOccupancy}
-              priorityCourtNum={priorityCourtNum}
-              onAssignCourt={onAssignCourt}
-              onPlayerClick={onPlayerClick}
-              onPlayerHover={onPlayerHover}
-              shouldHighlight={shouldHighlightFirstPlayer && index === 0 && !block.benchedType}
-              shouldHighlightEntireBlock={shouldHighlightEntireBlock && index === 0 && !block.benchedType}
-              shouldHighlightBenchButton={shouldHighlightBenchButton && index === 0 && !block.benchedType}
-              allCourtsFull={allCourtsFull}
-              onAddToNextGame={onAddToNextGame}
-              nextGamePlayers={nextGamePlayers}
-            />
-          ))}
+          {displayItems.map((item) => {
+            if (item.type === 'separator') {
+              return (
+                <div key={item.key} className="queue__separator">
+                  <span>{item.label}</span>
+                </div>
+              );
+            }
+
+            if (item.type === 'planned-game') {
+              return (
+                <PlannedGameBlock
+                  key={item.key}
+                  plannedGame={item.data}
+                  blocks={blocks}
+                  players={activePlayers}
+                  courtCount={courtCount}
+                  courtOccupancy={courtOccupancy}
+                  priorityCourtNum={priorityCourtNum}
+                  onAssignCourt={onAssignCourt}
+                  onPlayerClick={handlePlayerClickForPlannedGame}
+                  onPlayerHover={onPlayerHover}
+                  onUpdateSlot={onUpdatePlannedGameSlot}
+                  onClearGame={onClearPlannedGame}
+                  onRemoveGame={onRemovePlannedGame}
+                  selectedSlot={selectedSlot}
+                  onSelectSlot={handleSlotSelect}
+                  statusMessage={item.statusMessage}
+                  priority={item.priority}
+                />
+              );
+            }
+
+            // Regular queue block
+            const block = item.data;
+            const index = sortedBlocks.indexOf(block);
+            return (
+              <QueueBlock
+                key={item.key}
+                block={block}
+                courtCount={courtCount}
+                courtOccupancy={courtOccupancy}
+                priorityCourtNum={priorityCourtNum}
+                onAssignCourt={onAssignCourt}
+                onPlayerClick={selectedSlot ? (player) => handlePlayerClickForPlannedGame(player) : onPlayerClick}
+                onPlayerHover={onPlayerHover}
+                shouldHighlight={shouldHighlightFirstPlayer && index === 0 && !block.benchedType}
+                shouldHighlightEntireBlock={shouldHighlightEntireBlock && index === 0 && !block.benchedType}
+                shouldHighlightBenchButton={shouldHighlightBenchButton && index === 0 && !block.benchedType}
+                allCourtsFull={allCourtsFull}
+              />
+            );
+          })}
         </AnimatePresence>
 
         {shouldShowPreviewBlock && (

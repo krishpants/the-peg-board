@@ -18,7 +18,7 @@ const BadmintonQueue = () => {
     players,
     queueBlocks,
     undoStack,
-    nextGamePlayers,
+    plannedGames,
     setCounts,
     startSession,
     addPlayer,
@@ -32,10 +32,10 @@ const BadmintonQueue = () => {
     updatePairingIndex,
     undo,
     canUndo,
-    addToNextGame,
-    removeFromNextGame,
-    clearNextGame,
-    sendNextGameToCourt,
+    createPlannedGame,
+    updatePlannedGameSlot,
+    removePlannedGame,
+    clearPlannedGame,
   } = useBadmintonSession();
 
   const [nameModal, setNameModal] = useState({
@@ -529,12 +529,13 @@ const BadmintonQueue = () => {
                       shouldHighlightEntireBlock={shouldHelpFillCourt1}
                       shouldShowPreviewBlock={shouldHelpDeclareWinner}
                       shouldHighlightBenchButton={shouldShowFinalTips}
-                      nextGamePlayers={nextGamePlayers}
-                      onAddToNextGame={addToNextGame}
-                      onRemoveFromNextGame={removeFromNextGame}
-                      onClearNextGame={clearNextGame}
-                      onSendNextGameToCourt={sendNextGameToCourt}
+                      plannedGames={plannedGames}
+                      onCreatePlannedGame={createPlannedGame}
+                      onUpdatePlannedGameSlot={updatePlannedGameSlot}
+                      onRemovePlannedGame={removePlannedGame}
+                      onClearPlannedGame={clearPlannedGame}
                       hoveredQueuePlayer={hoveredQueuePlayer}
+                      activePlayers={players}
                     />
                     <button
                       type="button"

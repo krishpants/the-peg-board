@@ -11,9 +11,7 @@ const QueuePlayerCard = ({
   showOnlyPriority = false,
   onHover = null,
   shouldPulse = false,
-  shouldPulseBenchButton = false,
-  nextGamePlayers = [],
-  inNextGameArea = false
+  shouldPulseBenchButton = false
 }) => {
   const [isAssigning, setIsAssigning] = useState(false);
 
@@ -31,8 +29,6 @@ const QueuePlayerCard = ({
   const hasAvailableSpace = courtOccupancy.some((occupancy, idx) => (occupancy ?? 0) < 4);
   // Check if all courts are full
   const allCourtsFull = courtOccupancy.length > 0 && courtOccupancy.every(n => n === 4);
-  // Check if Next Game has space
-  const nextGameHasSpace = nextGamePlayers.length < 4;
 
   return (
     <div
@@ -49,12 +45,8 @@ const QueuePlayerCard = ({
         }
       }}
       onMouseEnter={() => {
-        if (onHover) {
-          if (priorityCourtNum && showOnlyPriority) {
-            onHover(player, priorityCourtNum);
-          } else if (allCourtsFull && nextGameHasSpace) {
-            onHover(player, null); // Hovering for Next Game
-          }
+        if (priorityCourtNum && showOnlyPriority && onHover) {
+          onHover(player, priorityCourtNum);
         }
       }}
       onMouseLeave={() => {

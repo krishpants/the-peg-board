@@ -138,13 +138,7 @@ const QueueBlock = ({
                 <QueuePlayerCard
                   key={player.playerNumber}
                   player={player}
-                  nextGamePlayers={nextGamePlayers}
-                  onPlayerClick={() => {
-                    if (onAddToNextGame && nextGamePlayers.length < 4) {
-                      onAddToNextGame(player);
-                    }
-                  }}
-                  onPlayerOptions={onPlayerClick}
+                  onPlayerClick={onPlayerClick}
                   onAssignCourt={(playerNumber, courtNumber) =>
                     onAssignCourt(block.id, playerNumber, courtNumber)
                   }
@@ -173,13 +167,7 @@ const QueueBlock = ({
                 <QueuePlayerCard
                   key={player.playerNumber}
                   player={player}
-                  nextGamePlayers={nextGamePlayers}
-                  onPlayerClick={() => {
-                    if (onAddToNextGame && nextGamePlayers.length < 4) {
-                      onAddToNextGame(player);
-                    }
-                  }}
-                  onPlayerOptions={onPlayerClick}
+                  onPlayerClick={onPlayerClick}
                   onAssignCourt={(playerNumber, courtNumber) =>
                     onAssignCourt(block.id, playerNumber, courtNumber)
                   }
@@ -206,13 +194,7 @@ const QueueBlock = ({
                 <QueuePlayerCard
                   key={player.playerNumber}
                   player={player}
-                  nextGamePlayers={nextGamePlayers}
-                  onPlayerClick={() => {
-                    if (onAddToNextGame && nextGamePlayers.length < 4) {
-                      onAddToNextGame(player);
-                    }
-                  }}
-                  onPlayerOptions={onPlayerClick}
+                  onPlayerClick={onPlayerClick}
                   onAssignCourt={(playerNumber, courtNumber) =>
                     onAssignCourt(block.id, playerNumber, courtNumber)
                   }
@@ -239,13 +221,7 @@ const QueueBlock = ({
                 <QueuePlayerCard
                   key={player.playerNumber}
                   player={player}
-                  nextGamePlayers={nextGamePlayers}
-                  onPlayerClick={() => {
-                    if (onAddToNextGame && nextGamePlayers.length < 4) {
-                      onAddToNextGame(player);
-                    }
-                  }}
-                  onPlayerOptions={onPlayerClick}
+                  onPlayerClick={onPlayerClick}
                   onAssignCourt={(playerNumber, courtNumber) =>
                     onAssignCourt(block.id, playerNumber, courtNumber)
                   }
