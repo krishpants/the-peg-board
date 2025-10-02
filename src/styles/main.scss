@@ -2108,6 +2108,23 @@ body {
       }
     }
 
+    &--available {
+      .player-card__name-button {
+        background: linear-gradient(135deg, #c8dffa 0%, #a8d0ff 100%);
+        box-shadow: 0 0 0 2px #4a90e2, 0 0 8px rgba(74, 144, 226, 0.3);
+        color: #1e40af;
+        font-weight: 700;
+        cursor: pointer;
+        animation: pulse-blue 2s infinite;
+
+        &:hover {
+          background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%);
+          box-shadow: 0 0 0 2px #4a90e2, 0 0 12px rgba(74, 144, 226, 0.5);
+          transform: scale(1.02);
+        }
+      }
+    }
+
     &--entering {
       &.court__pair-player--waiting {
         .player-card__name-button {
@@ -2946,6 +2963,34 @@ body {
     color: #fbbf24;
     padding: 4px $spacing-xs;
     text-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+  }
+
+  // Highlight available players when selecting for planned game
+  &--available {
+    background: linear-gradient(135deg, #c8dffa 0%, #a8d0ff 100%);
+    box-shadow: 0 0 0 2px #4a90e2, 0 0 8px rgba(74, 144, 226, 0.3);
+    cursor: pointer;
+    animation: pulse-blue 2s infinite;
+
+    .queue-player-card__name {
+      color: #1e40af;
+      font-weight: 700;
+    }
+
+    &:hover {
+      background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%);
+      box-shadow: 0 0 0 2px #4a90e2, 0 0 12px rgba(74, 144, 226, 0.5);
+      transform: translateY(-2px);
+    }
+  }
+}
+
+@keyframes pulse-blue {
+  0%, 100% {
+    box-shadow: 0 0 0 2px #4a90e2, 0 0 8px rgba(74, 144, 226, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 2px #4a90e2, 0 0 16px rgba(74, 144, 226, 0.5);
   }
 }
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameResult, onPlayerClick, queueBlocks = [], isPriority = false, onUpdatePairing, ghostPlayer = null, shouldHighlightFirstEmptySlot = false, shouldHighlightRemainingSlots = false, shouldHighlightVictoryButtons = false }) => {
+const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameResult, onPlayerClick, queueBlocks = [], isPriority = false, onUpdatePairing, ghostPlayer = null, shouldHighlightFirstEmptySlot = false, shouldHighlightRemainingSlots = false, shouldHighlightVictoryButtons = false, isSelectingForPlannedGame = false, plannedGames = [] }) => {
   const playerCount = players.length;
   const courtNumber = parseInt(title.replace('Court ', '')) || 0;
 
@@ -262,6 +262,9 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
           {players.map((player) => {
             const isPair1 = currentPairing.pair1.some(p => p.playerNumber === player.playerNumber);
             const isPair2 = currentPairing.pair2.some(p => p.playerNumber === player.playerNumber);
+            const isInPlannedGame = plannedGames.some(game =>
+              game.slots.some(slot => slot && slot.playerNumber === player.playerNumber)
+            );
 
             return (
               <motion.div
@@ -279,7 +282,7 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
                   isPair1 && currentPairing.pair1[1].playerNumber === player.playerNumber ? 'court__pair-player--top-right' :
                   isPair2 && currentPairing.pair2[0].playerNumber === player.playerNumber ? 'court__pair-player--bottom-left' :
                   isPair2 && currentPairing.pair2[1].playerNumber === player.playerNumber ? 'court__pair-player--bottom-right' : ''
-                }`}
+                } ${isSelectingForPlannedGame && !isInPlannedGame ? 'court__pair-player--available' : ''}`}
                 style={{
                   position: 'absolute',
                   top: '50%',
@@ -385,10 +388,14 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
                   transform: slotPosition
                 }}
               >
-                {player ? (
+                {player ? (() => {
+                  const isInPlannedGame = plannedGames.some(game =>
+                    game.slots.some(slot => slot && slot.playerNumber === player.playerNumber)
+                  );
+                  return (
                   <div
                     key={`player-${player.playerNumber}-${slotIndex}`}
-                    className={`court__pair-player court__pair-player--waiting court__pair-player--entering ${positionClass}`}
+                    className={`court__pair-player court__pair-player--waiting court__pair-player--entering ${positionClass} ${isSelectingForPlannedGame && !isInPlannedGame ? 'court__pair-player--available' : ''}`}
                   >
                     <button
                       type="button"
@@ -398,7 +405,8 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
                       {player.playerName || `Player #${player.playerNumber}`}
                     </button>
                   </div>
-                ) : isGhostSlot ? (
+                  );
+                })() : isGhostSlot ? (
                   <AnimatePresence mode="wait">
                     <motion.div
                       key="ghost"
@@ -471,7 +479,7 @@ const CourtColumn = ({ title, players, onQueueWinner, onQueueLoser, onQueueGameR
   );
 };
 
-const CourtsArea = ({ players, courtCount, onQueueWinner, onQueueLoser, onQueueGameResult, onPlayerClick, queueBlocks, priorityCourtNum, onUpdatePairing, hoveredPlayer, hoveredTargetCourt, shouldHighlightFirstEmptySlot, shouldHighlightRemainingSlots, shouldHighlightVictoryButtons }) => {
+const CourtsArea = ({ players, courtCount, onQueueWinner, onQueueLoser, onQueueGameResult, onPlayerClick, queueBlocks, priorityCourtNum, onUpdatePairing, hoveredPlayer, hoveredTargetCourt, shouldHighlightFirstEmptySlot, shouldHighlightRemainingSlots, shouldHighlightVictoryButtons, isSelectingForPlannedGame = false, plannedGames = [] }) => {
   const courts = Array.from({ length: courtCount }, (_, i) => {
     const num = i + 1;
     return {
@@ -498,6 +506,8 @@ const CourtsArea = ({ players, courtCount, onQueueWinner, onQueueLoser, onQueueG
           shouldHighlightFirstEmptySlot={shouldHighlightFirstEmptySlot && c.num === 1}
           shouldHighlightRemainingSlots={shouldHighlightRemainingSlots && c.num === 1}
           shouldHighlightVictoryButtons={shouldHighlightVictoryButtons && c.num === 1}
+          isSelectingForPlannedGame={isSelectingForPlannedGame}
+          plannedGames={plannedGames}
         />
       ))}
     </div>

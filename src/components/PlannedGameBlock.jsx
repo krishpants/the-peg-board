@@ -112,10 +112,10 @@ const PlannedGameBlock = ({
                     onAssignCourt(playerBlock.id, playerNumber, courtNumber);
                   }
                 }}
-                courtCount={courtCount}
-                courtOccupancy={courtOccupancy}
+                courtCount={0} // Never show court buttons - players go via priority click
+                courtOccupancy={[]}
                 priorityCourtNum={!playerStatus.isPlaying ? priorityCourtNum : null}
-                showOnlyPriority={false}
+                showOnlyPriority={true} // Enable click-to-send when priority court available
                 onHover={onPlayerHover}
                 shouldPulse={false}
                 shouldPulseBenchButton={false}

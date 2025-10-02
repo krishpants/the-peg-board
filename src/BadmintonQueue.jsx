@@ -11,6 +11,8 @@ import SubstitutionModal from './components/SubstitutionModal';
 import BenchModal from './components/BenchModal';
 
 const BadmintonQueue = () => {
+  const [selectedPlannedGameSlot, setSelectedPlannedGameSlot] = useState(null);
+
   const {
     courtCount,
     playerCount,
@@ -324,11 +326,31 @@ const BadmintonQueue = () => {
                   onQueueWinner={(p) => enqueuePlayerWithState(p, 'winner')}
                   onQueueLoser={(p) => enqueuePlayerWithState(p, 'loser')}
                   onQueueGameResult={queueGameResult}
-                  onPlayerClick={openSubstitutionModal}
+                  onPlayerClick={selectedPlannedGameSlot ? (player) => {
+                    // Handle player click for planned game
+                    // First check if player is already in any planned game
+                    const isAlreadyInPlannedGame = plannedGames.some(game =>
+                      game.slots.some(slot => slot && slot.playerNumber === player.playerNumber)
+                    );
+
+                    if (isAlreadyInPlannedGame) {
+                      // Don't add player if they're already in a planned game
+                      setSelectedPlannedGameSlot(null); // Clear selection state
+                      return;
+                    }
+
+                    const lastDashIndex = selectedPlannedGameSlot.lastIndexOf('-');
+                    const gameId = selectedPlannedGameSlot.substring(0, lastDashIndex);
+                    const slotIndex = parseInt(selectedPlannedGameSlot.substring(lastDashIndex + 1));
+                    updatePlannedGameSlot(gameId, slotIndex, player);
+                    setSelectedPlannedGameSlot(null);
+                  } : openSubstitutionModal}
                   queueBlocks={queueBlocks}
                   priorityCourtNum={priorityCourtNum}
                   onUpdatePairing={updatePairingIndex}
                   hoveredPlayer={hoveredQueuePlayer}
+                  isSelectingForPlannedGame={!!selectedPlannedGameSlot}
+                  plannedGames={plannedGames}
                   hoveredTargetCourt={hoveredTargetCourt}
                   shouldHighlightFirstEmptySlot={shouldHighlightFirstPlayer}
                   shouldHighlightRemainingSlots={shouldHelpFillCourt1}
@@ -536,6 +558,7 @@ const BadmintonQueue = () => {
                       onClearPlannedGame={clearPlannedGame}
                       hoveredQueuePlayer={hoveredQueuePlayer}
                       activePlayers={players}
+                      onSlotSelectionChange={setSelectedPlannedGameSlot}
                     />
                     <button
                       type="button"

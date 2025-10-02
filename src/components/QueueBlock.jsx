@@ -38,7 +38,9 @@ const QueueBlock = ({
   shouldHighlightBenchButton,
   allCourtsFull,
   onAddToNextGame,
-  nextGamePlayers = []
+  nextGamePlayers = [],
+  isSelectingForPlannedGame = false,
+  playersInPlannedGames = []
 }) => {
   const [timeAgo, setTimeAgo] = useState('');
 
@@ -54,9 +56,9 @@ const QueueBlock = ({
     return () => clearInterval(interval);
   }, [block.timestamp]);
 
-  // Filter out players that are in Next Game
-  const nextGamePlayerNumbers = nextGamePlayers.map(p => p.playerNumber);
-  const visiblePlayers = block.players.filter(p => !nextGamePlayerNumbers.includes(p.playerNumber));
+  // Filter out players that are in planned games
+  const plannedGamePlayerNumbers = playersInPlannedGames.map(p => p.playerNumber);
+  const visiblePlayers = block.players.filter(p => !plannedGamePlayerNumbers.includes(p.playerNumber));
 
   const winners = visiblePlayers.filter(p => p.lastState === 'winner');
   const losers = visiblePlayers.filter(p => p.lastState === 'loser');
@@ -70,7 +72,12 @@ const QueueBlock = ({
 
   // Check if this is a benched block
   const isBenched = block.benchedType === 'resting' || block.benchedType === 'left';
-  
+
+  // Don't render empty blocks
+  if (visiblePlayers.length === 0) {
+    return null;
+  }
+
   // Render benched blocks differently
   if (isBenched) {
     return (
@@ -86,7 +93,7 @@ const QueueBlock = ({
           {block.benchedType === 'resting' ? 'Resting' : 'Left Session'}
         </h3>
         <div className="queue__benched-grid">
-          {block.players.map((player) => (
+          {visiblePlayers.map((player) => (
             <button
               key={player.playerNumber}
               type="button"
@@ -149,6 +156,7 @@ const QueueBlock = ({
                   onHover={onPlayerHover}
                   shouldPulse={shouldHighlight && index === 0}
                   shouldPulseBenchButton={shouldHighlightBenchButton && index === 0}
+                  isAvailableForPlannedGame={isSelectingForPlannedGame && !plannedGamePlayerNumbers.includes(player.playerNumber)}
                 />
               ))}
           </div>
@@ -178,6 +186,7 @@ const QueueBlock = ({
                   onHover={onPlayerHover}
                   shouldPulse={shouldHighlight && winners.length === 0 && index === 0}
                   shouldPulseBenchButton={shouldHighlightBenchButton && winners.length === 0 && index === 0}
+                  isAvailableForPlannedGame={isSelectingForPlannedGame && !plannedGamePlayerNumbers.includes(player.playerNumber)}
                 />
               ))}
           </div>
@@ -205,6 +214,7 @@ const QueueBlock = ({
                   onHover={onPlayerHover}
                   shouldPulse={shouldHighlight && winners.length === 0 && losers.length === 0 && index === 0}
                   shouldPulseBenchButton={shouldHighlightBenchButton && winners.length === 0 && losers.length === 0 && index === 0}
+                  isAvailableForPlannedGame={isSelectingForPlannedGame && !plannedGamePlayerNumbers.includes(player.playerNumber)}
                 />
               ))}
           </div>
@@ -232,6 +242,7 @@ const QueueBlock = ({
                   onHover={onPlayerHover}
                   shouldPulse={shouldHighlight && winners.length === 0 && losers.length === 0 && readyPlayers.length === 0 && index === 0}
                   shouldPulseBenchButton={shouldHighlightBenchButton && winners.length === 0 && losers.length === 0 && readyPlayers.length === 0 && index === 0}
+                  isAvailableForPlannedGame={isSelectingForPlannedGame && !plannedGamePlayerNumbers.includes(player.playerNumber)}
                 />
               ))}
           </div>

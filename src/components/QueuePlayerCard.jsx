@@ -11,46 +11,34 @@ const QueuePlayerCard = ({
   showOnlyPriority = false,
   onHover = null,
   shouldPulse = false,
-  shouldPulseBenchButton = false
+  shouldPulseBenchButton = false,
+  isAvailableForPlannedGame = false
 }) => {
-  const [isAssigning, setIsAssigning] = useState(false);
-
-  const handleAssignCourt = (playerNumber, courtNumber) => {
-    if (isAssigning) return;
-
-    setIsAssigning(true);
-    onAssignCourt(playerNumber, courtNumber);
-
-    // Reset after animation completes
-    setTimeout(() => setIsAssigning(false), 500);
-  };
-
-  // Check if any court has space
-  const hasAvailableSpace = courtOccupancy.some((occupancy, idx) => (occupancy ?? 0) < 4);
-  // Check if all courts are full
-  const allCourtsFull = courtOccupancy.length > 0 && courtOccupancy.every(n => n === 4);
 
   return (
     <div
-      className={`queue-player-card ${shouldPulse ? 'help-pulse' : ''} ${priorityCourtNum && showOnlyPriority ? 'queue-player-card--priority' : ''}`}
+      className={`queue-player-card ${shouldPulse ? 'help-pulse' : ''} ${priorityCourtNum && showOnlyPriority ? 'queue-player-card--priority' : ''} ${isAvailableForPlannedGame ? 'queue-player-card--available' : ''}`}
       style={{
         marginBottom: 8,
-        cursor: (priorityCourtNum && showOnlyPriority) || onPlayerClick ? 'pointer' : 'default'
+        cursor: (priorityCourtNum && showOnlyPriority) || onPlayerClick || isAvailableForPlannedGame ? 'pointer' : 'default'
       }}
       onClick={() => {
-        if (priorityCourtNum && showOnlyPriority) {
-          handleAssignCourt(player.playerNumber, priorityCourtNum);
+        if (isAvailableForPlannedGame && onPlayerClick) {
+          // When selecting for planned game, always use the click handler
+          onPlayerClick(player);
+        } else if (priorityCourtNum && showOnlyPriority && onAssignCourt) {
+          onAssignCourt(player.playerNumber, priorityCourtNum);
         } else if (onPlayerClick) {
           onPlayerClick(player);
         }
       }}
       onMouseEnter={() => {
-        if (priorityCourtNum && showOnlyPriority && onHover) {
+        if (!isAvailableForPlannedGame && priorityCourtNum && showOnlyPriority && onHover) {
           onHover(player, priorityCourtNum);
         }
       }}
       onMouseLeave={() => {
-        if (onHover) {
+        if (!isAvailableForPlannedGame && onHover) {
           onHover(null, null);
         }
       }}
@@ -73,38 +61,6 @@ const QueuePlayerCard = ({
         <i className="fas fa-ellipsis-v"></i>
       </button>
 
-      {!showOnlyPriority && hasAvailableSpace && (
-        <div className="queue-player-card__action">
-          {Array.from({ length: courtCount }).map((_, idx) => {
-            const num = idx + 1;
-            const isFull = (courtOccupancy[idx] ?? 0) >= 4;
-            const isPriority = !isFull && priorityCourtNum === num;
-
-            return (
-              <button
-                key={`court-${num}`}
-                type="button"
-                className={`queue-btn queue-btn--court ${isPriority ? 'queue-btn--priority' : ''}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAssignCourt(player.playerNumber, num);
-                }}
-                disabled={isFull || isAssigning}
-                title={
-                  isFull
-                    ? 'Court is full (4 players)'
-                    : isPriority
-                    ? `Suggested: Court ${num}`
-                    : `Send to Court ${num}`
-                }
-                style={{ opacity: isAssigning ? 0.6 : 1 }}
-              >
-                {num}
-              </button>
-            );
-          })}
-        </div>
-      )}
     </div>
   );
 };

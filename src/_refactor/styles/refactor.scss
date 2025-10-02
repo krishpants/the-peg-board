@@ -1,0 +1,2916 @@
+// =============================================================================
+// BADMINTON QUEUE REFACTORED STYLES
+// =============================================================================
+
+@use 'sass:color';
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Bebas+Neue&display=swap');
+
+// Variables
+// -----------------------------------------------------------------------------
+$border-radius: 4px;
+$border-radius-sm: 4px;
+$spacing-xs: 6px;
+$spacing-sm: 8px;
+$spacing-md: 12px;
+$spacing-lg: 16px;
+
+// Dark theme colors
+$color-dark-bg: #0a0a0a;
+$color-dark-surface: #1a1a1a;
+$color-dark-card: #2a2a2a;
+$color-dark-card-hover: #3a3a3a;
+$color-dark-border: rgba(255, 255, 255, 0.1);
+$color-dark-border-strong: rgba(255, 255, 255, 0.2);
+$color-dark-text: #ffffff;
+$color-dark-text-muted: whitesmoke;
+
+// Accent colors
+$color-accent-red: #dc2626;
+$color-accent-red-bright: #ef4444;
+$color-accent-red-light: #f87171;
+
+// Game state colors
+$color-winner: #4ade80;
+$color-loser: #f87171;
+$color-waiting: #fbbf24;
+
+// =============================================================================
+// BASE & RESET
+// =============================================================================
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-weight: 500;
+  background: $color-dark-bg;
+  color: $color-dark-text;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#root {
+  height: 100vh;
+}
+
+// =============================================================================
+// CORE LAYOUT
+// =============================================================================
+
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: $color-dark-bg;
+}
+
+// Session layout (when game is active)
+.session {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: $color-dark-bg;
+
+  &__menu {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-md $spacing-lg;
+    background: #d1020e;  // Athletic red
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    flex-shrink: 0;
+  }
+
+  &__menu-brand {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+  }
+
+  &__menu-logo {
+    width: 32px;
+    height: 32px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+
+  &__menu-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    color: #ffffff;  // White text
+    letter-spacing: 1px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);  // Black shadow for contrast
+
+    @media (max-width: 900px) {
+      display: none; // Hide "THE PEG BOARD" text on smaller screens
+    }
+  }
+
+  &__menu-new {
+    margin-left: $spacing-lg;
+    background: transparent;  // Transparent like other buttons
+    border: none;
+    border-left: 1px solid rgba(0, 0, 0, 0.2);  // Match other buttons
+    color: #000000;  // Black text
+    padding: 8px 16px;
+    border-radius: 0;  // No rounding like others
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);  // Subtle hover
+      color: #ffffff;
+    }
+
+    i {
+      font-size: 14px;
+    }
+  }
+
+  &__menu-controls {
+    display: flex;
+    gap: 0;  // No gap so borders connect
+
+    button {
+      background: transparent !important;
+      border: none;
+      border-left: 1px solid rgba(0, 0, 0, 0.2);  // Thin line spacer on left
+      color: #000000;  // Black text
+      padding: 8px 16px !important;
+      border-radius: 0;  // No rounding
+      font-size: 16px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      &:first-child {
+        border-left: none;  // No border on first button
+      }
+
+      &:hover:not(:disabled) {
+        background: rgba(0, 0, 0, 0.1) !important;
+        color: #ffffff;
+        transform: none;
+        box-shadow: none;
+      }
+
+      &.active {
+        background: rgba(0, 0, 0, 0.15);
+        color: #ffffff;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      i {
+        font-size: 14px;
+
+        @media (max-width: 900px) {
+          font-size: 18px; // Larger icons when text is hidden
+        }
+      }
+
+      span {
+        @media (max-width: 900px) {
+          display: none; // Hide button text, show icons only
+        }
+      }
+    }
+  }
+
+  &__menu-btn {
+    background: transparent !important;
+    border: none;
+    border-left: 1px solid rgba(0, 0, 0, 0.2);
+    color: #000000;
+    padding: 8px 16px !important;
+    border-radius: 0;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &:hover:not(:disabled) {
+      background: rgba(0, 0, 0, 0.1) !important;
+      color: #ffffff;
+    }
+
+    i {
+      font-size: 14px;
+    }
+  }
+
+  &__menu-info {
+    color: #000000;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0 $spacing-md;
+  }
+
+  &__content {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    min-height: 0;
+  }
+}
+
+// Court area (left side)
+.court-area {
+  flex: 1;
+  background: $color-dark-bg;
+  padding: $spacing-lg;
+  overflow-y: auto;
+  min-width: 0;
+
+  &__inner {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+// Queue column (right side)
+.queue-column {
+  width: 450px;
+  border-left: 1px solid $color-dark-border;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: #171f22;
+  position: relative;
+  transition: width 0.3s ease, transform 0.3s ease;
+
+  &--collapsed {
+    width: 0;
+    overflow: hidden;
+  }
+
+  // Reduce width on smaller desktop screens
+  @media (max-width: 1200px) {
+    width: 380px;
+  }
+
+  // Overlay mode for medium screens
+  @media (max-width: 1350px) {
+    position: fixed;
+    right: 0;
+    top: 60px; // Account for menu bar height
+    height: calc(100vh - 60px);
+    z-index: 100;
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.5);
+
+    &--collapsed {
+      transform: translateX(100%);
+    }
+  }
+
+  // Full width overlay for small screens
+  @media (max-width: 800px) {
+    width: 100% !important;
+    left: 0;
+    right: 0;
+    top: 60px; // Account for menu bar
+    height: calc(100vh - 60px);
+    border-left: none;
+
+    &--collapsed {
+      transform: translateX(100%);
+    }
+  }
+
+  &__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow-y: auto;
+    padding: $spacing-lg;
+    padding-bottom: 150px; // Extra padding for full-width add player button with overscroll
+    width: 100%;
+    position: relative;
+  }
+
+  &__header {
+    margin-bottom: $spacing-lg;
+  }
+
+  &__add-player {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    transition: all 0.2s ease;
+
+    i {
+      font-size: 16px;
+    }
+
+    // Bottom Add Player button (full width)
+    &:not(.queue-area__plan-game-btn) {
+      width: 100%;
+      padding: 14px $spacing-md;
+      background: #2a2a2a;  // Dark grey background
+      color: #ffffff;  // White text
+      border: none;
+      border-top: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0;
+      font-size: 14px;
+      gap: $spacing-sm;
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+      z-index: 10;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+
+      &:hover:not(:disabled) {
+        background: #d1020e;  // Red on hover
+        box-shadow: 0 -6px 16px rgba(209, 2, 14, 0.4);
+        transform: none;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    i {
+      font-size: 14px;
+    }
+  }
+}
+
+// Queue backdrop for overlay mode
+.queue-backdrop {
+  display: none;
+
+  @media (max-width: 1350px) {
+    display: block;
+    position: fixed;
+    top: 60px; // Account for menu bar
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 60px);
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+    cursor: pointer;
+  }
+
+  @media (max-width: 800px) {
+    background: rgba(0, 0, 0, 0.7);
+  }
+}
+
+// =============================================================================
+// COURTS AREA
+// =============================================================================
+
+.courts-area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 15px;
+}
+
+.court {
+  background: $color-dark-surface;
+  border-radius: 15px;
+  border: 1px solid $color-dark-border;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  max-width: 280px;
+  width: 100%;
+  flex: 0 1 280px;
+  overflow: visible;
+  position: relative;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background: #314045;
+    border-bottom: 2px solid #000000;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    overflow: hidden;
+  }
+
+  &__title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #c8ced1;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+  }
+
+  &__status {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+  }
+
+  &__status-text {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 3px 8px 3px 10px;
+    border-radius: 0;
+    color: #c8ced1;
+    background: transparent;
+    border-right: 5px solid #666666;
+
+    &--waiting, &--partial {
+      border-right-color: #fbbf24;
+    }
+
+    &--playing {
+      border-right-color: #22c55e;
+    }
+  }
+
+  &__content {
+    flex: 1;
+    padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 200px;
+  }
+
+  &__pairing-container {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    margin-top: $spacing-md;
+
+    &--empty {
+      // Container for non-playing courts
+    }
+  }
+
+  &__slot-empty {
+    width: 150px;
+    height: 36px;
+    border: 2px dashed #666666;
+    border-radius: 18px; // Default, will be overridden by position classes
+    background: #171717;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666666;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    span {
+      display: block;
+    }
+
+    // Apply position-based border radius
+    &.court__pair-player--top-left {
+      border-radius: 18px 0 0 18px;
+      border-right: 2px dashed #666666;
+    }
+    &.court__pair-player--top-right {
+      border-radius: 0 18px 18px 0;
+      border-left: none;
+    }
+    &.court__pair-player--bottom-left {
+      border-radius: 18px 0 0 18px;
+      border-right: 2px dashed #666666;
+    }
+    &.court__pair-player--bottom-right {
+      border-radius: 0 18px 18px 0;
+      border-left: none;
+    }
+  }
+
+  &__slot-ghost {
+    width: 150px;
+    height: 36px;
+    border: 2px dashed rgba(255, 255, 255, 0.6);  // Visible dashed border
+    border-radius: 18px; // Default, will be overridden by position classes
+    background: rgba(255, 255, 255, 0.2);  // Solid but subtle background
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;  // Fully opaque white text
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 $spacing-sm;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 1;  // Fully opaque
+
+    // Apply position-based border radius
+    &.court__pair-player--top-left {
+      border-radius: 18px 0 0 18px;
+      border-right: 1px solid rgba(0, 0, 0, 0.15);
+    }
+    &.court__pair-player--top-right {
+      border-radius: 0 18px 18px 0;
+      border-left: 1px solid rgba(0, 0, 0, 0.15);
+    }
+    &.court__pair-player--bottom-left {
+      border-radius: 18px 0 0 18px;
+      border-right: 1px solid rgba(0, 0, 0, 0.15);
+    }
+    &.court__pair-player--bottom-right {
+      border-radius: 0 18px 18px 0;
+      border-left: 1px solid rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  &__pair-player {
+    flex: 1;
+    text-align: center;
+    width: 150px;
+    max-width: 150px;
+    min-width: 150px;
+    position: relative;
+    // No transition by default to prevent initial placement animation
+    // will-change: transform;
+
+    &--selectable {
+      .player-card__name-button {
+        cursor: pointer;
+      }
+
+      &:hover .player-card__name-button {
+        transform: scale(1.02);
+      }
+    }
+
+    &--dimmed {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    &--absolute {
+      position: absolute !important;
+      flex: none;
+    }
+
+    &--waiting {
+      .player-card__name-button {
+        background: #fbbf24;
+        color: #000000;
+        box-shadow: 0 2px 4px rgba(251, 191, 36, 0.3);
+      }
+    }
+
+    &--playing {
+      // Add transition only when court is playing (for rotation animation)
+      transition: transform 0.3s ease;
+
+      .player-card__name-button {
+        background: #e7e7e7;
+        color: #000000;
+      }
+    }
+
+    &.winning {
+      .player-card__name-button {
+        background: #22c55e;
+        color: #ffffff;
+        box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3);
+      }
+    }
+
+    &.losing {
+      .player-card__name-button {
+        background: #ef4444;
+        color: #ffffff;
+        box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+      }
+    }
+
+    // Position-based classes
+    &--top-left,
+    &--top-right,
+    &--bottom-left,
+    &--bottom-right {
+      position: absolute;
+    }
+
+    &--top-left .player-card__name-button {
+      border-radius: 18px 0 0 18px;
+      border-right: 1px solid rgba(0, 0, 0, 0.2);
+    }
+
+    &--top-right .player-card__name-button {
+      border-radius: 0 18px 18px 0;
+      border-left: 1px solid rgba(0, 0, 0, 0.2);
+    }
+
+    &--bottom-left .player-card__name-button {
+      border-radius: 18px 0 0 18px;
+      border-right: 1px solid rgba(0, 0, 0, 0.2);
+    }
+
+    &--bottom-right .player-card__name-button {
+      border-radius: 0 18px 18px 0;
+      border-left: 1px solid rgba(0, 0, 0, 0.2);
+    }
+
+    // Left side players show icon on the left
+    &--top-left .player-card__icon,
+    &--bottom-left .player-card__icon {
+      right: auto;
+      left: 12px;
+    }
+  }
+
+  &__pair-win-btn {
+    width: 50px !important;
+    height: 50px !important;
+    padding: 0 !important;
+    font-size: 2rem;
+    min-width: 50px !important;
+    min-height: 50px !important;
+    border-radius: 25px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
+    font-weight: 600;
+
+    &:hover {
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 6px 12px rgba(0, 0, 0, 0.35);
+      transform: translateY(-2px);
+    }
+
+    i {
+      font-size: 2rem;
+    }
+  }
+
+  &__vs-divider {
+    text-align: center;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: -100px;
+      right: -100px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.05);  // More subtle line
+    }
+
+    span {
+      position: relative;
+      color: rgba(255, 255, 255, 0.3);  // Much more muted VS text
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: #1a1a1a;
+      padding: 2px 12px;
+      z-index: 1;
+    }
+  }
+
+  &__footer {
+    padding: $spacing-sm $spacing-md;
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 36px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: rgba(255, 255, 255, 0.4);
+    transition: all 0.2s ease;
+    overflow: hidden;
+
+    &--button {
+      border: none;
+      cursor: pointer;
+      width: 100%;
+
+      i {
+        font-size: 12px;
+        margin-right: 6px;
+      }
+
+      &:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+        border-top-color: rgba(255, 255, 255, 0.15);
+      }
+
+      &:active {
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+        color: rgba(255, 255, 255, 0.3);
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.02);
+        }
+      }
+    }
+  }
+
+  // Court state modifiers
+  &--waiting {
+    // No special styling
+  }
+
+  &--playing {
+    // No special styling
+  }
+
+  &--priority {
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    animation: priorityPulse 2s ease-in-out infinite;
+  }
+
+  &__priority-arrow {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ffffff;
+    font-size: 24px;
+    animation: bounce 2s infinite;
+    z-index: 1;
+
+    i {
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+  }
+}
+
+// Player card button styles (used in courts)
+.player-card__name-button {
+  width: 150px;
+  height: 36px;
+  background: #e7e7e7;
+  border: none;
+  border-radius: 18px;
+  padding: $spacing-sm;
+  cursor: pointer;
+  color: #000000;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 6px 12px rgba(0, 0, 0, 0.7),      /* deep main drop */
+    0 3px 6px rgba(0, 0, 0, 0.5),       /* mid soft shadow */
+    -3px -3px 6px rgba(255, 255, 255, 0.2), /* subtle top/left light edge */
+    inset 0 1px 0 rgba(255, 255, 255, 0.1); /* faint inner rim */
+  // box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 14px;
+  position: relative;
+
+  &:hover {
+    background: #ffffff;
+    transform: translate(-1px,-1px);
+    box-shadow:
+      0 8px 16px rgba(0, 0, 0, 0.8),      /* deeper drop */
+      0 4px 8px rgba(0, 0, 0, 0.6),
+      -3px -3px 8px rgba(255, 255, 255, 0.3), /* brighter highlight */
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+}
+
+.player-card__icon {
+  font-size: 12px;
+  color: #666666;
+  position: absolute;
+  right: 12px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.player-card__name-button:hover .player-card__icon {
+  opacity: 1;
+}
+
+// Animations
+@keyframes priorityPulse {
+  0%, 100% {
+    border-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    border-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(5px); }
+}
+
+@keyframes bounceHorizontal {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50% { transform: translateY(-50%) translateX(5px); }
+}
+
+// =============================================================================
+// SETTINGS SCREEN
+// =============================================================================
+
+.settings-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-dark-bg;
+  padding: $spacing-lg;
+}
+
+.settings-card {
+  background: $color-dark-surface;
+  border-radius: $border-radius;
+  padding: 40px;
+  max-width: 500px;
+  width: 100%;
+  border: 1px solid $color-dark-border;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.settings {
+  &__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2.5rem;
+
+    img {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    }
+
+    h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 400;
+      letter-spacing: 2px;
+      color: #d1020e;
+      margin: 0;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  &__title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    color: $color-dark-text;
+  }
+
+  &__group {
+    margin-bottom: 1.5rem;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+
+    label {
+      font-size: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: $color-dark-text-muted;
+      min-width: 100px;
+    }
+  }
+
+  &__control {
+    display: flex;
+    align-items: center;
+    gap: 8px;  // Proper gap between controls
+
+    button {
+      width: 36px;
+      height: 36px;
+      background: #2a2a2a;  // Lighter grey for buttons
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: $border-radius;
+      color: $color-dark-text;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        background: #3a3a3a;
+        border-color: #d1020e;  // Red accent on hover
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+    }
+
+    input {
+      width: 80px;
+      height: 36px;
+      padding: 0 12px;
+      background: #1a1a1a;  // Darker background for input (surface color)
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: $border-radius;
+      color: $color-dark-text;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      transition: all 0.2s ease;
+
+      &:focus {
+        outline: none;
+        border-color: #d1020e;  // Red accent on focus
+        background: #2a2a2a;
+      }
+
+      // Hide spinner buttons
+      &::-webkit-inner-spin-button,
+      &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    }
+  }
+
+  &__note {
+    text-align: center;
+    font-size: 0.875rem;
+    color: $color-dark-text-muted;
+    margin-top: 1rem;
+    opacity: 0.7;
+  }
+
+  &__label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: $color-dark-text-muted;
+  }
+
+  &__input {
+    width: 100%;
+    padding: 10px;
+    border-radius: $border-radius;
+    border: 1px solid $color-dark-border;
+    background: $color-dark-card;
+    color: $color-dark-text;
+    font-size: 1rem;
+
+    &:focus {
+      outline: none;
+      border-color: $color-accent-red;
+    }
+  }
+}
+
+.app__actions {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.start-session-btn {
+  padding: 14px 40px;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: #d1020e;
+  color: white;
+  border: none;
+  border-radius: $border-radius;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: #e5121f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(209, 2, 14, 0.4);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// =============================================================================
+// QUEUE AREA
+// =============================================================================
+
+.queue-area {
+  h3 {
+    color: $color-dark-text;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+}
+
+// Queue blocks
+.queue__block {
+  background: #2a3d45;  // New blue-gray background
+  border-radius: 15px;
+  padding: 20px 15px;
+  border: 2px solid $color-dark-border;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  margin-bottom: $spacing-md;
+  position: relative;
+  overflow: visible;  // Allow flag to overflow
+
+  &--active {
+    animation: priorityPulse 2s ease-in-out infinite;
+    transition: none; // Disable transition so animation works
+  }
+}
+
+// Priority flag (positioned top right)
+.queue__priority-flag {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+
+  &--1 {
+    background: #d1020e;  // Theme red for Priority 1
+    color: #ffffff;
+  }
+
+  &--2 {
+    background: #fbbf24;  // Yellow for Priority 2
+    color: #000000;
+  }
+
+  &--low {
+    background: #94a3b8;  // Subtle gray for Priority 3+
+    color: #ffffff;
+  }
+}
+
+.queue__block-priority-arrow {
+  position: absolute;
+  left: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ffffff;
+  font-size: 24px;
+  animation: bounceHorizontal 2s infinite;
+  z-index: 1;
+
+  i {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+}
+
+.queue__block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;  // Center align all items vertically
+  margin-bottom: 12px;
+}
+
+.queue__block-header * {
+  align-items: center;  // Ensure all child elements align center
+}
+
+.queue__block-title {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  margin-bottom: 0;  // No margin, handled by header
+  color: #c6d4d9 !important;  // Light blue-gray
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.queue__block-time {
+  font-weight: 500;
+  color: #668894;  // Muted blue-gray
+  font-size: 11px;
+  flex-shrink: 0;  // Don't shrink
+  margin-left: 12px;  // Space from title
+}
+
+// Game layout (winners vs losers)
+.queue__game {
+  display: flex;
+  align-items: stretch;
+  gap: $spacing-md;
+
+  &--single-side {
+    justify-content: flex-start;
+  }
+}
+
+.queue__side {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+
+  &--winner {
+    border-left: 3px solid $color-winner;
+    padding-left: $spacing-sm;
+    background: linear-gradient(90deg, rgba(74, 222, 128, 0.08), transparent);
+  }
+
+  &--loser {
+    border-left: 3px solid $color-loser;
+    padding-left: $spacing-sm;
+    background: linear-gradient(90deg, rgba(248, 113, 113, 0.08), transparent);
+  }
+
+  &--waiting {
+    border-left: 3px solid $color-waiting;
+    padding-left: $spacing-sm;
+    background: linear-gradient(90deg, rgba(251, 191, 36, 0.08), transparent);
+  }
+
+  &--planned {
+    border-left: 3px solid #03a2ff;  // Blue border for planned games
+    padding-left: $spacing-sm;
+    background: linear-gradient(90deg, rgba(3, 162, 255, 0.08), transparent);
+  }
+}
+
+.queue__side-label {
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: $spacing-sm;
+  margin-bottom: $spacing-sm;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  .queue__side--winner & {
+    color: $color-winner;
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+  }
+
+  .queue__side--loser & {
+    color: $color-loser;
+    text-shadow: 0 0 10px rgba(248, 113, 113, 0.5);
+  }
+
+  .queue__side--waiting & {
+    color: $color-waiting;
+    text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+  }
+}
+
+.queue__vs {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: $color-dark-text;
+  opacity: 0.6;
+  padding: 0 $spacing-xs;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// Queue player cards
+.queue-player-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 31px;  // Fixed height for queue area
+  padding: 0 12px 0 8px;
+  border-radius: 20px;
+  margin-bottom: 4px;
+  background: #e7e7e7;
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  box-shadow:
+    0 6px 12px rgba(0, 0, 0, 0.55),     /* main heavy drop */
+    0 3px 6px rgba(0, 0, 0, 0.35),      /* mid soft shadow */
+    -3px -3px 6px rgba(255, 255, 255, 0.25), /* top/left light edge */
+    inset 0 1px 0 rgba(255, 255, 255, 0.15); /* faint inner rim highlight */
+  position: relative;
+  gap: 8px;
+
+  &:hover {
+    transform: translate(-1px,-1px);
+    background: #ffffff;
+    box-shadow:
+      0 8px 16px rgba(0, 0, 0, 0.65),   /* deeper drop */
+      0 4px 8px rgba(0, 0, 0, 0.4),
+      -3px -3px 8px rgba(255, 255, 255, 0.35), /* brighter highlight */
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  // Make clickable queue players brighter during selection
+  .queue-area &:not(.queue-player-card--dimmed):not(.queue-player-card--playing) {
+    background: #f5f5f5;  // Same as court players
+  }
+
+  &__name {
+    flex: 1;
+    font-size: 16px;
+    color: #000000;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+    margin-left: 8px;
+  }
+
+  &__action {
+    background: transparent;
+    border: none;
+    color: #666666;
+    padding: 4px 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    flex-shrink: 0;
+
+    i {
+      font-size: 14px;
+    }
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.1);
+      color: #000000;
+    }
+  }
+
+  &__icon {
+    font-size: 12px;
+    color: #666666;
+    position: absolute;
+    right: 16px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover &__icon {
+    opacity: 1;
+  }
+}
+
+// Empty state
+.queue-empty {
+  text-align: center;
+  padding: 2rem;
+  color: $color-dark-text-muted;
+
+  p {
+    margin: 0.5rem 0;
+  }
+
+  &__hint {
+    font-size: 0.9rem;
+    opacity: 0.7;
+  }
+}
+
+// =============================================================================
+// BUTTONS
+// =============================================================================
+
+.queue-btn {
+  padding: $spacing-xs 10px;
+  border-radius: $border-radius-sm;
+  border: 1px solid $color-dark-border;
+  background: $color-dark-card;
+  color: $color-dark-text;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 12px;
+  font-weight: 500;
+
+  &:hover {
+    background: $color-dark-card-hover;
+    border-color: $color-dark-border-strong;
+  }
+
+  &.winner {
+    background: #f5f5f5;  // White smoke
+    border: 2px solid #000000;  // Black border
+    color: #000000;
+    font-weight: 700;
+    min-width: 50px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+    .fas.fa-trophy {
+      font-size: 16px;  // Smaller trophy icon
+      display: inline-block;
+      transition: all 0.3s ease;
+      color: #000000;  // Black trophy
+    }
+
+    &:hover {
+      background: #22c55e;  // Green for winner
+      border-color: #22c55e;
+      color: #ffffff;
+      box-shadow: 0 3px 6px rgba(34, 197, 94, 0.3);
+      transform: scale(1.05);
+
+      .fas.fa-trophy {
+        color: #ffffff;
+      }
+    }
+  }
+
+  &.losing {
+    background: transparent !important;  // Completely transparent background
+    border-color: transparent !important;  // No border
+    box-shadow: none !important;  // No shadow
+
+    .fas.fa-trophy {
+      opacity: 0;  // Hide trophy when in losing state
+    }
+  }
+}
+
+// =============================================================================
+// MODALS
+// =============================================================================
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2147483647;
+  backdrop-filter: blur(8px);
+  padding: 1rem;
+  overflow-y: auto;
+
+  @media (max-width: 768px) {
+    align-items: flex-start;
+    padding-top: 2rem;
+  }
+}
+
+.modal {
+  background: #1a1a1a;
+  border-radius: $border-radius;
+  padding: 40px;
+  width: 400px;
+  max-width: 90vw;
+  border: 2px solid #d1020e;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+
+  &--bulk-rename {
+    width: 90vw;
+    max-width: 1200px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__message {
+    color: $color-dark-text-muted;
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 24px;
+  }
+
+  &__header-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.5);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    i {
+      font-size: 12px;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.3);
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+
+  &__form {
+    margin: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  &__input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 500;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    &:focus {
+      border-color: #d1020e;
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 0 3px rgba(209, 2, 14, 0.2);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    justify-content: flex-end;
+  }
+
+  &__btn {
+    padding: 10px 24px;
+    border-radius: $border-radius-sm;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+
+    &--cancel {
+      background: #2a2a2a;
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+
+      &:hover {
+        background: #3a3a3a;
+        color: #ffffff;
+      }
+    }
+
+    &--save, &--confirm {
+      background: #d1020e;
+      color: white;
+      white-space: nowrap;
+
+      &:hover {
+        background: #e5121f;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(209, 2, 14, 0.3);
+      }
+    }
+
+    &--secondary {
+      background: #2a2a2a;  // Dark grey
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+
+      &:hover {
+        background: #3a3a3a;
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+    }
+
+    &--primary {
+      background: #d1020e;  // Athletic red
+      color: white;
+
+      &:hover {
+        background: #e5121f;  // Brighter red
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(209, 2, 14, 0.3);
+      }
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+    overflow-y: auto;
+    flex: 1;
+    padding: 20px 0;
+  }
+
+  &__bulk-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    overflow-y: auto;
+    flex: 1;
+    padding: 20px 0;
+
+    @media (max-width: 1200px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    @media (max-width: 900px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media (max-width: 600px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &__input--bulk {
+    margin: 0;
+  }
+
+  &__input--default {
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  &__grid-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__player-number {
+    color: $color-accent-red-light;
+    font-weight: 500;
+    min-width: 30px;
+  }
+
+  &__tip {
+    margin-top: 20px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 3px solid $color-accent-red;
+    border-radius: $border-radius;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.5;
+    text-align: left;
+
+    strong {
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 600;
+    }
+
+    &--keyboard {
+      margin-top: auto;
+      margin-bottom: 0;
+      border-left-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.02);
+      text-align: left;
+    }
+
+    kbd {
+      display: inline-block;
+      padding: 2px 6px;
+      margin: 0 2px;
+      font-family: monospace;
+      font-size: 12px;
+      line-height: 1;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+      box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  // Welcome modal specific styles
+  &--welcome {
+    width: 600px;
+    max-width: 90vw;
+    text-align: center;
+
+    .modal__header-icon {
+      font-size: 48px;
+      color: #d1020e;  // Athletic red
+      margin-bottom: 20px;
+      animation: wave 0.5s ease-in-out;
+    }
+
+    .modal__tips {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: 24px 0;
+      text-align: left;
+    }
+
+    .modal__tip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      background: #2a2a2a;  // Dark grey
+      border-radius: $border-radius-sm;
+      border-left: 3px solid #d1020e;  // Red accent on left
+      margin-top: 0;  // Override default tip styling
+
+      i {
+        font-size: 18px;
+        color: #d1020e;  // Red icons
+        width: 24px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+
+      span {
+        flex: 1;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        text-align: left;
+      }
+    }
+
+    .modal__footer-text {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.6);
+      font-style: italic;
+      margin: 20px 0 24px;
+    }
+  }
+}
+
+// Wave animation for welcome icon
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+}
+
+// Game Result Modal specific styles
+.game-result-modal {
+  &__pairing {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: $border-radius;
+    margin-bottom: 20px;
+  }
+
+  &__pair {
+    flex: 1;
+    text-align: center;
+  }
+
+  &__pair-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 8px;
+  }
+
+  &__players {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__player {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: $border-radius;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    &--winner {
+      background: rgba(34, 197, 94, 0.2);
+      border: 1px solid #22c55e;
+
+      &:hover {
+        background: rgba(34, 197, 94, 0.3);
+      }
+    }
+
+    &--loser {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid #ef4444;
+
+      &:hover {
+        background: rgba(239, 68, 68, 0.3);
+      }
+    }
+  }
+
+  &__vs {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+// Queue Area Header
+.queue-area__header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-top: 8px;
+}
+
+.queue-area__plan-game-btn {
+  // Plan Game button styling (appears in queue area)
+  width: 160px;
+  padding: 8px $spacing-md;
+  background: #f5f5f5;  // White smoke
+  color: #000000;  // Black text
+  border: 2px solid #000000;  // Black border
+  border-radius: 20px;
+  font-size: 12px;
+  gap: $spacing-xs;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  margin: 0 auto;  // Center it
+
+  &:hover:not(:disabled) {
+    background: #03a2ff;  // Blue on hover
+    color: #ffffff;
+    border-color: #03a2ff;
+    box-shadow: 0 4px 10px rgba(3, 162, 255, 0.3);
+  }
+}
+
+// Planned Game Blocks
+.queue__block--planned-game {
+  // Border removed - was causing issues with active state
+  background: #2a3d45;  // Same background as other queue blocks
+  // Header structure is shared with all blocks
+
+  .queue__block-done {
+    padding: 4px 12px;
+    background: #03a2ff;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+
+    &:hover {
+      background: #0288d9;
+      transform: translateY(-1px);
+    }
+  }
+
+  .queue__block-delete {
+    padding: 0;
+    background: transparent;
+    color: #668894;  // Match time color
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-left: 12px;  // Same spacing as time
+
+    &:hover {
+      color: #d1020e;
+    }
+  }
+}
+
+// Send all to court button for planned games
+.queue__send-all-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 16px;
+  background: #03a2ff;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 2px 6px rgba(3, 162, 255, 0.3);
+
+  i {
+    font-size: 14px;
+  }
+
+  &:hover {
+    background: #0288d9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(3, 162, 255, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Status message for planned games
+.queue__planned-status {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  i {
+    font-size: 13px;
+  }
+}
+
+.queue__planned-game-slots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+// Empty slots in planned games
+.queue__planned-slot--empty {
+  padding: 0 16px;
+  background: #171717;  // Dark background like court empty slots
+  border: 2px dashed #666666;  // Dotted outline like courts
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  height: 31px;  // Fixed height for queue area
+  margin-bottom: 4px;  // Match player card margin
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #666666;  // Match court empty slot color
+  user-select: none;  // Prevent text selection
+  white-space: nowrap;
+
+  &:hover:not(.queue__planned-slot--target) {
+    border-color: #888888;
+    background: rgba(136, 136, 136, 0.05);
+  }
+}
+
+.queue__planned-slot--target {
+  border: 2px solid #03a2ff !important;
+  background: #171717 !important;  // Keep normal dark background
+  animation: none;  // Remove pulsing animation
+}
+
+.queue__planned-slot--ghost {
+  border: 2px dashed rgba(255, 255, 255, 0.6) !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  animation: none !important;
+}
+
+.queue__planned-slot-empty-text {
+  font-size: 13px;
+  font-style: italic;
+  color: #999;
+}
+
+// Selection mode - keep normal styling
+.queue-player-card--selectable {
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+}
+
+// Dim unavailable players
+.queue-player-card--dimmed {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+// =============================================================================
+// TUTORIAL PREVIEW BLOCK
+// =============================================================================
+
+// Preview block for showing where game results will go
+.queue__preview-block {
+  background: rgba($color-dark-surface, 0.3);
+  border-radius: $border-radius;
+  padding: $spacing-md;
+  border: 1px dashed rgba(#ef4444, 0.4);
+  margin-bottom: $spacing-md;
+  opacity: 0.8;
+}
+
+.queue__preview-title {
+  font-size: 12px !important;
+  font-weight: 600;
+  margin-bottom: $spacing-sm;
+  color: #ef4444 !important;
+  text-align: center;
+
+  i {
+    margin-right: $spacing-xs;
+    font-size: 16px;
+  }
+}
+
+.queue__preview-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-lg;
+}
+
+.queue__preview-side {
+  flex: 1;
+  max-width: 140px;
+}
+
+.queue__preview-label {
+  display: block;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  margin-bottom: $spacing-xs;
+}
+
+.queue__preview-slots {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.queue__preview-slot {
+  height: 30px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: $border-radius-sm;
+}
+
+.queue__preview-vs {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 600;
+}
+
+// Playing players in planned games (placeholder style)
+.queue-player-card--playing {
+  background: #2a3e45 !important;  // Dark background
+  border: 2px dashed #547e8d !important;  // Dotted outline
+  cursor: not-allowed;
+  opacity: 1;
+  box-shadow: none !important;  // No shadow for placeholders
+  filter: none !important;  // No drop shadow for placeholders
+
+  .queue-player-card__name {
+    color: #547e8d;  // Muted text color
+  }
+}
+
+@keyframes pulse-blue {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 20px rgba(0, 191, 255, 0.8);
+  }
+}
+
+// =============================================================================
+// NEW MODALS (MarkPlayer, Substitute, RestorePlayers)
+// =============================================================================
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2147483647;
+  backdrop-filter: blur(8px);
+  padding: 1rem;
+  overflow-y: auto;
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    align-items: flex-start;
+    padding-top: 2rem;
+  }
+}
+
+.modal-content {
+  background: #1a1a1a;
+  border-radius: $border-radius;
+  padding: 40px;
+  width: 450px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 2px solid #d1020e;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  cursor: default;
+
+  &--substitution,
+  &--bench {
+    width: 600px;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 20px;
+  }
+}
+
+.modal-header {
+  margin-bottom: 20px;
+
+  h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.modal-body {
+  color: $color-dark-text-muted;
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+
+  p {
+    margin: 0 0 20px 0;
+
+    strong {
+      color: #ffffff;
+      font-weight: 600;
+    }
+  }
+}
+
+.modal-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.modal-btn {
+  padding: 12px 32px;
+  border-radius: $border-radius-sm;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  flex: 1;
+  white-space: nowrap;
+
+  i {
+    font-size: 14px;
+  }
+
+  &--secondary {
+    background: #2a2a2a;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    &:hover {
+      background: #3a3a3a;
+      color: #ffffff;
+    }
+  }
+
+  &--primary {
+    background: #d1020e;
+    color: white;
+
+    &:hover {
+      background: #e5121f;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(209, 2, 14, 0.3);
+    }
+  }
+
+  &--danger {
+    background: #ef4444;
+    color: white;
+
+    &:hover {
+      background: #dc2626;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+  }
+}
+
+// Substitute Player Modal specific styles
+.substitute-player-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 4px;
+
+  // Custom scrollbar for webkit browsers
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+.substitute-player-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(4px);
+  }
+
+  span {
+    flex: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  i {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    flex-shrink: 0;
+  }
+}
+
+.substitute-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+}
+
+// Restore Players Modal specific styles
+.restore-section {
+  margin-bottom: 24px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    i {
+      font-size: 14px;
+    }
+  }
+}
+
+.restore-player-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 4px;
+
+  // Custom scrollbar for webkit browsers
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+// Substitution Modal Styles
+.substitution {
+  &__current {
+    margin-bottom: 20px;
+  }
+
+  &__label {
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  &__player-card {
+    background: linear-gradient(135deg, #d1020e, #a00108);
+    padding: 16px 20px;
+    border-radius: $border-radius;
+    border: none;
+    font-weight: 700;
+    font-size: 18px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(209, 2, 14, 0.3);
+  }
+
+  &__divider {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 16px 0;
+    font-size: 20px;
+  }
+
+  &__available {
+    margin-bottom: 20px;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 8px;
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: $color-dark-card;
+    border: 1px solid $color-dark-border;
+    padding: 10px 14px;
+    border-radius: $border-radius;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    color: $color-dark-text;
+    width: 100%;
+
+    &:hover {
+      background: lighten($color-dark-card, 5%);
+      border-color: #d1020e;
+      transform: translateX(2px);
+    }
+
+    &-name {
+      flex: 1;
+    }
+  }
+
+  &__empty {
+    text-align: center;
+    padding: 40px;
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+  }
+}
+
+// Bench Modal Styles
+.bench {
+  &__player {
+    margin-bottom: 24px;
+  }
+
+  &__label {
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  &__player-card {
+    background: linear-gradient(135deg, #d1020e, #a00108);
+    padding: 16px 20px;
+    border-radius: $border-radius;
+    border: none;
+    font-weight: 700;
+    font-size: 18px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(209, 2, 14, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  &__action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: $color-dark-card;
+    border: 1px solid $color-dark-border;
+    padding: 16px;
+    border-radius: $border-radius;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: $color-dark-text;
+
+    i {
+      font-size: 24px;
+    }
+
+    span {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    small {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      text-align: center;
+    }
+
+    &:hover {
+      background: lighten($color-dark-card, 5%);
+      transform: translateY(-2px);
+    }
+
+    &--resting {
+      &:hover {
+        border-color: #fbbf24;
+        i {
+          color: #fbbf24;
+        }
+      }
+    }
+
+    &--left {
+      &:hover {
+        border-color: #f87171;
+        i {
+          color: #f87171;
+        }
+      }
+    }
+  }
+}
+
+.modal__tip {
+  margin-top: 12px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: left;
+
+  kbd {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 11px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+}
+
+.restore-player-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(4px);
+  }
+
+  span {
+    flex: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  i {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    flex-shrink: 0;
+  }
+}
+
+
+// =============================================================================
+// HELP SYSTEM & TUTORIAL
+// =============================================================================
+
+// Help bar for tutorial guidance
+.help-bar {
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  right: 465px; // Account for queue sidebar + margin
+  background: #f5f5f5;  // White smoke
+  border: 2px solid #000000;  // Black border
+  border-radius: 8px;  // Less rounded
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  z-index: 50;
+  transition: all 0.3s ease;
+  padding: 12px;
+
+  @media (max-width: 1350px) {
+    right: 15px; // Full width on smaller screens
+  }
+
+  @media (max-width: 768px) {
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+  }
+
+  &__close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: #666666;  // Grey
+    cursor: pointer;
+    padding: 4px;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    z-index: 1;
+
+    &:hover {
+      color: #000000;  // Black on hover
+      transform: scale(1.1);
+    }
+  }
+
+  &--expanded {
+    right: 15px; // Just margin when sidebar collapsed
+  }
+
+  // When queue is collapsed or in overlay mode
+  @media (max-width: 1350px) {
+    right: 15px; // Just margin
+
+    &--expanded {
+      right: 15px; // Same since sidebar is overlay
+    }
+  }
+
+  // Full width on mobile
+  @media (max-width: 800px) {
+    right: 15px;
+    top: 70px; // Account for menu bar
+    bottom: auto;
+
+    &--expanded {
+      right: 15px;
+    }
+  }
+
+  &__content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 16px;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #000000;  // Black
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding-right: 12px;
+    border-right: 1px solid rgba(0, 0, 0, 0.2);  // Black border
+
+    i {
+      font-size: 18px;
+      color: #000000;  // Black icon
+    }
+  }
+
+  &__messages {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+
+  &__tips {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+
+  &__tips-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #000000;  // Black
+    margin-bottom: 6px;
+
+    i {
+      font-size: 18px;
+      color: #000000;  // Black icon
+    }
+  }
+
+  &__finish-btn {
+    margin-left: auto;
+    padding: 6px 12px;
+    background: #000000;  // Black button
+    border: 1px solid #000000;
+    border-radius: 4px;
+    color: #ffffff;  // White text
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+
+    i {
+      margin-right: 6px;
+    }
+
+    &:hover {
+      background: #d1020e;  // Red on hover
+      border-color: #d1020e;
+      transform: translateY(-1px);
+    }
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    i {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+      color: #000000;  // Black icons
+    }
+
+    &--primary {
+      i {
+        color: #d1020e;  // Red icons for primary
+      }
+
+      .help-bar__text {
+        color: #000000;  // Black text
+        font-weight: 600;
+      }
+    }
+
+    &--secondary {
+      i {
+        color: #666666;  // Grey icons for secondary
+      }
+
+      .help-bar__text {
+        color: #666666;  // Grey text for secondary
+      }
+    }
+  }
+
+  &__text {
+    font-size: 16px;
+    color: #000000;  // Black text
+    font-weight: 500;
+    line-height: 1.3;
+  }
+}
+
+// Help pulse animation
+@keyframes helpPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0);
+  }
+}
+
+// Reusable help pulse class that adds a white pulsing effect
+// Tutorial arrow indicator
+.tutorial-arrow {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1000;
+
+  &__svg {
+    width: 60px;
+    height: 60px;
+    color: var(--arrow-color, #ffffff);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  }
+
+  &__text {
+    position: absolute;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--arrow-color, #ffffff);
+    white-space: nowrap;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+
+  // Position modifiers (where the arrow is placed relative to the element)
+  &--position-above {
+    bottom: calc(100% + 5px);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &--position-below {
+    top: calc(100% + 5px);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &--position-left {
+    right: calc(100% + 5px);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  &--position-right {
+    left: calc(100% + 5px);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  // Direction modifiers (which way the arrow points) with animations
+  &--direction-up {
+    animation: tutorial-arrow-float-up 2s ease-in-out infinite;
+  }
+
+  &--direction-down {
+    animation: tutorial-arrow-float-down 2s ease-in-out infinite;
+  }
+
+  &--direction-left {
+    animation: tutorial-arrow-float-left 2s ease-in-out infinite;
+  }
+
+  &--direction-right {
+    animation: tutorial-arrow-float-right 2s ease-in-out infinite;
+  }
+}
+
+@keyframes tutorial-arrow-float-up {
+  0%, 100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, -8px);
+  }
+}
+
+@keyframes tutorial-arrow-float-down {
+  0%, 100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, 8px);
+  }
+}
+
+@keyframes tutorial-arrow-float-left {
+  0%, 100% {
+    transform: translate(0, -50%);
+  }
+  50% {
+    transform: translate(-8px, -50%);
+  }
+}
+
+@keyframes tutorial-arrow-float-right {
+  0%, 100% {
+    transform: translate(0, -50%);
+  }
+  50% {
+    transform: translate(8px, -50%);
+  }
+}
+
+// Wrapper for elements that need tutorial arrows
+.has-tutorial-arrow {
+  position: relative !important;
+}

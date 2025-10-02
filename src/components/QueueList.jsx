@@ -1,11 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import QueueBlock from './QueueBlock';
 import QueuePlayerCard from './QueuePlayerCard';
+import PlannedGameBlock from './PlannedGameBlock';
 
-const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], activePlayers = [], onAssignCourt, onPlayerClick, onPlayerHover, shouldHighlightFirstPlayer, shouldHighlightEntireBlock, shouldShowPreviewBlock, shouldHighlightBenchButton, plannedGames = [], onCreatePlannedGame, onUpdatePlannedGameSlot, onRemovePlannedGame, onClearPlannedGame, hoveredQueuePlayer = null }) => {
+const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], activePlayers = [], onAssignCourt, onPlayerClick, onPlayerHover, shouldHighlightFirstPlayer, shouldHighlightEntireBlock, shouldShowPreviewBlock, shouldHighlightBenchButton, plannedGames = [], onCreatePlannedGame, onUpdatePlannedGameSlot, onRemovePlannedGame, onClearPlannedGame, hoveredQueuePlayer = null, onSlotSelectionChange }) => {
   // For now, show all blocks (planned games will be handled separately)
   const visibleBlocks = blocks;
+
+  // Collect all players currently in planned games
+  const playersInPlannedGames = plannedGames.flatMap(game =>
+    game.slots.filter(slot => slot !== null)
+  );
 
   // Sort blocks: regular blocks first, then benched blocks
   const sortedBlocks = [...visibleBlocks].sort((a, b) => {
@@ -56,7 +62,184 @@ const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], acti
   // Check if all courts are full (all have 4 players)
   const allCourtsFull = courtOccupancy.length > 0 && courtOccupancy.every(n => n === 4);
 
-  // TODO: Implement court assignment for planned games
+  // State for click-to-add interaction
+  const [selectedSlot, setSelectedSlot] = useState(null);
+
+  // Calculate position for each planned game
+  const getPlannedGamePosition = (plannedGame) => {
+    let lowestBlockIndex = -1;
+    let hasPlayingPlayer = false;
+    let hasAnyPlayers = false;
+
+    plannedGame.slots.forEach(slot => {
+      if (!slot) return;
+
+      hasAnyPlayers = true;
+
+      // Check if player is currently on court
+      const isPlaying = activePlayers.some(p =>
+        p.playerNumber === slot.playerNumber && p.onCourt
+      );
+
+      if (isPlaying) {
+        hasPlayingPlayer = true;
+        return;
+      }
+
+      // Find player's block position
+      const blockIndex = sortedBlocks.findIndex(block =>
+        block.players.some(p => p.playerNumber === slot.playerNumber)
+      );
+
+      if (blockIndex > lowestBlockIndex) {
+        lowestBlockIndex = blockIndex;
+      }
+    });
+
+    // If no players yet, position at top
+    if (!hasAnyPlayers) {
+      return {
+        position: 0,
+        hasPlayingPlayer: false,
+        reason: '👥 Waiting for players to be added'
+      };
+    }
+
+    return {
+      position: hasPlayingPlayer ? 'bottom' : lowestBlockIndex,
+      hasPlayingPlayer,
+      reason: hasPlayingPlayer
+        ? '⏳ Waiting for players to finish'
+        : lowestBlockIndex > 2
+        ? '💡 Slightly longer wait for fairness'
+        : '✅ Ready when court available'
+    };
+  };
+
+  // Build display list with planned games in correct positions
+  const buildDisplayList = () => {
+    const displayItems = [];
+    const processedGames = new Set();
+
+    // First, add any planned games that should appear at the top (position 0)
+    plannedGames.forEach(game => {
+      const position = getPlannedGamePosition(game);
+      if (position.position === 0 && !position.hasPlayingPlayer) {
+        displayItems.push({
+          type: 'planned-game',
+          data: game,
+          key: `planned-${game.id}`,
+          statusMessage: position.reason,
+          priority: 'normal'
+        });
+        processedGames.add(game.id);
+      }
+    });
+
+    // Process each block and insert planned games above them
+    sortedBlocks.forEach((block, index) => {
+      // Add planned games that should appear above this block
+      plannedGames.forEach(game => {
+        if (processedGames.has(game.id)) return;
+
+        const position = getPlannedGamePosition(game);
+        if (position.position === index && !position.hasPlayingPlayer) {
+          displayItems.push({
+            type: 'planned-game',
+            data: game,
+            key: `planned-${game.id}`,
+            statusMessage: position.reason,
+            priority: 'normal'
+          });
+          processedGames.add(game.id);
+        }
+      });
+
+      // Add the regular block
+      displayItems.push({
+        type: 'block',
+        data: block,
+        key: `block-${block.id}`
+      });
+    });
+
+    // Add separator if there are games with playing players
+    const bottomGames = plannedGames.filter(game => {
+      const position = getPlannedGamePosition(game);
+      return position.hasPlayingPlayer;
+    });
+
+    if (bottomGames.length > 0) {
+      displayItems.push({
+        type: 'separator',
+        key: 'separator',
+        label: 'Games waiting for players to finish'
+      });
+
+      // Add planned games with playing players at bottom
+      bottomGames.forEach(game => {
+        const position = getPlannedGamePosition(game);
+        displayItems.push({
+          type: 'planned-game',
+          data: game,
+          key: `planned-${game.id}`,
+          statusMessage: position.reason,
+          priority: 'low'
+        });
+      });
+    }
+
+    return displayItems;
+  };
+
+  const displayItems = buildDisplayList();
+
+  // Handle slot selection for click-to-add
+  const handleSlotSelect = (slotId) => {
+    const newSelection = slotId === selectedSlot ? null : slotId;
+    setSelectedSlot(newSelection);
+    onSlotSelectionChange?.(newSelection);
+  };
+
+  // Handle player click when slot is selected
+  const handlePlayerClickForPlannedGame = (player) => {
+    if (selectedSlot) {
+      // Check if player is already in any planned game
+      const isAlreadyInPlannedGame = playersInPlannedGames.some(
+        p => p.playerNumber === player.playerNumber
+      );
+
+      if (isAlreadyInPlannedGame) {
+        // Don't add player if they're already in a planned game
+        setSelectedSlot(null);
+        onSlotSelectionChange?.(null);
+        return;
+      }
+
+      // selectedSlot is like "game-123456-0" where 0 is the slot index
+      const lastDashIndex = selectedSlot.lastIndexOf('-');
+      const gameId = selectedSlot.substring(0, lastDashIndex);
+      const slotIndex = parseInt(selectedSlot.substring(lastDashIndex + 1));
+      onUpdatePlannedGameSlot(gameId, slotIndex, player);
+      setSelectedSlot(null);
+      onSlotSelectionChange?.(null);
+    } else {
+      onPlayerClick?.(player);
+    }
+  };
+
+  // Handle ESC key to cancel selection
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && selectedSlot) {
+        setSelectedSlot(null);
+        onSlotSelectionChange?.(null);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [selectedSlot, onSlotSelectionChange]);
 
   return (
     <div className="queue">
@@ -145,6 +328,8 @@ const QueueList = ({ blocks, courtCount, courtOccupancy = [], players = [], acti
                 shouldHighlightEntireBlock={shouldHighlightEntireBlock && index === 0 && !block.benchedType}
                 shouldHighlightBenchButton={shouldHighlightBenchButton && index === 0 && !block.benchedType}
                 allCourtsFull={allCourtsFull}
+                isSelectingForPlannedGame={!!selectedSlot}
+                playersInPlannedGames={playersInPlannedGames}
               />
             );
           })}

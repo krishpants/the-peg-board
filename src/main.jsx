@@ -1,7 +1,20 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import '@fortawesome/fontawesome-free/css/all.min.css'
-import BadmintonQueue from './BadmintonQueue.jsx'
+
+// Toggle this to test refactored version
+const USE_REFACTOR = true;
+
+// Lazy load components to avoid loading unnecessary styles
+const loadApp = async () => {
+  if (USE_REFACTOR) {
+    const module = await import('./_refactor/BadmintonQueue_refactor.jsx');
+    return module.default;
+  } else {
+    const module = await import('./BadmintonQueue.jsx');
+    return module.default;
+  }
+};
 
 // Register service worker for offline functionality
 if ('serviceWorker' in navigator) {
@@ -34,8 +47,11 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <BadmintonQueue />
-  </StrictMode>,
-)
+// Load and render the app
+loadApp().then(BadmintonQueue => {
+  createRoot(document.getElementById('root')).render(
+    <StrictMode>
+      <BadmintonQueue />
+    </StrictMode>,
+  )
+})

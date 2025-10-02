@@ -194,12 +194,13 @@ export default function useBadmintonSession() {
   const resetSession = () => {
     setPlayers([]);
     setQueueBlocks([]);
+    setPlannedGames([]); // Clear all planned games
     setSessionStarted(false);
     clearUndoStack();
     clearStorage(); // Clear localStorage when starting new session
   };
 
-  // keep names in sync everywhere (on court + queued)
+  // keep names in sync everywhere (on court + queued + planned games)
   const updatePlayerName = (playerNumber, name) => {
     const clean = (name ?? '').trim();
     saveStateToUndoStack(`Update Player #${playerNumber} name`);
@@ -215,6 +216,18 @@ export default function useBadmintonSession() {
         ...b,
         players: b.players.map((qp) =>
           qp.playerNumber === playerNumber ? { ...qp, playerName: clean } : qp
+        ),
+      }))
+    );
+
+    // Also update names in planned games
+    setPlannedGames((prev) =>
+      prev.map((game) => ({
+        ...game,
+        slots: game.slots.map((slot) =>
+          slot && slot.playerNumber === playerNumber
+            ? { ...slot, playerName: clean }
+            : slot
         ),
       }))
     );
@@ -369,7 +382,13 @@ export default function useBadmintonSession() {
     setTimeout(() => {
       saveStateToUndoStack(`Assign Player #${playerNumber} to Court ${courtNum}`);
 
-      // TODO: Remove from planned games if they're in any
+      // Remove player from any planned games they're in
+      setPlannedGames(prev => prev.map(game => ({
+        ...game,
+        slots: game.slots.map(slot =>
+          slot && slot.playerNumber === playerNumber ? null : slot
+        )
+      })))
 
       // Find and extract the player info first
       let playerInfo = null;
